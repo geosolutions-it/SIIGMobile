@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SIIG Mobile</string>
+
+    <string name="title_section1">Mappa</string>
+    <string name="title_section2">Calcola Rischio</string>
+    <string name="title_section3">Mostra Pericolosità</string>
+
+    <string name="navigation_drawer_open">Apri Menù</string>
+    <string name="navigation_drawer_close">Chiudi Menù</string>
+
+    <string name="action_example">Ricerca</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
