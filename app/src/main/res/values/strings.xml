@@ -8,7 +8,8 @@
     <string name="navigation_drawer_open">Apri Menù</string>
     <string name="navigation_drawer_close">Chiudi Menù</string>
 
-    <string name="action_example">Ricerca</string>
+    <string name="action_search">Ricerca</string>
+    <string name="action_map">Mappa</string>
 
     <string name="action_settings">Settings</string>
 </resources>

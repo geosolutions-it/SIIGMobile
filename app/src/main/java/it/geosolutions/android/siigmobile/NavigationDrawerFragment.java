@@ -1,7 +1,7 @@
 package it.geosolutions.android.siigmobile;
 
-import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,6 +22,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import it.geosolutions.android.map.MapsActivity;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -248,8 +250,18 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
+        if (item.getItemId() == R.id.action_search) {
             Toast.makeText(getActivity(), "Azione di Ricerca...", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        if (item.getItemId() == R.id.action_map) {
+            Toast.makeText(getActivity(), "Starting Map...", Toast.LENGTH_SHORT).show();
+
+            // Start the map
+            Intent mapIntent = new Intent(getActivity(), MapsActivity.class);
+            getActivity().startActivity(mapIntent);
+
             return true;
         }
 
