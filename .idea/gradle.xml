@@ -10,8 +10,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ambilwarna" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/mapactivity" />
+            <option value="$PROJECT_DIR$/geopaparazzilibrary" />
+            <option value="$PROJECT_DIR$/geopaparazzispatialitelibrary" />
+            <option value="$PROJECT_DIR$/map" />
           </set>
         </option>
       </GradleProjectSettings>

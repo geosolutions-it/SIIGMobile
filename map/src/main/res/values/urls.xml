@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   <string translatable="false" name="mapstore_uri_schema">mapstore</string> 
+   <string translatable="false" name="mapstore_source_schema">mapstoresource</string> 
+</resources>

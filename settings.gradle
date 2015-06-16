@@ -1,1 +1,1 @@
-include ':app', ':mapactivity'
+include ':app', ':map', ':ambilwarna', ':geopaparazzilibrary', ':geopaparazzispatialitelibrary'

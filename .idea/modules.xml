@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SIIGMobile.iml" filepath="$PROJECT_DIR$/SIIGMobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ambilwarna/ambilwarna.iml" filepath="$PROJECT_DIR$/ambilwarna/ambilwarna.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mapactivity/mapactivity.iml" filepath="$PROJECT_DIR$/mapactivity/mapactivity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/geopaparazzilibrary/geopaparazzilibrary.iml" filepath="$PROJECT_DIR$/geopaparazzilibrary/geopaparazzilibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/geopaparazzispatialitelibrary/geopaparazzispatialitelibrary.iml" filepath="$PROJECT_DIR$/geopaparazzispatialitelibrary/geopaparazzispatialitelibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/map/map.iml" filepath="$PROJECT_DIR$/map/map.iml" />
+      <module fileurl="file://$PROJECT_DIR$/siigmobile.iml" filepath="$PROJECT_DIR$/siigmobile.iml" />
     </modules>
   </component>
 </project>
