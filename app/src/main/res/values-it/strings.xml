@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SIIG Mobile</string>
+    <string name="siig_risk_form_title">Calcolo Elaborazione Standard</string>
+    <string name="title_section1">Mappa</string>
+    <string name="title_section2">Calcolo Elaborazione Standard</string>
+    <string name="action_map">Mappa</string>
+    <string name="action_search">Ricerca</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="navigation_drawer_close">Chiudi Menù</string>
+    <string name="navigation_drawer_open">Apri Menù</string>
+    <string name="title_section3">Mostra Pericolosità</string>
+    <string name="compute_text">Elabora</string>
+    <string name="risk_description">Large Text</string>
+    <string name="risk">Rischio</string>
+    <string name="road_risk_factor">Pericolosità strada</string>
 </resources>

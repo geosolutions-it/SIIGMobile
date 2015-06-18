@@ -1,15 +1,20 @@
 <resources>
     <string name="app_name">SIIG Mobile</string>
 
-    <string name="title_section1">Mappa</string>
-    <string name="title_section2">Calcola Rischio</string>
-    <string name="title_section3">Mostra Pericolosità</string>
+    <string name="title_section1">Map</string>
+    <string name="title_section2">Compute Standard Elaboration</string>
+    <string name="title_section3">Show Risk Map</string>
 
-    <string name="navigation_drawer_open">Apri Menù</string>
-    <string name="navigation_drawer_close">Chiudi Menù</string>
+    <string name="navigation_drawer_open">Open Menu</string>
+    <string name="navigation_drawer_close">Close Menu</string>
 
-    <string name="action_search">Ricerca</string>
-    <string name="action_map">Mappa</string>
+    <string name="action_map">Map</string>
 
     <string name="action_settings">Settings</string>
+    <string name="siig_risk_form_title">Compute Standard Elaboration</string>
+    <string name="action_search">Search</string>
+    <string name="compute_text">Compute</string>
+    <string name="risk_description">Large Text</string>
+    <string name="risk">Risk</string>
+    <string name="road_risk_factor">Road Risk</string>
 </resources>
