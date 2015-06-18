@@ -299,7 +299,7 @@ public class ZipFileManager {
 		protected void onPostExecute(Boolean success) {
 			barDialog.dismiss();
 			
-			if(success != null && success == true){
+			if(success != null && success){
 				String[] data = {path_file, dir_path};
 				new UnzipFileAsyncTask().execute(data);
 			}else{

@@ -194,7 +194,7 @@ public class MapInfoControl extends MapControl{
     	paint_stroke.setStrokeJoin(STROKE_ANGLES);
     	
     	//Checks if user required dashed stroke
-	    if(STROKE_DASHED==true)
+	    if(STROKE_DASHED)
 	 	    paint_stroke.setPathEffect(new DashPathEffect(new float[]{STROKE_SHAPE_DIMENSION,STROKE_SPACES}, 0));
 		
 		if(defaultShapeSelection.equals(array[0])){

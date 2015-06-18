@@ -111,14 +111,14 @@ public  class MultiSourceOverlay implements Overlay,FreezableOverlay {
 	private void drawLayers(Canvas c, BoundingBox boundingBox, byte zoomLevel) {
 		try {
 			renderer.render(c, boundingBox, zoomLevel);
-			if(problemsNotified == true){
+			if(problemsNotified){
 				problemsNotified = false;
 				//TODO change status of the layers.
 				//manager.getLayerChangeListener().onLayerStatusChange();
 			}
 			
 		} catch (RenderingException e) {
-			if(problemsNotified == false){
+			if(!problemsNotified){
 				problemsNotified = true;
 				manager.notifyRenederingException(e);
 			}

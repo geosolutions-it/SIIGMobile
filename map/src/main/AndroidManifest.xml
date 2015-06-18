@@ -20,11 +20,11 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/map_name"
         android:theme="@style/AppTheme" >
-        <activity
+        <!--activity
             android:name="it.geosolutions.android.map.MapActivity"
             android:label="@string/map_name"
             android:configChanges="orientation|screenSize" >
-        </activity>
+        </activity-->
 
         <!-- Map -->
         <activity android:name="it.geosolutions.android.map.DataListActivity"/>

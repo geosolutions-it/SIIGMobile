@@ -580,7 +580,7 @@ public class MapsActivity extends MapActivityBase {
  * Show a confirm message to exit
  */
 	public void confirmExit() {
-			boolean confirmOnExit = getIntent().getExtras() != null ?getIntent().getExtras().getBoolean(PARAMETERS.CONFIRM_ON_EXIT ,true):false;
+			boolean confirmOnExit = getIntent().getExtras() != null  && getIntent().getExtras().getBoolean(PARAMETERS.CONFIRM_ON_EXIT ,true) ;
 			if(confirmOnExit){
 			new AlertDialog.Builder(this)
 		    .setTitle(R.string.button_confirm_exit_title)
@@ -1306,7 +1306,7 @@ public class MapsActivity extends MapActivityBase {
 				mbTilesAdded = true;
 				originalLayers.remove(layer);
 				Log.d(MapsActivity.class.getSimpleName(), "mbtiles layer added , size "+orderedLayers.size());
-			}else if(mbTilesAdded == true){
+			}else if(mbTilesAdded){
 				orderedLayers.add(layer);
 				originalLayers.remove(layer);
 				Log.d(MapsActivity.class.getSimpleName(), "other added , size "+orderedLayers.size());

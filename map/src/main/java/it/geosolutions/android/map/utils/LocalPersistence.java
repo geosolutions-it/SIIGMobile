@@ -99,7 +99,7 @@ public class LocalPersistence {
             Log.e("LocalPersistence",  e.getStackTrace().toString());
 
         } catch (ClassNotFoundException e) {
-            Log.e("LocalPersistence",  e.getStackTrace().toString().toString());
+            Log.e("LocalPersistence",  e.getStackTrace().toString());
 
         } finally {
             if (objectIn != null) {

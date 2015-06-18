@@ -86,7 +86,7 @@ public class WMSRequest {
 			sw.append("?");
 			for(String paramName : newParams.keySet()){
 				try {
-					sw.append(paramName + "="+ URLEncoder.encode(newParams.get(paramName), "UTF-8"));
+					sw.append(paramName).append("=").append(URLEncoder.encode(newParams.get(paramName), "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					Log.e("WMS","Unsupported encoding");
 				}
