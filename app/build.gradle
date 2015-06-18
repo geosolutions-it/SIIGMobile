@@ -36,6 +36,7 @@ task copyNativeLibs(type: Copy) {
     from(new File(project(':geopaparazzispatialitelibrary').projectDir, 'libs')) {
         include 'armeabi/libjsqlite.so'
         include 'armeabi-v7a/libjsqlite.so'
+        include 'x86/libjsqlite.so'
     }
     into new File(buildDir, 'native-libs')
 }
