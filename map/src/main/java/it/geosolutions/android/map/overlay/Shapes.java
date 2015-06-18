@@ -27,6 +27,8 @@ import com.vividsolutions.jts.android.geom.DrawableShape;
 import com.vividsolutions.jts.geom.Geometry;
 
 import eu.geopaparazzi.spatialite.database.spatial.core.GeometryIterator;
+import it.geosolutions.android.map.style.StyleManager;
+import it.geosolutions.android.map.style.Symbolizer;
 
 /**
  * A class used to draw various shapes on a map
@@ -56,12 +58,18 @@ public class Shapes {
 	
 	/**
 	 * Method used to draw a line on map.
-	 * @param stroke
-	 */
-	public void drawLine(Paint stroke){
-		ShapeWriter wr = new ShapeWriter(pointTransformer);
+     * @param advancedStyle
+     */
+	public void drawLines(AdvancedStyle advancedStyle){
+        Paint stroke = StyleManager.getStrokePaint4Style(advancedStyle);
+        ShapeWriter wr = new ShapeWriter(pointTransformer);
         wr.setRemoveDuplicatePoints(true);
         wr.setDecimation(style4Table.decimationFactor);
+        if(stroke == null){
+            // Can't draw
+            return;
+        }
+
         while( geometryIterator.hasNext() ) {
             Geometry geom = geometryIterator.next();
             DrawableShape shape = wr.toShape(geom);
@@ -76,7 +84,7 @@ public class Shapes {
 	 * @param fill
 	 * @param stroke
 	 */
-	public void drawPoint(Paint fill, Paint stroke){
+	public void drawPoints(Paint fill, Paint stroke){
 		ShapeWriter wr = new ShapeWriter(pointTransformer,style4Table.shape,style4Table.size);
         wr.setRemoveDuplicatePoints(true);
         wr.setDecimation(style4Table.decimationFactor);
@@ -99,7 +107,7 @@ public class Shapes {
 	 * @param fill
 	 * @param stroke
 	 */
-	public void drawPolygon(Paint fill, Paint stroke){
+	public void drawPolygons(Paint fill, Paint stroke){
 		ShapeWriter wr = new ShapeWriter(pointTransformer);
         wr.setRemoveDuplicatePoints(true);
         wr.setDecimation(style4Table.decimationFactor);
@@ -117,5 +125,20 @@ public class Shapes {
             }
 		}
 	}
-	
+
+    public void drawLines(Symbolizer symbolizer) {
+        AdvancedStyle astyle = new AdvancedStyle();
+        astyle.dashed = symbolizer.dashed;
+        astyle.decimationFactor = symbolizer.decimationFactor;
+        astyle.fillalpha = symbolizer.fillalpha;
+        astyle.fillcolor = symbolizer.fillcolor;
+        astyle.shape = symbolizer.shape;
+        astyle.strokealpha = symbolizer.strokealpha;
+        astyle.strokecolor = symbolizer.strokecolor;
+        astyle.size = symbolizer.size;
+        astyle.textfield = symbolizer.textfield;
+        astyle.textsize = symbolizer.textsize;
+        astyle.width = symbolizer.width;
+        this.drawLines(astyle);
+    }
 }

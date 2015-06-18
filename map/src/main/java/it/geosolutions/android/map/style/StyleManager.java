@@ -143,7 +143,12 @@ public class StyleManager{
         paint.setAntiAlias(true);
         paint.setStrokeCap(Cap.ROUND);
         paint.setStrokeJoin(Join.ROUND);
-        paint.setColor(Color.parseColor(style.strokecolor));
+        try {
+            paint.setColor(Color.parseColor(style.strokecolor));
+        } catch (IllegalArgumentException iae) {
+            // Default color is black
+            paint.setColor(Color.BLACK);
+        }
         float alpha = style.strokealpha * 255f;
         paint.setAlpha((int) alpha);
         paint.setStrokeWidth(style.width);

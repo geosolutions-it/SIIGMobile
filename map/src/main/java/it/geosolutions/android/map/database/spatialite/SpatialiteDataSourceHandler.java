@@ -20,6 +20,7 @@ package it.geosolutions.android.map.database.spatialite;
 import it.geosolutions.android.map.database.SpatialDataSourceHandler;
 import it.geosolutions.android.map.model.Attribute;
 import it.geosolutions.android.map.model.Feature;
+import it.geosolutions.android.map.style.Filter;
 import it.geosolutions.android.map.utils.Coordinates.Coordinates_Query;
 
 import java.io.File;
@@ -84,7 +85,9 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
     private List<SpatialVectorTable> vectorTableList;
     private List<SpatialRasterTable> rasterTableList;
     private String fileName;
-    
+
+    private Filter filter;
+
     public SpatialiteDataSourceHandler( String dbPath ) {
         try {
             File spatialDbFile = new File(dbPath);
@@ -529,7 +532,18 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
         qSb.append("'");
         qSb.append("     AND search_frame = ");
         qSb.append(mbr);
-        qSb.append(" );");
+        qSb.append(")");
+        if(filter!= null){
+            qSb.append(" AND \"");
+            qSb.append(filter.PropertyName);
+            qSb.append("\" >= ");
+            qSb.append(filter.LowerBoundary);
+            qSb.append(" AND \"");
+            qSb.append(filter.PropertyName);
+            qSb.append("\" < ");
+            qSb.append(filter.UpperBoundary);
+        }
+        qSb.append(" ;");
         String q = qSb.toString();
 
         return q;
@@ -724,13 +738,14 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 	}
 	
 	/**
-	 * Generates a query for a layer where the 
-	 * @param layer
+	 * Generates a query for a layer where the
+     * @param destSrid
+	 * @param table
 	 * @param attributeName
 	 * @param attributeValue
 	 * @param start
 	 * @param limit
-	 * @return
+	 * @return Stmt
 	 * @throws Exception 
 	 */
 	private Stmt generateQueryByAttributeForGeometry(String destSrid,SpatialVectorTable table, String attributeName,
@@ -756,7 +771,7 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 	        sbQ.append(")) AS ");
 	        sbQ.append(DEFAULT_GEOMETRY_NAME);
 	        //FROM
-	        sbQ.append(" FROM \"").append(table.getName());
+        sbQ.append(" FROM \"").append(table.getName());
 	        sbQ.append("\" ");
 	        //WHERE
 	        sbQ.append(" WHERE \"");
@@ -924,13 +939,13 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 	@Override
 	public ArrayList<Map<String,String>> intersectionToMapBBOX(String boundsSrid,
 			SpatialVectorTable spatialTable, double n, double s, double e,
-			double w,Integer start,Integer limit) throws Exception{
-		 Stmt stmt = generateBBoxQuery(boundsSrid, spatialTable, n, s, e, w,
+			double w,Integer start,Integer limit) throws Exception {
+        Stmt stmt = generateBBoxQuery(boundsSrid, spatialTable, n, s, e, w,
 					start, limit);
 	        ArrayList<Map<String,String>> features = new ArrayList<Map<String,String>>();
 	        try {
 	        	//every row of the table (feature)
-	            generateMap(spatialTable, stmt, features);
+                generateMap(spatialTable, stmt, features);
 	            
 	        }catch(Exception ee){
 	        	Log.e("DATABASE","Error in database query:\nException:"+ee.getMessage());
@@ -1049,9 +1064,7 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 		    for( int i = 0; i < column_count; i++ ) {
 		    	String cName = stmt.column_name(i);
 		    	
-		        if (!cName.equalsIgnoreCase(DEFAULT_GEOMETRY_NAME)) {
-		            continue;
-		        }else{
+		        if (cName.equalsIgnoreCase(DEFAULT_GEOMETRY_NAME)) {
 		        	 byte[] geomBytes = stmt.column_bytes(0);
 		             Geometry geometry;
 					try {
@@ -1443,4 +1456,14 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
         Stmt stmt = db.prepare(q);
 		return stmt;		
 	}
+
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Filter filter) {
+        this.filter = filter;
+    }
+
 }

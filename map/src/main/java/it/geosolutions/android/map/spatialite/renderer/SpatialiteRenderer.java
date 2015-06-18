@@ -18,12 +18,14 @@
 package it.geosolutions.android.map.spatialite.renderer;
 
 import it.geosolutions.android.map.database.SpatialDataSourceManager;
+import it.geosolutions.android.map.database.spatialite.SpatialiteDataSourceHandler;
 import it.geosolutions.android.map.model.Layer;
 import it.geosolutions.android.map.overlay.MapsforgePointTransformation;
 import it.geosolutions.android.map.overlay.Shapes;
 import it.geosolutions.android.map.renderer.OverlayRenderer;
 import it.geosolutions.android.map.spatialite.SpatialiteLayer;
 import it.geosolutions.android.map.style.AdvancedStyle;
+import it.geosolutions.android.map.style.Rule;
 import it.geosolutions.android.map.style.StyleManager;
 import it.geosolutions.android.map.utils.ProjectionUtils;
 import it.geosolutions.android.map.utils.StyleUtils;
@@ -112,6 +114,7 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 				}
 				
 				//check visibility range in style
+				// TODO the visibility range should be at Rule level
 				AdvancedStyle style4Table = l.getStyle();
 				if (!StyleUtils.isInVisibilityRange(style4Table, drawZoomLevel)){
 					continue;
@@ -124,39 +127,80 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 					//ISpatialDatabaseHandler spatialDatabaseHandler = sdManager.getVectorHandler(spatialTable);
 	
 					GeometryIterator geometryIterator = null;
-					try {
-						geometryIterator = spatialDatabaseHandler
-								.getGeometryIteratorInBounds("4326", spatialTable,
-										n, s, e, w);
-	
-						Paint fill = null;
-						Paint stroke = null;
-						if (style4Table.fillcolor != null
-								&& style4Table.fillcolor.trim().length() > 0)
-							fill = StyleManager.getFillPaint4Style(style4Table);
-						if (style4Table.strokecolor != null	&& style4Table.strokecolor.trim().length() > 0)
-							stroke = StyleManager.getStrokePaint4Style(style4Table);
-	
-						PointTransformation pointTransformer = new MapsforgePointTransformation(
-								projection, drawX, drawY, drawZoomLevel);
-						Shapes shapes = new Shapes(pointTransformer, canvas,
-								style4Table, geometryIterator);
-						if (spatialTable.isPolygon()) {
-							shapes.drawPolygon(fill, stroke);
-							
-						} else if (spatialTable.isLine()) {
-							shapes.drawLine(stroke);
-							
-						} else if (spatialTable.isPoint()) {
-							shapes.drawPoint(fill, stroke);
-							
-						}
-						
-						
-					} finally {
-						if (geometryIterator != null)
-							geometryIterator.close();
-					}
+
+                    if(style4Table.rules != null){
+
+                        for(Rule r : style4Table.rules) {
+                            // EXPERIMENTAL
+                            // Only for lines
+                            try {
+
+                                if (spatialDatabaseHandler instanceof SpatialiteDataSourceHandler) {
+                                    ((SpatialiteDataSourceHandler) spatialDatabaseHandler).setFilter(r.getFilter());
+                                }
+
+                                geometryIterator = spatialDatabaseHandler
+                                        .getGeometryIteratorInBounds("4326", spatialTable,
+                                                n, s, e, w);
+
+                                //Paint fill  = StyleManager.getFillPaint4Style(style4Table);
+                                //Paint stroke = StyleManager.getStrokePaint4Style(style4Table);
+
+                                PointTransformation pointTransformer = new MapsforgePointTransformation(projection, drawX, drawY, drawZoomLevel);
+                                Shapes shapes = new Shapes(pointTransformer, canvas, style4Table, geometryIterator);
+                                if (spatialTable.isPolygon()) {
+                                    //shapes.drawPolygons(fill, stroke);
+
+                                } else if (spatialTable.isLine()) {
+                                    shapes.drawLines(r.getSymbolizer());
+
+                                } else if (spatialTable.isPoint()) {
+                                    //shapes.drawPoints(fill, stroke);
+
+                                }
+
+
+                            } finally {
+                                if (geometryIterator != null)
+                                    geometryIterator.close();
+                            }
+                        }
+                    }else {
+
+                        try {
+
+                            geometryIterator = spatialDatabaseHandler
+                                    .getGeometryIteratorInBounds("4326", spatialTable,
+                                            n, s, e, w);
+
+                            Paint fill = null;
+                            Paint stroke = null;
+                            if (style4Table.fillcolor != null && style4Table.fillcolor.trim().length() > 0)
+                                fill = StyleManager.getFillPaint4Style(style4Table);
+                            if (style4Table.strokecolor != null && style4Table.strokecolor.trim().length() > 0)
+                                stroke = StyleManager.getStrokePaint4Style(style4Table);
+
+                            PointTransformation pointTransformer = new MapsforgePointTransformation(
+                                    projection, drawX, drawY, drawZoomLevel);
+                            Shapes shapes = new Shapes(pointTransformer, canvas,
+                                    style4Table, geometryIterator);
+                            if (spatialTable.isPolygon()) {
+                                shapes.drawPolygons(fill, stroke);
+
+                            } else if (spatialTable.isLine()) {
+                                shapes.drawLines(style4Table);
+
+                            } else if (spatialTable.isPoint()) {
+                                shapes.drawPoints(fill, stroke);
+
+                            }
+
+
+                        } finally {
+                            if (geometryIterator != null)
+                                geometryIterator.close();
+                        }
+                    }
 				}
 			}
 		} catch (Exception e1) {

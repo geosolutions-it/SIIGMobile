@@ -18,6 +18,7 @@
 package it.geosolutions.android.map.style;
 
 import it.geosolutions.android.map.BuildConfig;
+import it.geosolutions.android.map.style.json.RuleDeserializer;
 import it.geosolutions.android.map.utils.MapFilesProvider;
 
 import java.io.File;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 /**
@@ -71,7 +73,11 @@ public class StyleObjectProvider {
 	 * @throws IOException
 	 */
 	private AdvancedStyle readJsonFile(String fileName) throws IOException {
-		Gson gson = new Gson();
+
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Rule.class, new RuleDeserializer());
+		Gson gson = gsonBuilder.create();
+
 		String path = STYLE_DIR_IN + fileName;
 		FileReader fr = null;
 		try {
