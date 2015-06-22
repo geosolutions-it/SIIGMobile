@@ -149,7 +149,7 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
                                 PointTransformation pointTransformer = new MapsforgePointTransformation(projection, drawX, drawY, drawZoomLevel);
                                 Shapes shapes = new Shapes(pointTransformer, canvas, style4Table, geometryIterator);
                                 if (spatialTable.isPolygon()) {
-                                    //shapes.drawPolygons(fill, stroke);
+									shapes.drawPolygons(r.getSymbolizer());
 
                                 } else if (spatialTable.isLine()) {
                                     shapes.drawLines(r.getSymbolizer());
@@ -185,7 +185,7 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
                             Shapes shapes = new Shapes(pointTransformer, canvas,
                                     style4Table, geometryIterator);
                             if (spatialTable.isPolygon()) {
-                                shapes.drawPolygons(fill, stroke);
+                                shapes.drawPolygons(style4Table);
 
                             } else if (spatialTable.isLine()) {
                                 shapes.drawLines(style4Table);

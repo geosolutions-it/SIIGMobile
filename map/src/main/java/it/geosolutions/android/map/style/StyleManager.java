@@ -116,7 +116,12 @@ public class StyleManager{
         paint.reset();
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.parseColor(style.fillcolor));
+        try {
+            paint.setColor(Color.parseColor(style.fillcolor));
+        } catch (IllegalArgumentException iae) {
+            // Default color is red
+            paint.setColor(Color.RED);
+        }
         float alpha = style.fillalpha * 255f;
         paint.setAlpha((int) alpha);
         

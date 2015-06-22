@@ -107,8 +107,16 @@ public class Shapes {
 	 * @param fill
 	 * @param stroke
 	 */
-	public void drawPolygons(Paint fill, Paint stroke){
-		ShapeWriter wr = new ShapeWriter(pointTransformer);
+	public void drawPolygons(AdvancedStyle advancedStyle){
+        Paint stroke = StyleManager.getStrokePaint4Style(advancedStyle);
+        Paint fill = StyleManager.getFillPaint4Style(advancedStyle);
+
+        if(stroke == null && fill==null){
+            // Can't draw
+            return;
+        }
+
+        ShapeWriter wr = new ShapeWriter(pointTransformer);
         wr.setRemoveDuplicatePoints(true);
         wr.setDecimation(style4Table.decimationFactor);
 		while( geometryIterator.hasNext() ) {
@@ -140,5 +148,22 @@ public class Shapes {
         astyle.textsize = symbolizer.textsize;
         astyle.width = symbolizer.width;
         this.drawLines(astyle);
+    }
+
+
+    public void drawPolygons(Symbolizer symbolizer) {
+        AdvancedStyle astyle = new AdvancedStyle();
+        astyle.dashed = symbolizer.dashed;
+        astyle.decimationFactor = symbolizer.decimationFactor;
+        astyle.fillalpha = symbolizer.fillalpha;
+        astyle.fillcolor = symbolizer.fillcolor;
+        astyle.shape = symbolizer.shape;
+        astyle.strokealpha = symbolizer.strokealpha;
+        astyle.strokecolor = symbolizer.strokecolor;
+        astyle.size = symbolizer.size;
+        astyle.textfield = symbolizer.textfield;
+        astyle.textsize = symbolizer.textsize;
+        astyle.width = symbolizer.width;
+        this.drawPolygons(astyle);
     }
 }

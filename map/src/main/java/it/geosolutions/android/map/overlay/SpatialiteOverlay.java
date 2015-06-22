@@ -141,7 +141,7 @@ public  class SpatialiteOverlay implements Overlay,FreezableOverlay {
                             drawZoomLevel);
                     Shapes shapes = new Shapes(pointTransformer, canvas, style4Table, geometryIterator);
                     if (spatialTable.isPolygon()) {
-                        shapes.drawPolygons(fill, stroke);
+                        shapes.drawPolygons(style4Table);
                         if (isInterrupted() || sizeHasChanged()) {
                             // stop working
                             return;
