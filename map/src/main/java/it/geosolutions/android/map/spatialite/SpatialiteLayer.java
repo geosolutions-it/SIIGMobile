@@ -42,7 +42,9 @@ public class SpatialiteLayer implements Layer<SpatialiteSource> {
 	private String tableName;
 	
 	private double opacity;
-	
+
+	private String styleFileName;
+
 	/**
 	 * LayerGroup of this Layer, can be null
 	 */
@@ -58,6 +60,10 @@ public class SpatialiteLayer implements Layer<SpatialiteSource> {
 
 	public AdvancedStyle  getStyle(){
 		StyleManager styleManager =StyleManager.getInstance();
+        if(styleFileName != null && !styleFileName.isEmpty()){
+            Log.d("SpatialiteLayer", "Getting style of "+tableName+" : "+styleFileName );
+            return styleManager.getStyle(styleFileName);
+        }
         return styleManager.getStyle(tableName);
 	}
 	
@@ -186,4 +192,12 @@ public class SpatialiteLayer implements Layer<SpatialiteSource> {
 		
 	}
 
+    public String getStyleFileName() {
+        return styleFileName;
+    }
+
+    public void setStyleFileName(String styleFileName) {
+        Log.d("SpatialiteLayer", "Setting style of "+title+" to "+styleFileName );
+        this.styleFileName = styleFileName;
+    }
 }

@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">SIIG Mobile</string>
 
-    <string name="title_section1">Map</string>
-    <string name="title_section2">Compute Standard Elaboration</string>
-    <string name="title_section3">Show Risk Map</string>
+    <string name="title_graph">Street Graph</string>
+    <string name="title_risk_environment">Environment Risk</string>
+    <string name="title_risk_social">Social Risk</string>
+    <string name="title_risk_total">Total Risk</string>
+
+    <string name="title_elab_start">Standard Elaboration</string>
+    <string name="title_elab_load">Load Elaboration</string>
 
     <string name="navigation_drawer_open">Open Menu</string>
     <string name="navigation_drawer_close">Close Menu</string>
@@ -17,4 +21,7 @@
     <string name="risk_description">Large Text</string>
     <string name="risk">Risk</string>
     <string name="road_risk_factor">Road Risk</string>
+    <string name="title_activity_compute_form" translatable="false">ComputeFormActivity</string>
+
+    <string name="action_example">Example action</string>
 </resources>

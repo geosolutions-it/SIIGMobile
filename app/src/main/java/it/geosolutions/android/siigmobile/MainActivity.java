@@ -1,22 +1,53 @@
 package it.geosolutions.android.siigmobile;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import it.geosolutions.android.map.activities.MapActivityBase;
+import it.geosolutions.android.map.control.CoordinateControl;
+import it.geosolutions.android.map.control.LocationControl;
+import it.geosolutions.android.map.control.MapControl;
+import it.geosolutions.android.map.control.MapInfoControl;
+import it.geosolutions.android.map.model.Layer;
+import it.geosolutions.android.map.model.MSMMap;
+import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
+import it.geosolutions.android.map.overlay.managers.OverlayManager;
+import it.geosolutions.android.map.spatialite.SpatialiteLayer;
+import it.geosolutions.android.map.utils.MapFilesProvider;
+import it.geosolutions.android.map.utils.SpatialDbUtils;
+import it.geosolutions.android.map.view.AdvancedMapView;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+
+    // default path for files
+    private static final File MAP_DIR = MapFilesProvider.getBaseDirectoryFile();
+    private static final File MAP_FILE = MapFilesProvider.getBackgroundMapFile();
+
+    /**
+     * Tag for Logging
+     */
+    private static final String TAG = "MainActivity";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -27,6 +58,12 @@ public class MainActivity extends AppCompatActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+
+    private MultiSourceOverlayManager layerManager;
+
+    public AdvancedMapView mapView;
+    public OverlayManager overlayManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,27 +78,136 @@ public class MainActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mapView =  (AdvancedMapView) findViewById(R.id.advancedMapView);
+
+        // Setup LayerManager
+        layerManager =  new MultiSourceOverlayManager(mapView);
+
+        // Enable Touch events
+        mapView.setClickable(true);
+
+        // Show ScaleBar
+        mapView.getMapScaleBar().setShowMapScaleBar(true);
+
+        // Coordinate Control
+        mapView.addControl(new CoordinateControl(mapView, true));
+
+        // Info Control
+        MapInfoControl ic= new MapInfoControl(mapView,this);
+        ic.setActivationButton((ImageButton) findViewById(R.id.ButtonInfo));
+        ic.setMode(MapControl.MODE_VIEW);
+        mapView.addControl(ic);
+
+        // Location Control
+        LocationControl lc  =new LocationControl(mapView);
+        lc.setActivationButton((ImageButton)findViewById(R.id.ButtonLocation));
+        mapView.addControl(lc);
+
+        // Add Layers
+        MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
+
+        ArrayList<Layer> layers = new ArrayList<Layer>();
+        for(Layer l : mapConfig.layers){
+            Log.d(TAG, "Layer Title: " + l.getTitle());
+            if(l.getTitle().startsWith("v_elab")){
+                layers.add(l);
+            }
+        }
+
+        // Add Neutral style
+        for(Layer l : layers){
+            if(l instanceof SpatialiteLayer){
+                Log.d(TAG, "Setting Style for layer: " + l.getTitle());
+                ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "grafo"));
+            }
+        }
+
+        layerManager.setLayers(layers);
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        if(layerManager == null){
+            // nothing to do
+            return;
+        }
+        ArrayList<Layer> layers = layerManager.getLayers();
+        switch (position){
+            case 0:
+                // Set Neutral style
+                for(Layer l : layers){
+                    if(l instanceof SpatialiteLayer){
+                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
+                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "grafo"));
+                    }
+                }
+                layerManager.setLayers(layers);
+                mapView.redraw();
+                break;
+            case 1:
+                // Set Neutral style
+                for(Layer l : layers){
+                    if(l instanceof SpatialiteLayer){
+                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
+                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "ambientale"));
+                    }
+                }
+                layerManager.setLayers(layers);
+                mapView.redraw();
+                break;
+            case 2:
+                // Set Neutral style
+                for(Layer l : layers){
+                    if(l instanceof SpatialiteLayer){
+                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
+                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "sociale"));
+                    }
+                }
+                layerManager.setLayers(layers);
+                mapView.redraw();
+                break;
+            case 3:
+                // Set Neutral style
+                for(Layer l : layers){
+                    if(l instanceof SpatialiteLayer){
+                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
+                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "totale"));
+                    }
+                }
+                layerManager.setLayers(layers);
+                mapView.redraw();
+                break;
+
+            case 4:
+                Toast.makeText(getBaseContext(), "Starting Form...", Toast.LENGTH_SHORT).show();
+                // Start the form activity
+                Intent formIntent = new Intent(this, ComputeFormActivity.class);
+                startActivity(formIntent);
+                break;
+            default:
+                /*
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+                */
+                break;
+        }
+
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.title_graph);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.title_elab_start);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section3);
+                mTitle = getString(R.string.title_elab_load);
                 break;
         }
     }
@@ -158,4 +304,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Controls can be refreshed getting the result of an intent, in this case
+        // each control knows which intent he sent with their requestCode/resultCode
+        for(MapControl control : mapView.getControls()){
+            control.refreshControl(requestCode,resultCode, data);
+        }
+    }
 }

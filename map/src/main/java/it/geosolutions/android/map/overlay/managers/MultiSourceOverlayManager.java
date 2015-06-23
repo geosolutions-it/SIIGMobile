@@ -131,7 +131,7 @@ public class MultiSourceOverlayManager implements OverlayManager {
 	 * 
 	 * @param itemId
 	 *            id of the menu item
-	 * @param enabled
+	 * @param enable
 	 *            true to set the layer visible, false to make it not visible
 	 */
 	public void toggleOverlayVisibility(int itemId, boolean enable) {
@@ -281,7 +281,7 @@ public class MultiSourceOverlayManager implements OverlayManager {
 	}
 	/**
 	 * load a MapStore configuration into the WMSOverlay
-	 * @param the <MapStoreConfiguration> object to load
+	 * @param result the <MapStoreConfiguration> object to load
 	 */
 	public void loadMapStoreConfig(MapStoreConfiguration result){
 		if(result == null) {
