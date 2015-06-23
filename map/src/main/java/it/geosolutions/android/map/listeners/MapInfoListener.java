@@ -125,13 +125,17 @@ public class MapInfoListener implements OnTouchListener {
 	 */
 	protected ArrayList<Layer> getLayers() {
 		MultiSourceOverlayManager manager = view.getLayerManager();
-		ArrayList<Layer> layers = manager.getLayers();
 		ArrayList<Layer> result = new ArrayList<Layer>();
-		for (Layer layer : layers) {
-			if (layer.isVisibility()) {
-				result.add(layer);
-			}
-		}
+		if(manager != null){
+            ArrayList<Layer> layers = manager.getLayers();
+            for (Layer layer : layers) {
+                if (layer.isVisibility()) {
+                    result.add(layer);
+                }
+            }
+        }else{
+            Log.w("MAPINFOTOOL", "Could not find LayerManager");
+        }
 		return result;
 	}
 

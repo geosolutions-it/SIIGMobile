@@ -75,7 +75,8 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -358,7 +359,7 @@ public class MapsActivity extends MapActivityBase {
 			      layerManager.loadMap((MSMMap)getIntent().getExtras().getSerializable(MSM_MAP));
 				
 			}else{
-				boolean dontLoadMBTileLayer = MapFilesProvider.getBackgroundSourceType() == BackgroundSourceType.MBTILES ? true : false;
+				boolean dontLoadMBTileLayer = MapFilesProvider.getBackgroundSourceType() == BackgroundSourceType.MBTILES ;
 				MSMMap map = SpatialDbUtils.mapFromDb(dontLoadMBTileLayer);
 				StorageUtils.setupSources(this);
 				//This adds layers also if its called loadMap but it will not order layers
@@ -396,15 +397,15 @@ public class MapsActivity extends MapActivityBase {
 		case BOTH:
 		case ONLY_LEFT:
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			mDrawerList = (View) findViewById(R.id.left_drawer); 
+			mDrawerList = findViewById(R.id.left_drawer);
 			if(mDrawerMode == DrawerMode.BOTH){				
-				mLayerMenu = (View) findViewById(R.id.right_drawer);
+				mLayerMenu = findViewById(R.id.right_drawer);
 			}
 			
 			mDrawerToggle = new ActionBarDrawerToggle(
 					this,                  /* host Activity */
 					mDrawerLayout,         /* DrawerLayout object */
-					R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret  */
+					//R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret  */
 					R.string.drawer_open,  /* "open drawer" description */
 					R.string.drawer_close  /* "close drawer" description */
 					) {
@@ -497,7 +498,7 @@ public class MapsActivity extends MapActivityBase {
                                 returnIntent.putParcelableArrayListExtra(PARAMETERS.MARKERS, MarkerUtils.getMarkersDTO(markers));
                                 setResult(RESULT_OK, returnIntent);
                                 finish();
-                                return;
+
                                 //if you don't want to return data:
 //			        	setResult(RESULT_CANCELED, returnIntent);        
 //			        	finish();
@@ -588,7 +589,6 @@ public class MapsActivity extends MapActivityBase {
 		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int which) { 
 		        	finish();
-		        	 return;
 		        }
 		     })
 		    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -604,7 +604,7 @@ public class MapsActivity extends MapActivityBase {
 	}
 	
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		// Restore UI state from the savedInstanceState.
 		// This bundle has also been passed to onCreate.
@@ -626,11 +626,11 @@ public class MapsActivity extends MapActivityBase {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.contextmenu_map, (Menu) menu);
+		inflater.inflate(R.menu.contextmenu_map, menu);
 		
 		switch (mDrawerMode) {
 		case BOTH:
-			inflater.inflate(R.menu.actionmenu_map, (Menu) menu);
+			inflater.inflate(R.menu.actionmenu_map, menu);
 			
 			break;
 		default:
@@ -691,9 +691,9 @@ public class MapsActivity extends MapActivityBase {
 	 * @param savedInstanceState
 	 */
 	private void createMarkers(Bundle savedInstanceState) {
-		 List<MarkerDTO> markerDTOs=null;
+		 List<MarkerDTO> markerDTOs;
 		// add the OverlayItem to the ArrayItemizedOverlay
-		 ArrayList<DescribedMarker> markers= null;
+		 ArrayList<DescribedMarker> markers;
 		if (savedInstanceState != null) {
 			markerDTOs = savedInstanceState.getParcelableArrayList(PARAMETERS.MARKERS);
 			markers= MarkerUtils.markerDTO2DescribedMarkers(this,markerDTOs);

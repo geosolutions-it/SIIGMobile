@@ -941,7 +941,7 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 			SpatialVectorTable spatialTable, double n, double s, double e,
 			double w,Integer start,Integer limit) throws Exception {
         Stmt stmt = generateBBoxQuery(boundsSrid, spatialTable, n, s, e, w,
-					start, limit);
+                start, limit);
 	        ArrayList<Map<String,String>> features = new ArrayList<Map<String,String>>();
 	        try {
 	        	//every row of the table (feature)
@@ -961,7 +961,7 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 			SpatialVectorTable spatialTable, double n, double s, double e,
 			double w,Integer start,Integer limit) throws Exception{
 		 Stmt stmt = buildFeatureBBoxQuery(boundsSrid, spatialTable, n, s, e, w,
-					start, limit);
+                 start, limit);
 	        ArrayList<Feature> features = new ArrayList<Feature>();
 	        try {
 	        	//every row of the table (feature)
@@ -1031,7 +1031,9 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 	 */
 	public void generateAttributes(SpatialVectorTable spatialTable, Stmt stmt,
 			ArrayList<Feature> features,boolean includeGeometry) throws Exception{
-		try{	
+        WKBReader wkbReader = new WKBReader();
+
+        try{
 		while( stmt.step() ) {
 		    int column_count = stmt.column_count();
 		    Feature feature = new Feature();
@@ -1040,12 +1042,23 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 		        String cName = stmt.column_name(i);
 		        //skip geometry
 		        if (cName.equalsIgnoreCase(spatialTable.getGeomName() )|| cName.equalsIgnoreCase(DEFAULT_GEOMETRY_NAME)){
-		            continue;
-		        }
-		        attribute.setName(cName);
-		        attribute.setValue(stmt.column_string(i));
-				//add name->value pairs to the attribute ArrayList
-		        feature.add(attribute);
+                    if(includeGeometry){
+                        byte[] geomBytes = stmt.column_bytes(i);
+                        Geometry geometry = null;
+                        try {
+                            geometry = wkbReader.read(geomBytes);
+                        } catch (ParseException e) {
+                            Log.w("SpatialiteDataSourceHandler", "Error parsing geometry, skipping..");
+                            continue;
+                        }
+                        feature.setGeometry(geometry);
+                    }
+		        }else {
+                    attribute.setName(cName);
+                    attribute.setValue(stmt.column_string(i));
+                    //add name->value pairs to the attribute ArrayList
+                    feature.add(attribute);
+                }
 		        
 		    }
 		    features.add(feature);
@@ -1464,6 +1477,88 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
 
     public void setFilter(Filter filter) {
         this.filter = filter;
+    }
+
+    // FeatureIterator
+    /*
+    public GeometryIterator getGeometryIteratorInBounds( String destSrid, SpatialVectorTable table, double n, double s, double e,
+                                                         double w ) {
+        String query = buildGeometriesInBoundsQuery(destSrid, table, n, s, e, w);
+        return new GeometryIterator(db, query);
+    }
+    */
+
+    private String buildFeaturesInBoundsQuery( String destSrid, SpatialVectorTable table, double n, double s, double e, double w, String attributeName) {
+        boolean doTransform = false;
+        if (!table.getSrid().equals(destSrid)) {
+            doTransform = true;
+        }
+
+        StringBuilder mbrSb = new StringBuilder();
+        if (doTransform)
+            mbrSb.append("ST_Transform(");
+        mbrSb.append("BuildMBR(");
+        mbrSb.append(w);
+        mbrSb.append(", ");
+        mbrSb.append(n);
+        mbrSb.append(", ");
+        mbrSb.append(e);
+        mbrSb.append(", ");
+        mbrSb.append(s);
+        if (doTransform) {
+            mbrSb.append(", ");
+            mbrSb.append(destSrid);
+            mbrSb.append("), ");
+            mbrSb.append(table.getSrid());
+        }
+        mbrSb.append(")");
+        String mbr = mbrSb.toString();
+
+        StringBuilder qSb = new StringBuilder();
+        qSb.append("SELECT ST_AsBinary(CastToXY(");
+        if (doTransform)
+            qSb.append("ST_Transform(");
+        qSb.append(table.getGeomName());
+        if (doTransform) {
+            qSb.append(", ");
+            qSb.append(destSrid);
+            qSb.append(")");
+        }
+        qSb.append("))");
+
+        if(attributeName!= null && !attributeName.isEmpty()){
+            qSb.append(", ");
+            qSb.append(attributeName);
+        }
+
+        qSb.append(" FROM \"");
+        qSb.append(table.getName());
+        qSb.append("\" WHERE ST_Intersects(");
+        qSb.append(table.getGeomName());
+        qSb.append(", ");
+        qSb.append(mbr);
+        qSb.append(") = 1");
+        qSb.append("   AND ROWID IN (");
+        qSb.append("     SELECT ROWID FROM Spatialindex WHERE f_table_name ='");
+        qSb.append(table.getName());
+        qSb.append("'");
+        qSb.append("     AND search_frame = ");
+        qSb.append(mbr);
+        qSb.append(")");
+        if(filter!= null){
+            qSb.append(" AND \"");
+            qSb.append(filter.PropertyName);
+            qSb.append("\" >= ");
+            qSb.append(filter.LowerBoundary);
+            qSb.append(" AND \"");
+            qSb.append(filter.PropertyName);
+            qSb.append("\" < ");
+            qSb.append(filter.UpperBoundary);
+        }
+        qSb.append(" ;");
+        String q = qSb.toString();
+
+        return q;
     }
 
 }

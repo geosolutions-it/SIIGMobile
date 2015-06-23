@@ -27,6 +27,8 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Join;
+import android.util.Log;
+
 import eu.geopaparazzi.spatialite.database.spatial.core.Style;
 
 /**
@@ -91,7 +93,7 @@ public class StyleManager{
     public  AdvancedStyle getStyle(String name){
  
     	if(styleCache.containsKey(name)){
-//    		Log.d("STYLE","style "+name+" in the cache");
+    		Log.d("STYLE", "style " + name + " in the cache");
     		return styleCache.get(name);
     		
     	}
@@ -163,5 +165,9 @@ public class StyleManager{
         	paint.setPathEffect(new DashPathEffect(new float[]{15f,10f}, 0));
 
         return paint;
-    }  
+    }
+
+    public static Paint getTextStrokePaint4Style(AdvancedStyle advancedStyle) {
+        return getStrokePaint4Style(advancedStyle);
+    }
 }

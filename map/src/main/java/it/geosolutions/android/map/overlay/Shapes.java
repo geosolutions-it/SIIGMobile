@@ -62,10 +62,11 @@ public class Shapes {
      */
 	public void drawLines(AdvancedStyle advancedStyle){
         Paint stroke = StyleManager.getStrokePaint4Style(advancedStyle);
+        Paint textStroke = StyleManager.getTextStrokePaint4Style(advancedStyle);
         ShapeWriter wr = new ShapeWriter(pointTransformer);
         wr.setRemoveDuplicatePoints(true);
         wr.setDecimation(style4Table.decimationFactor);
-        if(stroke == null){
+        if(stroke == null && textStroke == null){
             // Can't draw
             return;
         }
@@ -75,6 +76,10 @@ public class Shapes {
             DrawableShape shape = wr.toShape(geom);
             if (stroke != null){
                 shape.draw(canvas, stroke);
+            }
+
+            if(textStroke != null){
+                //canvas.drawTextOnPath();
             }
         }
 	}
@@ -104,12 +109,12 @@ public class Shapes {
 	
 	/**
 	 * method used to draw a polygon on map
-	 * @param fill
-	 * @param stroke
+	 * @param advancedStyle
 	 */
 	public void drawPolygons(AdvancedStyle advancedStyle){
         Paint stroke = StyleManager.getStrokePaint4Style(advancedStyle);
         Paint fill = StyleManager.getFillPaint4Style(advancedStyle);
+
 
         if(stroke == null && fill==null){
             // Can't draw
@@ -130,6 +135,7 @@ public class Shapes {
                 if (stroke != null){
                     shape.draw(canvas, stroke);
                 }
+
             }
 		}
 	}
@@ -146,6 +152,8 @@ public class Shapes {
         astyle.size = symbolizer.size;
         astyle.textfield = symbolizer.textfield;
         astyle.textsize = symbolizer.textsize;
+        astyle.textfillcolor = symbolizer.textfillcolor;
+        astyle.textstrokecolor = symbolizer.textstrokecolor;
         astyle.width = symbolizer.width;
         this.drawLines(astyle);
     }

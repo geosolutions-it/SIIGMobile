@@ -12,6 +12,8 @@ public class Symbolizer {
     public String shape = "square";
     public float width = 3f;
     public float textsize = 5f;
+    public String textstrokecolor = "";
+    public String textfillcolor = "";
     public String textfield = "";
     public boolean dashed = false;
     public float decimationFactor = 0.00001f;

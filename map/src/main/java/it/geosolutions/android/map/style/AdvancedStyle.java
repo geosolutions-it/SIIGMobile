@@ -30,4 +30,6 @@ public class AdvancedStyle extends Style implements Serializable{
     public byte maxZoom = 30;//TODO do it better
     public boolean dashed = false;
     public Rule[] rules = null;
+    public String textstrokecolor = "";
+    public String textfillcolor = "";
 }
