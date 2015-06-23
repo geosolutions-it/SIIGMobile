@@ -287,23 +287,6 @@ public class MainActivity extends MapActivityBase
         }
     }
 
-    public void onRiskRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((AppCompatRadioButton) view).isChecked();
-
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.radio_risk:
-                if (checked)
-
-                    break;
-            case R.id.radio_street:
-                if (checked)
-
-                    break;
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

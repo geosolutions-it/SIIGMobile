@@ -18,9 +18,12 @@
     <string name="siig_risk_form_title">Compute Standard Elaboration</string>
     <string name="action_search">Search</string>
     <string name="compute_text">Compute</string>
-    <string name="risk_description">Large Text</string>
+    <string name="risk_description_title">Risk Option Description</string>
+    <string name="risk_description" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sit amet nunc luctus, rutrum nulla et, congue nibh. Nunc risus est, dignissim et ultrices sed, maximus semper ex.</string>
     <string name="risk">Risk</string>
     <string name="road_risk_factor">Road Risk</string>
+    <string name="road_risk_description_title">Road Risk Option Description</string>
+    <string name="road_risk_description" translatable="false">Donec in justo eget justo feugiat maximus. Proin eleifend pretium turpis ac interdum.</string>
     <string name="title_activity_compute_form" translatable="false">ComputeFormActivity</string>
 
     <string name="action_example">Example action</string>

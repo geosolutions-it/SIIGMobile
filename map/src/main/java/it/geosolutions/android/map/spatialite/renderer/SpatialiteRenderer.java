@@ -132,7 +132,6 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 
                         for(Rule r : style4Table.rules) {
                             // EXPERIMENTAL
-                            // Only for lines
                             try {
 
                                 if (spatialDatabaseHandler instanceof SpatialiteDataSourceHandler) {

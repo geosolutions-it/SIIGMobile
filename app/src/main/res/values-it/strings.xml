@@ -8,7 +8,6 @@
     <string name="navigation_drawer_close">Chiudi Menù</string>
     <string name="navigation_drawer_open">Apri Menù</string>
     <string name="compute_text">Elabora</string>
-    <string name="risk_description">Large Text</string>
     <string name="risk">Rischio</string>
     <string name="road_risk_factor">Pericolosità strada</string>
     <string name="title_elab_start">Elaborazione Standard</string>
@@ -17,4 +16,6 @@
     <string name="title_risk_environment">Rischio Ambientale</string>
     <string name="title_risk_social">Rischio Sociale</string>
     <string name="title_risk_total">Rischio Totale</string>
+    <string name="risk_description_title">Descrizione Opzione Rischio</string>
+    <string name="road_risk_description_title">Descrizione Pericolosità Strada</string>
 </resources>

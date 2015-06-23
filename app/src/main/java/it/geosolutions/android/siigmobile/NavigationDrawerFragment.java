@@ -257,7 +257,7 @@ public class NavigationDrawerFragment extends Fragment {
             Toast.makeText(getActivity(), "Azione di Ricerca...", Toast.LENGTH_SHORT).show();
             return true;
         }
-
+/*
         if (item.getItemId() == R.id.action_map) {
             Toast.makeText(getActivity(), "Starting Map...", Toast.LENGTH_SHORT).show();
 
@@ -267,7 +267,7 @@ public class NavigationDrawerFragment extends Fragment {
 
             return true;
         }
-
+*/
         return super.onOptionsItemSelected(item);
     }
 

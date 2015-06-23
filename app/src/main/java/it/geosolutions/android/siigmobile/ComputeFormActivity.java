@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +41,7 @@ public class ComputeFormActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.compute_navigation_drawer,
                 (DrawerLayout) findViewById(R.id.compute_drawer_layout));
+
     }
 
     @Override
@@ -52,6 +54,7 @@ public class ComputeFormActivity extends AppCompatActivity
     }
 
     public void onSectionAttached(int number) {
+        /*
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_graph);
@@ -63,13 +66,15 @@ public class ComputeFormActivity extends AppCompatActivity
                 mTitle = getString(R.string.title_elab_load);
                 break;
         }
+        */
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        //actionBar.setTitle(mTitle);
+        actionBar.setTitle(getString(R.string.title_elab_start));
     }
 
 
@@ -140,5 +145,23 @@ public class ComputeFormActivity extends AppCompatActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
+    public void onRiskRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((AppCompatRadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_risk:
+                if (checked)
+
+                    break;
+            case R.id.radio_street:
+                if (checked)
+
+                    break;
+        }
+    }
+
 
 }
