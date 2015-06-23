@@ -169,6 +169,11 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 
                         try {
 
+                            // Reset the filter
+                            if (spatialDatabaseHandler instanceof SpatialiteDataSourceHandler) {
+								((SpatialiteDataSourceHandler) spatialDatabaseHandler).setFilter(null);
+							}
+
                             geometryIterator = spatialDatabaseHandler
                                     .getGeometryIteratorInBounds("4326", spatialTable,
                                             n, s, e, w);
