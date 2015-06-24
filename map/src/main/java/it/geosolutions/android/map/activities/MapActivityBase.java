@@ -42,20 +42,20 @@ import android.support.v7.app.AppCompatActivity;
  * preferences file and restored in the next startup process.
  */
 public abstract class MapActivityBase extends AppCompatActivity implements MapActivity {
-	private static final String KEY_LATITUDE = "latitude";
-	private static final String KEY_LONGITUDE = "longitude";
+	protected static final String KEY_LATITUDE = "latitude";
+	protected static final String KEY_LONGITUDE = "longitude";
 	private static final String KEY_MAP_FILE = "mapFile";
-	private static final String KEY_ZOOM_LEVEL = "zoomLevel";
-	private static final String PREFERENCES_FILE = "MapActivity";
+	protected static final String KEY_ZOOM_LEVEL = "zoomLevel";
+	protected static final String PREFERENCES_FILE = "MapActivity";
 	private static final String PREFERENCES_VERSION_KEY = "version";
 	private static final int PREFERENCES_VERSION_NUMBER = 2;
 
-	private static boolean containsMapViewPosition(SharedPreferences sharedPreferences) {
+	protected static boolean containsMapViewPosition(SharedPreferences sharedPreferences) {
 		return sharedPreferences.contains(KEY_LATITUDE) && sharedPreferences.contains(KEY_LONGITUDE)
 				&& sharedPreferences.contains(KEY_ZOOM_LEVEL);
 	}
 
-	private static boolean isCompatible(SharedPreferences sharedPreferences) {
+	protected static boolean isCompatible(SharedPreferences sharedPreferences) {
 		return sharedPreferences.getInt(PREFERENCES_VERSION_KEY, -1) == PREFERENCES_VERSION_NUMBER;
 	}
 

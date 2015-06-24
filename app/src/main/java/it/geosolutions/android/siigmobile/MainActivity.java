@@ -2,6 +2,8 @@ package it.geosolutions.android.siigmobile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -14,6 +16,12 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.vividsolutions.jts.geom.util.GeometryCollectionMapper;
+
+import org.mapsforge.android.maps.MapView;
+import org.mapsforge.core.model.GeoPoint;
+import org.mapsforge.core.model.MapPosition;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +43,6 @@ import it.geosolutions.android.map.view.AdvancedMapView;
 
 public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
 
     // default path for files
     private static final File MAP_DIR = MapFilesProvider.getBaseDirectoryFile();
@@ -65,6 +72,9 @@ public class MainActivity extends MapActivityBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        checkDefaults();
+
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -77,6 +87,19 @@ public class MainActivity extends MapActivityBase
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         mapView =  (AdvancedMapView) findViewById(R.id.advancedMapView);
+
+        // Enforce Background and initial position
+        MapPosition mp = mapView.getMapViewPosition().getMapPosition();
+        if(mapView.getMapFile() == null || !mapView.getMapFile().exists()) {
+            mapView.setMapFile(MAP_FILE);
+            mp = new MapPosition(new GeoPoint(Config.INITIAL_LATITUDE,Config.INITIAL_LONGITUDE), (byte) Config.INITIAL_ZOOMLEVEL);
+            mapView.getMapViewPosition().setMapPosition(mp);
+        }
+
+        if(mp.geoPoint.latitude == 0 && mp.geoPoint.longitude == 0){
+            mp = new MapPosition(new GeoPoint(Config.INITIAL_LATITUDE,Config.INITIAL_LONGITUDE), (byte) Config.INITIAL_ZOOMLEVEL);
+            mapView.getMapViewPosition().setMapPosition(mp);
+        }
 
         // Setup LayerManager
         layerManager =  new MultiSourceOverlayManager(mapView);
@@ -112,15 +135,44 @@ public class MainActivity extends MapActivityBase
             }
         }
 
-        // Add Neutral style
+        // Start with "Rischio Totale" theme
         for(Layer l : layers){
             if(l instanceof SpatialiteLayer){
                 Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "grafo"));
+                ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "totale"));
             }
         }
 
         layerManager.setLayers(layers);
+    }
+
+    /**
+     * Check if the necessary options are set and eventually set the default values
+     */
+    private void checkDefaults() {
+
+        //MAP_FILE is the file, can be null
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor ed = prefs.edit();
+        if("not_found".equals(prefs.getString(MapView.MAPSFORGE_BACKGROUND_RENDERER_TYPE, "not_found"))){
+            ed.putString(MapView.MAPSFORGE_BACKGROUND_RENDERER_TYPE, "0");
+        }
+        if(prefs.getString(MapView.MAPSFORGE_BACKGROUND_FILEPATH, null) == null){
+            ed.putString(MapView.MAPSFORGE_BACKGROUND_FILEPATH, MAP_FILE.getAbsolutePath());
+        }
+        ed.commit();
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE, MODE_PRIVATE);
+        SharedPreferences.Editor mapPrefEditor = sharedPreferences.edit();
+
+        if(!containsMapViewPosition(sharedPreferences)){
+            mapPrefEditor.putFloat(KEY_LATITUDE, Config.INITIAL_LATITUDE);
+            mapPrefEditor.putFloat(KEY_LONGITUDE, Config.INITIAL_LONGITUDE);
+            mapPrefEditor.putInt(KEY_ZOOM_LEVEL, Config.INITIAL_ZOOMLEVEL);
+        }
+        mapPrefEditor.commit();
+        //MapFilesProvider.setBackgroundFileName(MAP_FILE.getName());
     }
 
     @Override
