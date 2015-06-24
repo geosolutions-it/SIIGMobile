@@ -16,6 +16,6 @@
     <string name="title_risk_environment">Rischio Ambientale</string>
     <string name="title_risk_social">Rischio Sociale</string>
     <string name="title_risk_total">Rischio Totale</string>
-    <string name="risk_description_title">Descrizione Opzione Rischio</string>
+    <string name="risk_description_title">Descrizione Rischio</string>
     <string name="road_risk_description_title">Descrizione Pericolosità Strada</string>
 </resources>

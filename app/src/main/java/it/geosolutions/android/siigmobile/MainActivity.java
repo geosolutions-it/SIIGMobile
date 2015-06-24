@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatRadioButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -128,6 +125,10 @@ public class MainActivity extends MapActivityBase
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+
+        // Update Title
+        onSectionAttached(position);
+
         // update the main content by replacing fragments
         if(layerManager == null){
             // nothing to do
@@ -200,13 +201,22 @@ public class MainActivity extends MapActivityBase
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
+            case 0:
                 mTitle = getString(R.string.title_graph);
                 break;
+            case 1:
+                mTitle = getString(R.string.title_risk_environment);
+                break;
             case 2:
-                mTitle = getString(R.string.title_elab_start);
+                mTitle = getString(R.string.title_risk_social);
                 break;
             case 3:
+                mTitle = getString(R.string.title_risk_total);
+                break;
+            case 4:
+                mTitle = getString(R.string.title_elab_start);
+                break;
+            case 5:
                 mTitle = getString(R.string.title_elab_load);
                 break;
         }

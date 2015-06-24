@@ -34,6 +34,7 @@
             android:text="@string/road_risk_factor"
             android:id="@+id/radio_street"
             android:checked="false"
+            android:onClick="onRiskRadioButtonClicked"
             android:textSize="@dimen/abc_text_size_menu_material" />
 
     </RadioGroup>
@@ -43,12 +44,13 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/risk_description_title"
-        android:id="@+id/textView"
+        android:id="@+id/option_description_title"
         android:layout_below="@+id/radiogroup_risk_type"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/abc_dialog_padding_top_material" />
 
     <Button
         android:layout_width="wrap_content"
@@ -64,8 +66,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/risk_description"
-        android:id="@+id/textView7"
-        android:layout_below="@+id/textView"
+        android:id="@+id/form_compute_option_description"
+        android:layout_below="@+id/option_description_title"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/radiogroup_risk_type"

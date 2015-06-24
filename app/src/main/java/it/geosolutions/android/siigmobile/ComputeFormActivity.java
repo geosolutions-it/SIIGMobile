@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 public class ComputeFormActivity extends AppCompatActivity
@@ -153,13 +154,29 @@ public class ComputeFormActivity extends AppCompatActivity
         // Check which radio button was clicked
         switch(view.getId()) {
             case R.id.radio_risk:
-                if (checked)
-
-                    break;
+                if (checked){
+                    TextView descrTextView = (TextView) view.getRootView().findViewById(R.id.form_compute_option_description);
+                    if(descrTextView != null){
+                        descrTextView.setText(R.string.risk_description);
+                    }
+                    TextView titleTextView = (TextView) view.getRootView().findViewById(R.id.option_description_title);
+                    if(titleTextView != null){
+                        titleTextView.setText(R.string.risk_description_title);
+                    }
+                }
+                break;
             case R.id.radio_street:
-                if (checked)
-
-                    break;
+                if (checked){
+                    TextView descrTextView = (TextView) view.getRootView().findViewById(R.id.form_compute_option_description);
+                    if(descrTextView != null){
+                        descrTextView.setText(R.string.road_risk_description);
+                    }
+                    TextView titleTextView = (TextView) view.getRootView().findViewById(R.id.option_description_title);
+                    if(titleTextView != null){
+                        titleTextView.setText(R.string.road_risk_description_title);
+                    }
+                }
+                break;
         }
     }
 
