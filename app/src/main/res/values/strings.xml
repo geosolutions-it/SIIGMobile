@@ -26,5 +26,5 @@
     <string name="road_risk_description" translatable="false">Donec in justo eget justo feugiat maximus. Proin eleifend pretium turpis ac interdum.</string>
     <string name="title_activity_compute_form" translatable="false">ComputeFormActivity</string>
 
-    <string name="action_example">Example action</string>
+    <string name="legend_text">Legend will be here</string>
 </resources>

@@ -35,5 +35,12 @@
         android:layout_gravity="end"
         android:dividerHeight="0dp"
         android:background="#CFFF" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="@string/legend_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>
