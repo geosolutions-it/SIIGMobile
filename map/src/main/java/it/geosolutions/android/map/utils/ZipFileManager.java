@@ -243,7 +243,7 @@ public class ZipFileManager {
 				path_file = dir_path + "/" + file_name;
 				output = new FileOutputStream(path_file);
 		
-				byte data[] = new byte[1024];
+				byte data[] = new byte[50*1024];
 		
 				long total = 0;
 				while ((count = input.read(data)) != -1) {	
@@ -378,7 +378,7 @@ public class ZipFileManager {
 	        				continue;
 	        			}
 		                fout = new FileOutputStream(path[1] + "/" + ze.getName(),false);
-		                byte[] buffer = new byte[1024];
+		                byte[] buffer = new byte[8192];
 		                for (int lenght = zis.read(buffer); lenght != -1; lenght = zis.read(buffer)){
 		                    fout.write(buffer,0,lenght);
 		                }
