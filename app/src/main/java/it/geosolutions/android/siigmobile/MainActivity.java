@@ -1,8 +1,11 @@
 package it.geosolutions.android.siigmobile;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -38,6 +41,7 @@ import it.geosolutions.android.map.overlay.managers.OverlayManager;
 import it.geosolutions.android.map.spatialite.SpatialiteLayer;
 import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.map.utils.SpatialDbUtils;
+import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
 
 
@@ -45,8 +49,7 @@ public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     // default path for files
-    private static final File MAP_DIR = MapFilesProvider.getBaseDirectoryFile();
-    private static final File MAP_FILE = MapFilesProvider.getBackgroundMapFile();
+    private static File MAP_FILE;
 
     /**
      * Tag for Logging
@@ -73,6 +76,9 @@ public class MainActivity extends MapActivityBase
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        MapFilesProvider.setBaseDir(Config.BASE_DIR_NAME);
+        MAP_FILE = MapFilesProvider.getBackgroundMapFile();
+
         checkDefaults();
 
         setContentView(R.layout.activity_main);
@@ -88,62 +94,134 @@ public class MainActivity extends MapActivityBase
 
         mapView =  (AdvancedMapView) findViewById(R.id.advancedMapView);
 
-        // Enforce Background and initial position
-        MapPosition mp = mapView.getMapViewPosition().getMapPosition();
-        if(mapView.getMapFile() == null || !mapView.getMapFile().exists()) {
-            mapView.setMapFile(MAP_FILE);
-            mp = new MapPosition(new GeoPoint(Config.INITIAL_LATITUDE,Config.INITIAL_LONGITUDE), (byte) Config.INITIAL_ZOOMLEVEL);
-            mapView.getMapViewPosition().setMapPosition(mp);
+        // If MAP_FILE does not exists, it will be null
+        // MAP_FILE.exists() will always be true
+        if(MAP_FILE == null){
+
+            askForDownload();
+
+        }else {
+
+            setupMap();
         }
 
-        if(mp.geoPoint.latitude == 0 && mp.geoPoint.longitude == 0){
-            mp = new MapPosition(new GeoPoint(Config.INITIAL_LATITUDE,Config.INITIAL_LONGITUDE), (byte) Config.INITIAL_ZOOMLEVEL);
-            mapView.getMapViewPosition().setMapPosition(mp);
-        }
+    }
 
-        // Setup LayerManager
-        layerManager =  new MultiSourceOverlayManager(mapView);
+    private void setupMap() {
 
-        // Enable Touch events
-        mapView.setClickable(true);
+        if(MAP_FILE != null) {
 
-        // Show ScaleBar
-        mapView.getMapScaleBar().setShowMapScaleBar(true);
-
-        // Coordinate Control
-        mapView.addControl(new CoordinateControl(mapView, true));
-
-        // Info Control
-        MapInfoControl ic= new MapInfoControl(mapView,this);
-        ic.setActivationButton((ImageButton) findViewById(R.id.ButtonInfo));
-        ic.setMode(MapControl.MODE_VIEW);
-        mapView.addControl(ic);
-
-        // Location Control
-        LocationControl lc  =new LocationControl(mapView);
-        lc.setActivationButton((ImageButton)findViewById(R.id.ButtonLocation));
-        mapView.addControl(lc);
-
-        // Add Layers
-        MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
-
-        ArrayList<Layer> layers = new ArrayList<Layer>();
-        for(Layer l : mapConfig.layers){
-            Log.d(TAG, "Layer Title: " + l.getTitle());
-            if(l.getTitle().startsWith("v_elab")){
-                layers.add(l);
+            // Enforce Background and initial position
+            MapPosition mp = mapView.getMapViewPosition().getMapPosition();
+            if (mapView.getMapFile() == null || !mapView.getMapFile().exists()) {
+                mapView.setMapFile(MAP_FILE);
+                mp = new MapPosition(new GeoPoint(Config.INITIAL_LATITUDE, Config.INITIAL_LONGITUDE), (byte) Config.INITIAL_ZOOMLEVEL);
+                mapView.getMapViewPosition().setMapPosition(mp);
             }
-        }
 
-        // Start with "Rischio Totale" theme
-        for(Layer l : layers){
-            if(l instanceof SpatialiteLayer){
-                Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "totale"));
+            if (mp.geoPoint.latitude == 0 && mp.geoPoint.longitude == 0) {
+                mp = new MapPosition(new GeoPoint(Config.INITIAL_LATITUDE, Config.INITIAL_LONGITUDE), (byte) Config.INITIAL_ZOOMLEVEL);
+                mapView.getMapViewPosition().setMapPosition(mp);
             }
+
+            // Setup LayerManager
+            layerManager =  new MultiSourceOverlayManager(mapView);
+
+            // Enable Touch events
+            mapView.setClickable(true);
+
+            // Show ScaleBar
+            mapView.getMapScaleBar().setShowMapScaleBar(true);
+
+            // Coordinate Control
+            mapView.addControl(new CoordinateControl(mapView, true));
+
+            // Info Control
+            MapInfoControl ic= new MapInfoControl(mapView,this);
+            ic.setActivationButton((ImageButton) findViewById(R.id.ButtonInfo));
+            ic.setMode(MapControl.MODE_VIEW);
+            mapView.addControl(ic);
+
+            // Location Control
+            LocationControl lc  =new LocationControl(mapView);
+            lc.setActivationButton((ImageButton)findViewById(R.id.ButtonLocation));
+            mapView.addControl(lc);
+
+            // Add Layers
+            MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
+
+            ArrayList<Layer> layers = new ArrayList<Layer>();
+            for(Layer l : mapConfig.layers){
+                Log.d(TAG, "Layer Title: " + l.getTitle());
+                if(l.getTitle().startsWith(Config.LAYERS_PREFIX)){
+                    layers.add(l);
+                }
+            }
+
+            // Start with "Rischio Totale" theme
+            for(Layer l : layers){
+                if(l instanceof SpatialiteLayer){
+                    Log.d(TAG, "Setting Style for layer: " + l.getTitle());
+                    ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[3]));
+                }
+            }
+
+            layerManager.setLayers(layers);
+
+        }else{
+
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.map_config_error))
+                    .setPositiveButton(getString(R.string.ok_string), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create()
+                    .show();
+
+        }
+    }
+
+    private void askForDownload() {
+        File external_storage = Environment.getExternalStorageDirectory();
+
+        if(external_storage.getFreeSpace() < Config.REQUIRED_SPACE){
+
+            new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.not_enough_space))
+                .setPositiveButton(getString(R.string.ok_string), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create().show();
+            return;
         }
 
-        layerManager.setLayers(layers);
+
+        String dir_path = external_storage.getPath();
+        ZipFileManager zfm = new ZipFileManager(
+                this,
+                dir_path,
+                MapFilesProvider.getBaseDir(),
+                Config.BASE_PACKAGE_URL,
+                getString(R.string.download_base_data_title),
+                getString(R.string.download_base_data)) {
+
+            // TODO: This method is badly named, it should be a post-execute callback
+            @Override
+            public void launchMainActivity(boolean success) {
+                if(success){
+                    // Update the map file reference
+                    MAP_FILE = MapFilesProvider.getBackgroundMapFile();
+                    // Reconfigure the map
+                    setupMap();
+                }
+            }
+        };
     }
 
     /**
@@ -158,7 +236,7 @@ public class MainActivity extends MapActivityBase
         if("not_found".equals(prefs.getString(MapView.MAPSFORGE_BACKGROUND_RENDERER_TYPE, "not_found"))){
             ed.putString(MapView.MAPSFORGE_BACKGROUND_RENDERER_TYPE, "0");
         }
-        if(prefs.getString(MapView.MAPSFORGE_BACKGROUND_FILEPATH, null) == null){
+        if(MAP_FILE != null && prefs.getString(MapView.MAPSFORGE_BACKGROUND_FILEPATH, null) == null){
             ed.putString(MapView.MAPSFORGE_BACKGROUND_FILEPATH, MAP_FILE.getAbsolutePath());
         }
         ed.commit();
@@ -182,57 +260,26 @@ public class MainActivity extends MapActivityBase
         onSectionAttached(position);
 
         // update the main content by replacing fragments
-        if(layerManager == null){
+        if(layerManager == null && position < 4){
             // nothing to do
             return;
         }
-        ArrayList<Layer> layers = layerManager.getLayers();
-        switch (position){
+       switch (position){
             case 0:
-                // Set Neutral style
-                for(Layer l : layers){
-                    if(l instanceof SpatialiteLayer){
-                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "grafo"));
-                    }
-                }
-                layerManager.setLayers(layers);
-                mapView.redraw();
-                break;
             case 1:
-                // Set Neutral style
-                for(Layer l : layers){
-                    if(l instanceof SpatialiteLayer){
-                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "ambientale"));
-                    }
-                }
-                layerManager.setLayers(layers);
-                mapView.redraw();
-                break;
             case 2:
-                // Set Neutral style
-                for(Layer l : layers){
-                    if(l instanceof SpatialiteLayer){
-                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "sociale"));
-                    }
-                }
-                layerManager.setLayers(layers);
-                mapView.redraw();
-                break;
             case 3:
-                // Set Neutral style
+                // Set Layers style
+                ArrayList<Layer> layers = layerManager.getLayers();
                 for(Layer l : layers){
                     if(l instanceof SpatialiteLayer){
                         Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace("v_elab_std", "totale"));
+                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[position]));
                     }
                 }
                 layerManager.setLayers(layers);
                 mapView.redraw();
                 break;
-
             case 4:
                 Toast.makeText(getBaseContext(), "Starting Form...", Toast.LENGTH_SHORT).show();
                 // Start the form activity
@@ -357,6 +404,11 @@ public class MainActivity extends MapActivityBase
         // each control knows which intent he sent with their requestCode/resultCode
         for(MapControl control : mapView.getControls()){
             control.refreshControl(requestCode,resultCode, data);
+        }
+
+        // The user still don't have the data, ask for download
+        if(MAP_FILE == null){
+            askForDownload();
         }
     }
 }

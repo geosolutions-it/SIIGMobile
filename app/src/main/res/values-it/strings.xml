@@ -19,4 +19,9 @@
     <string name="risk_description_title">Descrizione Rischio</string>
     <string name="road_risk_description_title">Descrizione Pericolosità Strada</string>
     <string name="legend_text">La legenda sarà qui</string>
+    <string name="download_base_data_title">Download</string>
+    <string name="download_base_data">Saranno scaricati i dati necessari al funzionamento della mappa, procedere?</string>
+    <string name="not_enough_space">Impossibile scaricare i dati necessari.\nSono richiesti almeno 1,2Gb di spazio liberi.</string>
+    <string name="map_config_error">Impossibile configurare la mappa</string>
+    <string name="ok_string">OK</string>
 </resources>

@@ -27,4 +27,10 @@
     <string name="title_activity_compute_form" translatable="false">ComputeFormActivity</string>
 
     <string name="legend_text">Legend will be here</string>
+    <string name="download_base_data">Map files will be downloaded, do you want to proceed?</string>
+    <string name="download_base_data_title">Download</string>
+    <string name="not_enough_space">This application needs at least 1.2 Gb of free space to work.\nCannot download required data.</string>
+    <string name="map_config_error">Cannot configure the map</string>
+    <string name="ok_string">OK</string>
+
 </resources>
