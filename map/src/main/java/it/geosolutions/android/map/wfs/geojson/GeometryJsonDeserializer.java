@@ -1,5 +1,7 @@
 package it.geosolutions.android.map.wfs.geojson;
 
+import android.util.Log;
+
 import static it.geosolutions.android.map.wfs.geojson.GeoJsonConstants.COORDINATES;
 import static it.geosolutions.android.map.wfs.geojson.GeoJsonConstants.TYPE;
 import static it.geosolutions.android.map.wfs.geojson.GeoJsonConstants.TYPE_GEOMETRYCOLLECTION;
@@ -23,6 +25,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+
 /**
  * <JsonDeserializer> for GeoJson Geometry part
  * @author Lorenzo Natali (lorenzo.natali at geo-solutions.it)
@@ -94,9 +98,39 @@ public class GeometryJsonDeserializer implements JsonDeserializer<Geometry> {
         		}
 			 }
         } else if (geometryType.equals(TYPE_MULTIPOLYGON)) {
-        	// NOT SUPPORTED YET
+        	// TODO test
+            JsonElement jc = obj.get(COORDINATES);
+            if(jc != null){
+                final int polygonAmount = jc.getAsJsonArray().size();
+                final Polygon[] polygons = new Polygon[polygonAmount];
+
+                JsonArray ja = jc.getAsJsonArray();
+                for(int i = 0; i < polygonAmount; i++){
+                    JsonArray polygon = ja.get(i).getAsJsonArray();
+
+                    //use polygon impl
+                    //check if this polygon contains inner polygons
+                    if(polygon.getAsJsonArray().size() > 1){
+                        final int holesCount = polygon.getAsJsonArray().size() - 1;
+                        LinearRing[] holes = new LinearRing[holesCount];
+                        for(int j = 0; j < holesCount;j++){
+                            holes[j] = getLinearRingFromCoordinates(polygon.getAsJsonArray().get(j + 1).getAsJsonArray(), fact);
+                        }
+                        polygons[i] = fact.createPolygon(getLinearRingFromCoordinates(polygon.getAsJsonArray().get(0).getAsJsonArray(), fact), holes);
+
+                    }else if(polygon.getAsJsonArray().size() == 1){//there is one outer polygon
+
+                        polygons[i] = fact.createPolygon(getCoordinatesArray(polygon.getAsJsonArray().get(0).getAsJsonArray()));
+                    }
+
+                }
+
+                return fact.createMultiPolygon(polygons);
+            }
         } else if (geometryType.equals(TYPE_GEOMETRYCOLLECTION)) {
         	// NOT SUPPORTED YET
+
+            Log.w(GeometryJsonDeserializer.class.getSimpleName(), "NOT SUPPORTED YET !");
         }
 		return null;
 	}
