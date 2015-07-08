@@ -4,6 +4,11 @@ import android.content.Context;
 import android.test.ActivityUnitTestCase;
 import android.util.Log;
 
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLTestCase;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -41,98 +46,186 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
 
     /**
      * Tests the creation of a wps request
-     *
-     * the alphabetical order of the parameters
-     *
-     * its validity comparing it to a mock request from resources
-     *
-     * sending it to a mock server
-     *
-     * To await (virtual) completion a CountDownLatch is used
      */
-    public void testWPSCallCreation(){
+    public void testWPSCallCreation() {
 
-        RiskWPSRequest request = createDummyRequest();
+        // Prepare dummy input features
+        FeatureCollection features = createDummyFeatures();
 
+        String store = "destination";
+        int batch = 1000;
+        int precision = 4;
+        int processing = 1;
+        int formula = 26;
+        int target = 100;
+        int level = 3;
+        int kemler = 0;
+        String materials = "1,2,3,4,5,6,7,8,9,10,11,12";
+        String scenarios = "1,2,3,4,5,6,7,8,9,10,11,12,13,14";
+        String entities = "1,2,3,4,5";
+        String severeness = "0,1";
+        String fp = "fp_scen_centrale";
+
+        // Create RiskWPSRequest
+        RiskWPSRequest request = new RiskWPSRequest(
+                features,
+                store,
+                batch,
+                precision,
+                processing,
+                formula,
+                target,
+                level,
+                kemler,
+                materials,
+                scenarios,
+                entities,
+                severeness,
+                fp
+        );
+
+        // Basic testing
         assertNotNull(request);
 
         assertNotNull(request.getFeatureCollection());
 
         assertNotNull(request.getParameters());
 
+        // Set parameter
         request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
 
-        //1.ensure parameters in alphabetical key order
-        int i = 0;
-        for(Map.Entry<String,Object> entry : request.getParameters().entrySet()) {
-            Log.i(TAG,String.format(Locale.getDefault(),"Parameter %s : %s",entry.getKey(),entry.getValue().toString()));
-            switch (i){
-                case 0:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_BATCH));
-                    break;
-                case 1:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_ENTITIES));
-                    break;
-                case 2:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_EXTENDEDSCHEMA));
-                    break;
-                case 3:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_FORMULA));
-                    break;
-                case 4:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_FP));
-                    break;
-                case 5:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_KEMLER));
-                    break;
-                case 6:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_LEVEL));
-                    break;
-                case 7:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_MATERIALS));
-                    break;
-                case 8:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_PRECISION));
-                    break;
-                case 9:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_PROCESSING));
-                    break;
-                case 10:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_SCENARIOS));
-                    break;
-                case 11:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_SEVERENESS));
-                    break;
-                case 12:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_STORE));
-                    break;
-                case 13:
-                    assertTrue(entry.getKey().equals(RiskWPSRequest.KEY_TARGET));
-                    break;
-            }
+        //Ensure parameters are correctly set
+        Map<String, Object> parameters = request.getParameters();
 
-            i++;
-        }
+        assertNotNull(parameters);
 
-        //2.having ensured the order, create the query
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_STORE));
+        assertEquals(store, parameters.get(RiskWPSRequest.KEY_STORE));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_BATCH));
+        assertEquals(batch, parameters.get(RiskWPSRequest.KEY_BATCH));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_PRECISION));
+        assertEquals(precision, parameters.get(RiskWPSRequest.KEY_PRECISION));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_PROCESSING));
+        assertEquals(processing, parameters.get(RiskWPSRequest.KEY_PROCESSING));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_FORMULA));
+        assertEquals(formula, parameters.get(RiskWPSRequest.KEY_FORMULA));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_TARGET));
+        assertEquals(target, parameters.get(RiskWPSRequest.KEY_TARGET));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_LEVEL));
+        assertEquals(level, parameters.get(RiskWPSRequest.KEY_LEVEL));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_KEMLER));
+        assertEquals(kemler, parameters.get(RiskWPSRequest.KEY_KEMLER));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_MATERIALS));
+        assertEquals(materials, parameters.get(RiskWPSRequest.KEY_MATERIALS));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_SCENARIOS));
+        assertEquals(scenarios, parameters.get(RiskWPSRequest.KEY_SCENARIOS));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_ENTITIES));
+        assertEquals(entities, parameters.get(RiskWPSRequest.KEY_ENTITIES));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_SEVERENESS));
+        assertEquals(severeness, parameters.get(RiskWPSRequest.KEY_SEVERENESS));
+
+        assertNotNull(parameters.get(RiskWPSRequest.KEY_FP));
+        assertEquals(fp, parameters.get(RiskWPSRequest.KEY_FP));
+    }
+
+    /**
+     * Test for the RiskWPSRequest.createWPSCallFromText() method
+     * The generated XML should be equivalent to the dummy_wps reference file content
+     */
+    public void testCreateWPSCallFromText(){
+
+        // Prepare dummy input features
+        FeatureCollection features = createDummyFeatures();
+
+        // Create RiskWPSRequest
+        RiskWPSRequest request = new RiskWPSRequest(
+                features,
+                "destination",
+                1000,
+                4,
+                1,
+                26,
+                100,
+                3,
+                0,
+                "1,2,3,4,5,6,7,8,9,10,11,12",
+                "1,2,3,4,5,6,7,8,9,10,11,12,13,14",
+                "1,2,3,4,5",
+                "0,1",
+                "fp_scen_centrale"
+        );
+
+        // Set parameter
+        request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
+
+        //Create the query
         final String query = RiskWPSRequest.createWPSCallFromText(request);
 
         assertNotNull(query);
 
+        //Compare it against a dummy wps request from resources
         try {
-            //3.compare it against a dummy wps request from resources
-            final String response = getRawResourceAsString(getInstrumentation().getTargetContext(), R.raw.dummy_wps);
 
-            assertEquals(query, response);
+            String response  = getRawResourceAsString(getInstrumentation().getTargetContext(), R.raw.dummy_wps);
+
+            Diff myDiff = new Diff(response, query);
+            XMLUnit.setIgnoreWhitespace(true);
+            assertTrue("XML are similar " + myDiff, myDiff.similar());
 
         } catch (IOException e) {
             Log.e(TAG, "IOException getting dummy wps", e);
             fail();
+        } catch (SAXException e) {
+            Log.e(TAG, "SAXException computing XML diff", e);
+            fail(e.getMessage());
         }
 
-        //4.Test making a call against a mock server
 
-        //CountDownLatch lets us wait until async ops return and prevents the test from being killed
+    }
+
+    /**
+     * This is not a test
+     * This is an example on how to call the WPS Service with Retrofit
+     * In this example we use a MockServer to emulate the server
+     *
+     */
+    public void demoWPSCall() {
+        FeatureCollection features = createDummyFeatures();
+
+        // Create RiskWPSRequest
+        RiskWPSRequest request = new RiskWPSRequest(
+                features,
+                "destination",
+                1000,
+                4,
+                1,
+                26,
+                100,
+                3,
+                0,
+                "1,2,3,4,5,6,7,8,9,10,11,12",
+                "1,2,3,4,5,6,7,8,9,10,11,12,13,14",
+                "1,2,3,4,5",
+                "0,1",
+                "fp_scen_centrale"
+        );
+
+        request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
+
+        String query = RiskWPSRequest.createWPSCallFromText(request);
+
+        //CountDownLatch lets us wait until async ops return and prevents the process from being killed
         final CountDownLatch signal = new CountDownLatch(1);
 
         RestAdapter restAdapter = new RestAdapter.Builder()
@@ -161,8 +254,8 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
 
                 assertNotNull(result);
                 assertNotNull(result.features);
-                assertEquals(result.features.size(),6);
-                assertEquals(result.crs.properties.get("name"),"EPSG:32632");
+                assertEquals(6, result.features.size());
+                assertEquals("EPSG:32632", result.crs.properties.get("name"));
             }
 
             @Override
@@ -176,7 +269,6 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
             }
         });
 
-
         try {
             signal.await();// wait for callback
         }catch (InterruptedException e){
@@ -184,6 +276,10 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
         }
     }
 
+    /**
+     * Mock Implementation for Retrofit Client
+     * The response is got from the application resources
+     */
     public class MockClient implements Client {
 
         @Override
@@ -210,7 +306,7 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
         return new String(buffer);
     }
 
-    private RiskWPSRequest createDummyRequest(){
+    private FeatureCollection createDummyFeatures(){
 
         final  String sampleFeatureJSON =
 
@@ -257,22 +353,7 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
             throw new IllegalArgumentException("could not parse sample features");
         }
 
-        return new RiskWPSRequest(
-                features,
-                "destination",
-                1000,
-                4,
-                1,
-                26,
-                100,
-                3,
-                0,
-                "1,2,3,4,5,6,7,8,9,10,11,12",
-                "1,2,3,4,5,6,7,8,9,10,11,12,13,14",
-                "1,2,3,4,5",
-                "0,1",
-                "fp_scen_centrale"
-        );
+        return features;
 
     }
 }
