@@ -5,22 +5,22 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.vividsolutions.jts.geom.util.GeometryCollectionMapper;
 
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.core.model.GeoPoint;
@@ -43,6 +43,7 @@ import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.map.utils.SpatialDbUtils;
 import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
+import it.geosolutions.android.siigmobile.legend.LegendAdapter;
 
 
 public class MainActivity extends MapActivityBase
@@ -72,6 +73,9 @@ public class MainActivity extends MapActivityBase
     public AdvancedMapView mapView;
     public OverlayManager overlayManager;
 
+    private LegendAdapter legendAdapter;
+    private TextView legendTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +97,12 @@ public class MainActivity extends MapActivityBase
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         mapView =  (AdvancedMapView) findViewById(R.id.advancedMapView);
+
+        final ListView legendListview = (ListView) findViewById(R.id.legend_listview);
+        legendTitle = (TextView) findViewById(R.id.legend_drawer_title);
+        legendAdapter = new LegendAdapter(getBaseContext());
+        legendListview.setAdapter(legendAdapter);
+
 
         // If MAP_FILE does not exists, it will be null
         // MAP_FILE.exists() will always be true
@@ -163,6 +173,11 @@ public class MainActivity extends MapActivityBase
                 if(l instanceof SpatialiteLayer){
                     Log.d(TAG, "Setting Style for layer: " + l.getTitle());
                     ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[3]));
+
+                    //add this call in when local_save branch has merged whenever the style changes
+                    legendAdapter.applyStlye(((SpatialiteLayer) l).getStyle());
+                    legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[3]);//replace 3 with currentRisk from load_result branch
+                    //till here
                 }
             }
 
@@ -275,6 +290,10 @@ public class MainActivity extends MapActivityBase
                     if(l instanceof SpatialiteLayer){
                         Log.d(TAG, "Setting Style for layer: " + l.getTitle());
                         ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[position]));
+
+                        //add this call in when local_save branch has merged whenever the style changes
+                        legendAdapter.applyStlye(((SpatialiteLayer) l).getStyle());
+                        legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[position]);
                     }
                 }
                 layerManager.setLayers(layers);
@@ -299,26 +318,9 @@ public class MainActivity extends MapActivityBase
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 0:
-                mTitle = getString(R.string.title_graph);
-                break;
-            case 1:
-                mTitle = getString(R.string.title_risk_environment);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_risk_social);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_risk_total);
-                break;
-            case 4:
-                mTitle = getString(R.string.title_elab_start);
-                break;
-            case 5:
-                mTitle = getString(R.string.title_elab_load);
-                break;
-        }
+
+        mTitle = getResources().getStringArray(R.array.drawer_items)[number];
+
     }
 
     public void restoreActionBar() {
