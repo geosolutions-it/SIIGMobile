@@ -32,5 +32,8 @@
     <string name="not_enough_space">This application needs at least 1.2 Gb of free space to work.\nCannot download required data.</string>
     <string name="map_config_error">Cannot configure the map</string>
     <string name="ok_string">OK</string>
+    <string name="search_hint">Search location</string>
+    <string name="place_not_covered">The selected place is not covered by the map file</string>
+    <string name="not_online">You need to be online to use this service</string>
 
 </resources>

@@ -5,22 +5,23 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
-import com.vividsolutions.jts.geom.util.GeometryCollectionMapper;
 
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.core.model.GeoPoint;
@@ -43,6 +44,10 @@ import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.map.utils.SpatialDbUtils;
 import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
+import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
+import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
+import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
+import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
 
 
 public class MainActivity extends MapActivityBase
@@ -71,6 +76,10 @@ public class MainActivity extends MapActivityBase
 
     public AdvancedMapView mapView;
     public OverlayManager overlayManager;
+
+    private SimpleCursorAdapter searchViewAdapter;
+    private IGeoCoder mGeoCoder;
+    private GeoCodingTask mGeoCodingTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +113,16 @@ public class MainActivity extends MapActivityBase
 
             setupMap();
         }
+
+        searchViewAdapter = new SimpleCursorAdapter(getBaseContext(),
+                R.layout.suggestion_item,
+                null,
+                new String[] {Config.CURSOR_TITLE}, //the row of the cursor to use in the adapter entry view
+                new int[] {R.id.suggestion_tv},//the view id in the layout file to be edited by the adapter
+                0);
+
+        //select here the geocoder implementation
+        mGeoCoder = new NominatimGeoCoder();
 
     }
 
@@ -336,9 +355,100 @@ public class MainActivity extends MapActivityBase
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
+
+            final MenuItem search = menu.findItem(R.id.action_search);
+            final GeoCodingSearchView geoCodingSearchView = (GeoCodingSearchView) MenuItemCompat.getActionView(search);
+
+            geoCodingSearchView.setSuggestionsAdapter(searchViewAdapter);
+            geoCodingSearchView.setCallback(new GeoCodingSearchView.GeoCodingCallback() {
+                @Override
+                public void doQuery(String query) {
+
+                    if(Util.isOnline(getBaseContext())){
+
+                        populateAdapter(query);
+
+                    }else{
+                        Toast.makeText(getBaseContext(),getString(R.string.not_online),Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void suggestionSelected(int position) {
+
+                    final Cursor cur = searchViewAdapter.getCursor();
+                    cur.moveToPosition(position);
+
+                    final String title = cur.getString(cur.getColumnIndex(Config.CURSOR_TITLE));
+                    final String lat   = cur.getString(cur.getColumnIndex(Config.CURSOR_LAT));
+                    final String lon   = cur.getString(cur.getColumnIndex(Config.CURSOR_LON));
+
+                    if(BuildConfig.DEBUG) {
+                        Log.i(TAG, "selected " + title + " lat : " + lat + " lon " + lon);
+                    }
+
+                    final double dLat = Double.parseDouble(lat);
+                    final double dLon = Double.parseDouble(lon);
+
+                    final GeoPoint p = new GeoPoint(dLat, dLon);
+
+                    try {
+                        //if mapview covers, center on place, zoom in and collapse search view
+                        if (mapView.getMapDatabase().getMapFileInfo().boundingBox.contains(p)) {
+
+                            mapView.getMapViewPosition().setCenter(p);
+
+                            mapView.getMapViewPosition().setZoomLevel(Config.PLACE_SELECTED_ZOOM_TO_LEVEL);
+
+                            mapView.redraw();
+
+                            //close keyboard collapse actionview
+                            MenuItemCompat.collapseActionView(search);
+                        } else {
+                            //the map file does not cover, inform user, leave search view expanded
+                            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle(getString(R.string.app_name))
+                                    .setMessage(getString(R.string.place_not_covered))
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .create();
+                             dialog.show();
+                        }
+                    }catch(IllegalArgumentException e){
+                        Log.e(TAG," error checking the map views bounds, is no map file open ?",e);
+                    }
+                }
+            });
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * populates the adapter of the searchview with the result of a GeoCoding request
+     *
+     * @param query the text to use in the geocoding request
+     */
+    private void populateAdapter(final String query) {
+
+        if(mGeoCodingTask != null){
+            mGeoCodingTask.cancel(true);
+        }
+
+        mGeoCodingTask = new GeoCodingTask(mGeoCoder, query) {
+            @Override
+            public void done(Cursor cursor) {
+
+                searchViewAdapter.changeCursor(cursor);
+            }
+        };
+        mGeoCodingTask.execute();
     }
 
     @Override

@@ -24,4 +24,7 @@
     <string name="not_enough_space">Impossibile scaricare i dati necessari.\nSono richiesti almeno 1,2Gb di spazio liberi.</string>
     <string name="map_config_error">Impossibile configurare la mappa</string>
     <string name="ok_string">OK</string>
+    <string name="search_hint">Cerca luogo</string>
+    <string name="place_not_covered">Il luogo selezionato non é coperto dalla mappa attuale.</string>
+    <string name="not_online">Bisogna essere on-line per approfittare di questo funzionamento.</string>
 </resources>
