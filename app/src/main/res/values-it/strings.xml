@@ -24,4 +24,23 @@
     <string name="not_enough_space">Impossibile scaricare i dati necessari.\nSono richiesti almeno 1,2Gb di spazio liberi.</string>
     <string name="map_config_error">Impossibile configurare la mappa</string>
     <string name="ok_string">OK</string>
+
+    <string name="elab_dialog_title">Nuova elaborazione</string>
+    <string name="elab_dialog_enter_title">Inserisci un nome per questa elaborazione.</string>
+    <string name="elab_name">Nome</string>
+    <string name="elab_description">Descrizione</string>
+    <string name="elab_enter_title">Inserisci un nome per favore</string>
+    <string name="elab_success">Nome salvato con successo</string>
+    <string name="elab_failure">Impossibile salvare il nome per questa elaborazione</string>
+    <string name="elab_no_results">Nessuna elaborazione disponibile</string>
+
+    <string name="bb_longitude">Longitudine</string>
+    <string name="bb_latitude">Latitudine</string>
+    <string name="bb_upperleft">In alto a sinistra</string>
+    <string name="bb_lowerright">In basso a destra</string>
+    <string name="clear">Sgombrare</string>
+    <string name="deleting">Cancellando&#8230;</string>
+    <string name="selected">selezionato</string>
+    <string name="go_back">Torna alla mappa</string>
+    <string name="please_wait">Si prega di aspettare un momento&#8230;</string>
 </resources>
