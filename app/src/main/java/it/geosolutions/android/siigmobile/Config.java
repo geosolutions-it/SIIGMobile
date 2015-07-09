@@ -13,6 +13,14 @@ public class Config {
     public static int INITIAL_ZOOMLEVEL = 7;
 
     public static String GRAFO_LAYER = "v_elab_std_1";
+    public static int SEARCHVIEW_CHARACTER_THRESHOLD = 3;
+    public static int SUGGESTIONS_THRESHOLD = 5;
+    public static byte PLACE_SELECTED_ZOOM_TO_LEVEL = 14;
+
+    public final static String CURSOR_TITLE = "title";
+    public final static String CURSOR_LAT = "lat";
+    public final static String CURSOR_LON = "lon";
+
     public static String LAYERS_PREFIX = "v_elab_std";
     public static final String RESULT_PREFIX = "resultTable_";
     public static final String[] STYLES_PREFIX_ARRAY = {"grafo", "ambientale", "sociale", "totale" };

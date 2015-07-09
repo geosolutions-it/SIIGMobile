@@ -58,4 +58,5 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
 
     androidTestCompile 'xmlunit:xmlunit:1.6'
+
 }
