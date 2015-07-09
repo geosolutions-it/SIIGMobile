@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -251,7 +250,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         if (item.getItemId() == R.id.action_search) {
-            Toast.makeText(getActivity(), "Azione di Ricerca...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "Azione di Ricerca...", Toast.LENGTH_SHORT).show();
             return true;
         }
 /*
