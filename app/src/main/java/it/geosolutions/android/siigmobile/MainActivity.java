@@ -2,25 +2,30 @@ package it.geosolutions.android.siigmobile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import org.mapsforge.android.maps.MapView;
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 import org.mapsforge.core.model.MapPosition;
 
@@ -41,6 +46,9 @@ import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.map.utils.SpatialDbUtils;
 import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
+import it.geosolutions.android.siigmobile.spatialite.DeleteUnsafedResultsTask;
+import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
+import jsqlite.Database;
 
 
 public class MainActivity extends MapActivityBase
@@ -70,6 +78,17 @@ public class MainActivity extends MapActivityBase
     public AdvancedMapView mapView;
     public OverlayManager overlayManager;
 
+    private final static int RESULT_REQUEST_CODE = 1234;
+    private final static int COMPUTE_REQUEST_CODE = 2345;
+
+    private String  user_edited_layer_title;
+    private boolean user_layer_saveable = false;
+    private boolean user_layer_clearable = false;
+    
+    private static int currentStyle = Config.DEFAULT_STYLE;// Start with "Rischio Totale" theme
+
+    private ProgressDialog pd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,9 +117,35 @@ public class MainActivity extends MapActivityBase
 
             askForDownload();
 
-        }else {
+        }else{
+            //check if unsaved results need to be deleted
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            if(prefs.getLong(Config.PARAM_LAST_UNSAVED_DELETION,0l) < System.currentTimeMillis() + Config.UNSAVED_DELETION_INTERVAL){
+                if(BuildConfig.DEBUG){
+                    Log.d(TAG, "deleting unsafed results");
+                }
+                new DeleteUnsafedResultsTask(){
+                    @Override
+                    public void started() {
+                        showProgress(getString(R.string.please_wait));
+                    }
 
-            setupMap();
+                    @Override
+                    public void done() {
+                        hideProgress();
+
+                        SharedPreferences.Editor ed = prefs.edit();
+                        ed.putLong(Config.PARAM_LAST_UNSAVED_DELETION, System.currentTimeMillis());
+                        ed.apply();
+
+                        setupMap();
+                    }
+                }.execute(getBaseContext());
+
+            }else{
+
+                setupMap();
+            }
         }
 
     }
@@ -145,26 +190,7 @@ public class MainActivity extends MapActivityBase
             lc.setActivationButton((ImageButton)findViewById(R.id.ButtonLocation));
             mapView.addControl(lc);
 
-            // Add Layers
-            MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
-
-            ArrayList<Layer> layers = new ArrayList<Layer>();
-            for(Layer l : mapConfig.layers){
-                Log.d(TAG, "Layer Title: " + l.getTitle());
-                if(l.getTitle().startsWith(Config.LAYERS_PREFIX)){
-                    layers.add(l);
-                }
-            }
-
-            // Start with "Rischio Totale" theme
-            for(Layer l : layers){
-                if(l instanceof SpatialiteLayer){
-                    Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                    ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[3]));
-                }
-            }
-
-            layerManager.setLayers(layers);
+            loadDBLayers(null);
 
         }else{
 
@@ -182,6 +208,86 @@ public class MainActivity extends MapActivityBase
         }
     }
 
+    /**
+     * loads spatialite layers (database files) from the apps folder
+     * if @param layerToCenter is not null and among the loaded layers
+     * the bounding box  of this layer is calculated and the mapview centered on it
+     */
+    private void loadDBLayers(final String layerToCenter){
+
+
+        // Add Layers
+        MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
+        ArrayList<Layer> layers = new ArrayList<>();
+        for(Layer l : mapConfig.layers){
+            if(BuildConfig.DEBUG) {
+                Log.d(TAG, "Layer Title: " + l.getTitle());
+            }
+
+            //show result mode, add only the layer to show
+            if (layerToCenter != null && l.getTitle().equals(layerToCenter) || (currentStyle == 0 && l.getTitle().equals(Config.GRAFO_LAYER))) {
+
+                layers.add(l);
+
+                //normal mode, add only risk layers
+            }else if (layerToCenter == null && l.getTitle().startsWith(Config.LAYERS_PREFIX)) {
+                layers.add(l);
+
+            }
+        }
+
+
+        for(Layer l : layers){
+            if (l instanceof SpatialiteLayer) {
+                if(BuildConfig.DEBUG) {
+                    Log.d(TAG, "Setting Style for layer: " + l.getTitle());
+                }
+
+                if(l.getTitle().startsWith(Config.RESULT_PREFIX)){
+
+                    ((SpatialiteLayer) l).setStyleFileName(Config.RESULT_STYLES[resultModeForRiskMode()]);
+
+                    if (layerToCenter != null && l.getTitle().equals(layerToCenter)) {
+
+                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
+
+                        if (bb != null) {
+
+                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
+                        }
+
+                        break; //stop looping, only this result layer interests
+
+                    }
+                }else{
+
+                    ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[currentStyle]));
+                }
+
+            }
+        }
+
+        layerManager.setLayers(layers);
+
+        mapView.redraw();
+
+    }
+    //TODO get the result mode from the result itself
+    public int resultModeForRiskMode(){
+
+        switch (currentStyle){
+            case 0:
+            case 3:
+                return 2;
+            case 1:
+                return 0;
+            case 2:
+                return 1;
+            default:
+                return 2;
+        }
+    }
+
     private void askForDownload() {
         File external_storage = Environment.getExternalStorageDirectory();
 
@@ -195,7 +301,7 @@ public class MainActivity extends MapActivityBase
                         dialog.dismiss();
                     }
                 })
-                .create().show();
+                    .create().show();
             return;
         }
 
@@ -267,23 +373,29 @@ public class MainActivity extends MapActivityBase
             case 1:
             case 2:
             case 3:
-                // Set Layers style
-                ArrayList<Layer> layers = layerManager.getLayers();
-                for(Layer l : layers){
-                    if(l instanceof SpatialiteLayer){
-                        Log.d(TAG, "Setting Style for layer: " + l.getTitle());
-                        ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[position]));
-                    }
-                }
-                layerManager.setLayers(layers);
-                mapView.redraw();
+                currentStyle = position;
+                //reload, if an elaboration arrived center on it
+                loadDBLayers(user_edited_layer_title);
+
                 break;
             case 4:
                 Toast.makeText(getBaseContext(), "Starting Form...", Toast.LENGTH_SHORT).show();
+
+                final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
                 // Start the form activity
                 Intent formIntent = new Intent(this, ComputeFormActivity.class);
-                startActivity(formIntent);
+                formIntent.putExtra(ComputeFormActivity.PARAM_BOUNDINGBOX, bb);
+
+                final boolean isPolygonRequest = mapView.getMapViewPosition().getZoomLevel() <= 13;
+
+                formIntent.putExtra(ComputeFormActivity.PARAM_POLYGON, isPolygonRequest);
+
+                startActivityForResult(formIntent, COMPUTE_REQUEST_CODE);
                 break;
+           case 5:
+               Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
+               startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
+               break;
             default:
                 /*
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -332,6 +444,12 @@ public class MainActivity extends MapActivityBase
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
+            if(user_layer_saveable ){
+                getMenuInflater().inflate(R.menu.saveable, menu);
+            }
+            if(user_layer_clearable){
+                getMenuInflater().inflate(R.menu.clearable, menu);
+            }
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
             return true;
@@ -349,9 +467,116 @@ public class MainActivity extends MapActivityBase
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_save) {
+
+            showEditElaborationTitleAndDescriptionDialog();
+        } else if (id == R.id.action_clear){
+
+            clearMenu();
+
+            loadDBLayers(null);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showEditElaborationTitleAndDescriptionDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.elab_dialog_title));
+
+        LayoutInflater inflater = LayoutInflater.from(getBaseContext());
+
+        final View editView = inflater.inflate(R.layout.enter_title_layout, null);
+
+        builder.setView(editView);
+
+        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        final EditText title_ed = (EditText) editView.findViewById(R.id.title_field);
+                        final EditText desc_ed = (EditText) editView.findViewById(R.id.description_field);
+
+                        final String title = title_ed.getText().toString();
+                        final String desc = desc_ed.getText().toString();
+
+                        if (TextUtils.isEmpty(title)) {
+
+                            Toast.makeText(getBaseContext(), getString(R.string.elab_enter_title), Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();//release
+
+                            //reshow
+                            showEditElaborationTitleAndDescriptionDialog();
+                            return;
+                        }
+
+                        new AsyncTask<Void,Void,Boolean>() {
+                            private ProgressDialog pd;
+                            @Override
+                            protected void onPreExecute() {
+                                super.onPreExecute();
+                                pd = new ProgressDialog(MainActivity.this, ProgressDialog.STYLE_SPINNER);
+                                pd.setMessage(getBaseContext().getString(R.string.saving_source));
+                                pd.setCancelable(false);
+                                pd.setIcon(R.drawable.ic_launcher);
+                                pd.show();
+                            }
+
+                            @Override
+                            protected Boolean doInBackground(Void... params) {
+
+                                final Database db = SpatialiteUtils.openSpatialiteDB(getBaseContext());
+                                final boolean result = SpatialiteUtils.updateNameTableWithUserData(db, user_edited_layer_title, title,desc);
+
+                                try {
+                                    db.close();
+                                }catch (jsqlite.Exception e) {
+                                    Log.e(TAG, "exception closing db",e);
+                                }
+                                return result;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Boolean success) {
+                                super.onPostExecute(success);
+
+                                if(pd != null && pd.isShowing()) {
+                                    pd.dismiss();
+                                }
+
+                                //user saved, remove save button
+                                clearMenu();
+                                //TODO saved, now what switch back to all risks ? -> loadDBLayers()
+
+                                Toast.makeText(getBaseContext(), success ? getString(R.string.elab_success) : getString(R.string.elab_failure),Toast.LENGTH_SHORT).show();
+
+                            }
+                        }.execute();
+
+
+
+                        dialog.dismiss();
+                    }
+                }
+
+        );
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
+
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                }
+
+        );
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
     }
 
     /**
@@ -400,13 +625,88 @@ public class MainActivity extends MapActivityBase
 
         // Controls can be refreshed getting the result of an intent, in this case
         // each control knows which intent he sent with their requestCode/resultCode
-        for(MapControl control : mapView.getControls()){
-            control.refreshControl(requestCode,resultCode, data);
+        for (MapControl control : mapView.getControls()) {
+            control.refreshControl(requestCode, resultCode, data);
         }
 
         // The user still don't have the data, ask for download
-        if(MAP_FILE == null){
+        if (MAP_FILE == null) {
             askForDownload();
+        }
+
+        //Result of click on a local elaboration
+        if (requestCode == RESULT_REQUEST_CODE && resultCode == RESULT_OK) {
+
+            final String tableName = data.getStringExtra(Config.RESULT);
+
+            if (tableName != null) {
+
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "selected result arrived " + tableName);
+                }
+
+                loadDBLayers(tableName);
+
+            }
+
+            invalidateMenu(tableName,false, true);
+
+            //result of a new elaboration calculation
+        } else if (requestCode == COMPUTE_REQUEST_CODE && resultCode == RESULT_OK) {
+
+            final String tableName = data.getStringExtra(Config.RESULT);
+
+            if (tableName != null) {
+
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "selected result arrived " + tableName);
+                }
+
+                loadDBLayers(tableName);
+
+            }
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(getString(R.string.elab_dialog_title));
+            }
+
+            invalidateMenu(tableName, true, true);
+        }
+    }
+
+
+    /**
+     * removes the save button from the toolbar
+     */
+    public void invalidateMenu(final String user_edited_table, final boolean saveable, final boolean clearable){
+
+        user_edited_layer_title = user_edited_table;
+
+        user_layer_saveable  = saveable;
+        user_layer_clearable = clearable;
+
+        invalidateOptionsMenu();
+    }
+    public void clearMenu(){
+
+        invalidateMenu(null, false, false);
+
+    }
+
+    public void showProgress(final String message){
+
+        if(pd == null){
+            pd = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+            pd.setCancelable(false);
+            pd.setIcon(R.drawable.ic_launcher);
+        }
+        pd.setMessage(message);
+        pd.show();
+
+    }
+    public void hideProgress(){
+
+        if(pd != null && pd.isShowing()){
+            pd.dismiss();
         }
     }
 }

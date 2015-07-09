@@ -219,9 +219,7 @@ public static MSMMap mapFromDb(boolean vectorOnly){
 
 		List<ISpatialDatabaseHandler> handlers = SpatialDataSourceManager.getInstance().getSpatialDatabaseHandlers();
 		//SpatialDataSourceManager.getInstance().getSpatialVectorTables(true);
-		
 		for(ISpatialDatabaseHandler h : handlers){
-		
 			// get Vector Layers
 			List<SpatialVectorTable> tables =  h.getSpatialVectorTables(true);
 			SpatialiteSource s = null;
@@ -292,9 +290,9 @@ public static MSMMap mapFromDb(boolean vectorOnly){
 		}
 
 	} catch (Exception e) {
-		if(BuildConfig.DEBUG){
+//		if(BuildConfig.DEBUG){
 			Log.e("Spatialite","error retrieving spatial tables", e);
-		}
+		//}
 		return m;
 	}
 	return m;
