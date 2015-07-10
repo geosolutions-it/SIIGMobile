@@ -4,4 +4,6 @@
     <color name="list_selected">#FFAAAAAA</color>
     <color name="list_deselected">#FFFFFFFF</color>
 
+    <color name="grafo">#ff0000ff</color>
+
 </resources>

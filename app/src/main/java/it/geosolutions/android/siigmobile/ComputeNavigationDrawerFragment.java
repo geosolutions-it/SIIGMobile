@@ -100,14 +100,7 @@ public class ComputeNavigationDrawerFragment extends Fragment {
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_graph),
-                        getString(R.string.title_risk_environment),
-                        getString(R.string.title_risk_social),
-                        getString(R.string.title_risk_total),
-                        getString(R.string.title_elab_start),
-                        getString(R.string.title_elab_load),
-                }));
+                getResources().getStringArray(R.array.drawer_items)));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }

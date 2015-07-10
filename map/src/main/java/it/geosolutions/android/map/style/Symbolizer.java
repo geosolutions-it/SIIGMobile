@@ -15,6 +15,7 @@ public class Symbolizer {
     public String textstrokecolor = "";
     public String textfillcolor = "";
     public String textfield = "";
+    public String title = "";
     public boolean dashed = false;
     public float decimationFactor = 0.00001f;
 }
