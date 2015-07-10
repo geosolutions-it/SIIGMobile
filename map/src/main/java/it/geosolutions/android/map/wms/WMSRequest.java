@@ -24,12 +24,16 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
+
+import com.squareup.okhttp.Headers;
+
 /**
  * Class that manages a WMSSource request from the Same Source.
- * Manages Style parameter for the compund request but doesn't 
+ * Manages Style parameter for the composed request but doesn't
  * manages the CQL_FILTER parameter yet. 
  * NOTE: The map is generated as lower case keys.
  * @author Lorenzo Natali (lorenzo.natali@geo-solutions.it)
@@ -46,9 +50,11 @@ public class WMSRequest {
 		public static final String CQL_FILTER = "cql_filter";
 		public static final String LAYERS = "layers";
 	}
-	
+
+    private Headers headers;
+
 	/**
-	 * create a request for the WMS source and 
+	 * create a request for the WMS source and
 	 * @param source
 	 * @param layers
 	 */
@@ -57,8 +63,16 @@ public class WMSRequest {
 		this.layers = layers;
 		refreshParams();
 	}
-	
-	/**
+
+    public Headers getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Headers headers) {
+        this.headers = headers;
+    }
+
+    /**
 	 * Creates a request from source,+layers+ other parameters
 	 * The Source base parameters can be overidden by the layers
 	 * base parameters and than the passed parameters.
@@ -73,7 +87,7 @@ public class WMSRequest {
 		}
 		return newParams;
 	}
-	/**
+    /**
 	 * Get a URL for a WMS request with current custom parameters
 	 * @param params
 	 */
@@ -81,7 +95,10 @@ public class WMSRequest {
 		HashMap<String, String> newParams = getParams(params);
 		URL url = null;
 		try {
-			StringWriter sw =new StringWriter();
+            // Initial value of the StringWriter's buffer is set to the
+            // typical WMS request URL length to prevent wasting buffer allocations
+            int commonWMSUrlLength = 320;
+			StringWriter sw = new StringWriter(commonWMSUrlLength);
 			sw.append(source.getUrl().split("\\?")[0]);
 			sw.append("?");
 			for(String paramName : newParams.keySet()){

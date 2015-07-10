@@ -6,6 +6,8 @@ package it.geosolutions.android.siigmobile;
  */
 public class Config {
 
+    public static final String DESTINATION_WMS_URL = "http://destination.geo-solutions.it/geoserver_destination_plus/destination/wms";
+    public static final String DESTINATION_AUTHORIZATION = "Basic c3VwZXI6c3VwZXI=";
     public static String BASE_DIR_NAME = "/siig_mobile";
 
     public static float INITIAL_LATITUDE = 45.42082f;
@@ -26,6 +28,19 @@ public class Config {
     public static final String[] STYLES_PREFIX_ARRAY = {"grafo", "ambientale", "sociale", "totale" };
     public static final String[] RESULT_STYLES = {"result_ambientale", "result_sociale", "result_totale" };
     public static final int DEFAULT_STYLE = 3;
+
+    public static final String[] WMS_LAYERS = {"grafo_stradale", "rischio_totale_ambientale", "rischio_totale_sociale", "rischio_totale" };
+    public static final String[] WMS_ENV = {
+            "false",
+            "low:5.994576e-9;medium:0.015552002997288;max:0.031104",
+            "low:1.53216e-11;medium:0.0002868048076608;max:0.0005736096",
+            "lowsociale:1.53216e-11;mediumsociale:0.0002868048076608;maxsociale:0.0005736096;lowambientale:5.994576e-9;mediumambientale:0.015552002997288;maxambientale:0.031104" };
+    public static final String[] WMS_RISKPANEL = {"true", "true", "true", "true" };
+    public static final String[] WMS_DEFAULTENV = {
+            "false",
+            "low:5.994576e-9;medium:0.015552002997288;max:0.031104",
+            "low:1.53216e-11;medium:0.0002868048076608;max:0.0005736096",
+            "lowsociale:1.53216e-11;mediumsociale:0.0002868048076608;maxsociale:0.0005736096;lowambientale:5.994576e-9;mediumambientale:0.015552002997288;maxambientale:0.031104" };
 
     public static final String RESULT = "result";
 

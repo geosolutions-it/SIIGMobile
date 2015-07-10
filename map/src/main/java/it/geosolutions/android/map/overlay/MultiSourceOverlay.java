@@ -95,7 +95,7 @@ public  class MultiSourceOverlay implements Overlay,FreezableOverlay {
                 //draw the cached bitmap on the canvas
                 canvas.drawBitmap(cacheBitmap, 0, 0, null);
             }else{
-                //normal behiviour
+                //normal behaviour
                 drawLayers(canvas, bbox,  zoomLevel);
             }
 		

@@ -20,7 +20,7 @@ package it.geosolutions.android.map.wms;
 import java.util.ArrayList;
 import java.util.HashMap;
 /**
- * Utility class to create Chunks of contiguos layers for a source.
+ * Utility class to create Chunks of contiguous layers for a source.
  * @author  Lorenzo Natali (lorenzo.natali@geo-solutions.it)
  *
  */
@@ -29,7 +29,11 @@ public class WMSLayerChunker {
 		HashMap<WMSSource, ArrayList<WMSLayer>> chunks = createChunkedHash(layers);
 		ArrayList<WMSRequest> requests = new ArrayList<WMSRequest>();
 		for(WMSSource s : chunks.keySet()){
-			requests.add(new WMSRequest(s, chunks.get(s)));
+            WMSRequest req = new WMSRequest(s, chunks.get(s));
+            if(s.getHeaders() != null){
+                req.setHeaders(s.getHeaders());
+            }
+			requests.add(req);
 		}
 		return requests;
 		

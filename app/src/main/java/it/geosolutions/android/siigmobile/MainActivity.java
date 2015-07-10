@@ -29,6 +29,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.Headers;
+
 import org.mapsforge.android.maps.MapView;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
@@ -36,6 +38,7 @@ import org.mapsforge.core.model.MapPosition;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import it.geosolutions.android.map.activities.MapActivityBase;
 import it.geosolutions.android.map.control.CoordinateControl;
@@ -47,10 +50,14 @@ import it.geosolutions.android.map.model.MSMMap;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
 import it.geosolutions.android.map.overlay.managers.OverlayManager;
 import it.geosolutions.android.map.spatialite.SpatialiteLayer;
+import it.geosolutions.android.map.style.AdvancedStyle;
+import it.geosolutions.android.map.style.StyleManager;
 import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.map.utils.SpatialDbUtils;
 import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
+import it.geosolutions.android.map.wms.WMSLayer;
+import it.geosolutions.android.map.wms.WMSSource;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
@@ -243,20 +250,57 @@ public class MainActivity extends MapActivityBase
     /**
      * loads spatialite layers (database files) from the apps folder
      * if @param layerToCenter is not null and among the loaded layers
-     * the bounding box  of this layer is calculated and the mapview centered on it
+     * the bounding box of this layer is calculated and the mapview centered on it
      */
     private void loadDBLayers(final String layerToCenter){
 
-
-
-        // Add Layers
-        MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
         ArrayList<Layer> layers = new ArrayList<>();
-        for(Layer l : mapConfig.layers){
-            if(BuildConfig.DEBUG) {
-                Log.d(TAG, "Layer Title: " + l.getTitle());
-            }
 
+        /**
+         * Adding WMS layers
+         */
+        WMSSource destinationSource = new WMSSource(Config.DESTINATION_WMS_URL);
+
+        // Authorization Headers
+        Headers.Builder hbuilder = new Headers.Builder();
+        hbuilder.add("Authorization", Config.DESTINATION_AUTHORIZATION);
+        destinationSource.setHeaders(hbuilder.build());
+
+        WMSLayer layer = new WMSLayer(destinationSource, Config.WMS_LAYERS[currentStyle]);
+        //layer.setTitle("Rischio Totale");
+        //layer.setGroup(mlayer.group);
+        layer.setVisibility(true);
+        //TODO Now skip tiled option
+        layer.setTiled(false);
+        //create base parameters
+        HashMap<String, String> baseParams = new HashMap<String, String>();
+        baseParams.put("format", "image/png8");
+        //if(mlayer.styles != null) baseParams.put("styles",mlayer.styles );
+        //if(mlayer.buffer != null) baseParams.put("buffer",mlayer.buffer.toString() );
+        baseParams.put("transparent", "true" );
+
+        // Need additional parameters
+        if(currentStyle>0) {
+            baseParams.put("ENV", Config.WMS_ENV[currentStyle]);
+            baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[currentStyle]);
+            baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[currentStyle]);
+        }
+        layer.setBaseParams(baseParams);
+
+        layers.add(layer);
+
+        if(layerToCenter != null) {
+            // Add Result Layer
+            MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
+            for (Layer l : mapConfig.layers) {
+                if (layerToCenter.equals(l.getTitle())) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "Adding Layer : " + l.getTitle());
+                    }
+                    layers.add(l);
+                }
+
+            /*
             //show result mode, add only the layer to show
             if (layerToCenter != null && l.getTitle().equals(layerToCenter) || (currentStyle == 0 && l.getTitle().equals(Config.GRAFO_LAYER))) {
 
@@ -264,9 +308,13 @@ public class MainActivity extends MapActivityBase
 
                 //normal mode, add only risk layers
             }else if (layerToCenter == null && l.getTitle().startsWith(Config.LAYERS_PREFIX)) {
+
                 layers.add(l);
 
             }
+            */
+            }
+
         }
 
         for(Layer l : layers){
@@ -295,16 +343,16 @@ public class MainActivity extends MapActivityBase
 
                     ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[currentStyle]));
                 }
-
-                // TODO check if this can be moved out of the loop
-                //add this call in when local_save branch has merged whenever the style changes
-                legendAdapter.applyStlye(((SpatialiteLayer) l).getStyle());
-                legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
-
             }
         }
 
         layerManager.setLayers(layers);
+
+        // Update the Legend Panel
+        StyleManager styleManager = StyleManager.getInstance();
+        AdvancedStyle legendStyle = styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1");
+        legendAdapter.applyStyle(legendStyle);
+        legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
 
         mapView.redraw();
 

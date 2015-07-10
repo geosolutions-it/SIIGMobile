@@ -58,8 +58,8 @@ public  class WMSUntiledRenderer implements WMSRenderer{
 		}
 	
 		for(WMSRequest r :requests){
-			URL url = r.getURL(createParameters(c,boundingBox,zoomLevel));
-			draw(c,url,boundingBox,zoomLevel);
+
+			draw(c, r, boundingBox,zoomLevel);
 		}
 	    
 	}
@@ -67,18 +67,27 @@ public  class WMSUntiledRenderer implements WMSRenderer{
 	/**
 	 * Draws the layers on the canvas from a WMS url
 	 * @param c
-	 * @param url
+	 * @param r
 	 * @param zoomLevel 
 	 * @param boundingBox 
 	 * @throws RenderingException 
 	 */
-	private void draw(Canvas c, URL url, BoundingBox boundingBox, byte zoomLevel) throws RenderingException {
+	private void draw(Canvas c, WMSRequest r, BoundingBox boundingBox, byte zoomLevel) throws RenderingException {
+
+		URL url = r.getURL(createParameters(c,boundingBox,zoomLevel));
 		if(url == null) return; //TODO notify
-	    if(connection !=null){
+        Log.d("WMSUntiledRenderer", "WMS URL: "+url);
+		if(connection !=null){
 	    	connection.disconnect();
 	    }
 		try {
 			connection = (HttpURLConnection) url.openConnection();
+            // Add Headers
+            if(r.getHeaders()!= null){
+                for(String n: r.getHeaders().names()) {
+                    connection.setRequestProperty(n, r.getHeaders().get(n));
+                }
+            }
 			connection.setConnectTimeout(1000);//TODO Make this configurable
 		} catch (IOException e2) {
 			Log.e("WMS","error opening connection");

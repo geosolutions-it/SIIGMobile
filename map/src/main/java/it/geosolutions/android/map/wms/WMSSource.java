@@ -17,6 +17,8 @@
  */
 package it.geosolutions.android.map.wms;
 
+import com.squareup.okhttp.Headers;
+
 import it.geosolutions.android.map.model.Source;
 import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
 import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
@@ -32,6 +34,7 @@ import java.util.List;
  *
  */
 public class WMSSource implements Source{
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -67,8 +70,17 @@ public class WMSSource implements Source{
 	public HashMap<String,String> baseParams= new HashMap<String,String>();
 	private String url;
 	private String title;
-	
-	/**
+    private Headers headers;
+
+    public Headers getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Headers headers) {
+        this.headers = headers;
+    }
+
+    /**
 	 * Create a WMSSource using its URL
 	 * @param url
 	 */

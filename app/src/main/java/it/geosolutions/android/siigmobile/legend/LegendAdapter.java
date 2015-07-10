@@ -38,11 +38,11 @@ public class LegendAdapter extends ArrayAdapter<LegendItem>{
     /**
      * Applies a new style
      *
-     * Uses the fiels "label" and "strokecolor" of the symbolizer of the rules of a style
+     * Uses the fields "label" and "strokecolor" of the symbolizer of the rules of a style
      *
      * @param style the style to apply
      */
-    public void applyStlye(AdvancedStyle style){
+    public void applyStyle(AdvancedStyle style){
 
         //avoid multiple invalidation of the same style
         if(mCurrentStyle != null && style.equals(mCurrentStyle)){
