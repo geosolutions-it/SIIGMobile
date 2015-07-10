@@ -115,7 +115,7 @@ public class ComputeFormActivity extends AppCompatActivity
         //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         //actionBar.setTitle(mTitle);
-        actionBar.setTitle(getString(R.string.title_elab_start));
+        actionBar.setTitle(getResources().getStringArray(R.array.drawer_items)[4]);
     }
 
 

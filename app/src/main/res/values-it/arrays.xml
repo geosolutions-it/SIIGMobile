@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="drawer_items">
+        <item>Grafo stradale</item>
+        <item>Rischio Ambientale</item>
+        <item>Rischio Sociale</item>
+        <item>Rischio Totale</item>
+        <item>Elaborazione Standard</item>
+        <item>Carica Elaborazione</item>
+    </string-array>
+
+    <string-array name="grafo">
+        <item>Strada</item>
+    </string-array>
+
+</resources>

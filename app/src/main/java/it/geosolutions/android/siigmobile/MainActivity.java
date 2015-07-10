@@ -25,6 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.mapsforge.android.maps.MapView;
@@ -56,6 +58,7 @@ import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsafedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import jsqlite.Database;
+import it.geosolutions.android.siigmobile.legend.LegendAdapter;
 
 
 public class MainActivity extends MapActivityBase
@@ -98,6 +101,8 @@ public class MainActivity extends MapActivityBase
     private SimpleCursorAdapter searchViewAdapter;
     private IGeoCoder mGeoCoder;
     private GeoCodingTask mGeoCodingTask;
+    private LegendAdapter legendAdapter;
+    private TextView legendTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +125,13 @@ public class MainActivity extends MapActivityBase
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         mapView =  (AdvancedMapView) findViewById(R.id.advancedMapView);
+
+        final ListView legendListview = (ListView) findViewById(R.id.legend_listview);
+        legendTitle = (TextView) findViewById(R.id.legend_drawer_title);
+        legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
+        legendAdapter = new LegendAdapter(getBaseContext());
+        legendListview.setAdapter(legendAdapter);
+
 
         // If MAP_FILE does not exists, it will be null
         // MAP_FILE.exists() will always be true
@@ -236,6 +248,7 @@ public class MainActivity extends MapActivityBase
     private void loadDBLayers(final String layerToCenter){
 
 
+
         // Add Layers
         MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
         ArrayList<Layer> layers = new ArrayList<>();
@@ -255,7 +268,6 @@ public class MainActivity extends MapActivityBase
 
             }
         }
-
 
         for(Layer l : layers){
             if (l instanceof SpatialiteLayer) {
@@ -283,6 +295,11 @@ public class MainActivity extends MapActivityBase
 
                     ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[currentStyle]));
                 }
+
+                // TODO check if this can be moved out of the loop
+                //add this call in when local_save branch has merged whenever the style changes
+                legendAdapter.applyStlye(((SpatialiteLayer) l).getStyle());
+                legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
 
             }
         }
@@ -396,7 +413,6 @@ public class MainActivity extends MapActivityBase
                 currentStyle = position;
                 //reload, if an elaboration arrived center on it
                 loadDBLayers(user_edited_layer_title);
-
                 break;
             case 4:
                 Toast.makeText(getBaseContext(), "Starting Form...", Toast.LENGTH_SHORT).show();
@@ -429,26 +445,9 @@ public class MainActivity extends MapActivityBase
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 0:
-                mTitle = getString(R.string.title_graph);
-                break;
-            case 1:
-                mTitle = getString(R.string.title_risk_environment);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_risk_social);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_risk_total);
-                break;
-            case 4:
-                mTitle = getString(R.string.title_elab_start);
-                break;
-            case 5:
-                mTitle = getString(R.string.title_elab_load);
-                break;
-        }
+
+        mTitle = getResources().getStringArray(R.array.drawer_items)[number];
+
     }
 
     public void restoreActionBar() {

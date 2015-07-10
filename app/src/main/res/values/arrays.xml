@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="drawer_items">
+        <item>Street Graph</item>
+        <item>Environmental Risk</item>
+        <item>Social Risk</item>
+        <item>Total Risk</item>
+        <item>Standard Elaboration</item>
+        <item>Load Elaboration</item>
+    </string-array>
+
+    <string-array name="grafo">
+        <item>Street</item>
+    </string-array>
+
+        
+</resources>

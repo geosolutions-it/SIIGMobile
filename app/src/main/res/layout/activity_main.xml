@@ -30,17 +30,28 @@
 
     <LinearLayout android:id="@+id/right_drawer"
         android:orientation="vertical"
-        android:layout_width="240dp"
+        android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:dividerHeight="0dp"
         android:background="#CFFF" >
 
         <TextView
+            android:id="@+id/legend_drawer_title"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:text="@string/legend_text"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:background="@android:color/white"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <ListView android:id="@+id/legend_listview"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:choiceMode="singleChoice"
+                  android:background="@android:color/white"/>
+
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>
