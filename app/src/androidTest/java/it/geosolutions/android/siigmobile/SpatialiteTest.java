@@ -21,6 +21,7 @@ import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsafedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
+import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.*;
 
 /**

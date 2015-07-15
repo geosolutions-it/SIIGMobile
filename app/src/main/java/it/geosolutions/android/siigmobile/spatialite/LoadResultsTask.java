@@ -7,7 +7,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.geosolutions.android.siigmobile.CRSFeatureCollection;
+import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.Database;
 
 /**

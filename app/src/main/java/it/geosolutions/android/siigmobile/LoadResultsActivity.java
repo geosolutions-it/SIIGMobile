@@ -32,6 +32,7 @@ import it.geosolutions.android.map.database.SpatialDataSourceManager;
 import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.siigmobile.spatialite.LoadResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
+import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.Database;
 import jsqlite.Exception;
 

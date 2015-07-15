@@ -40,4 +40,6 @@
     <string name="search_hint">Cerca luogo</string>
     <string name="place_not_covered">Il luogo selezionato non é coperto dalla mappa attuale.</string>
     <string name="not_online">Bisogna essere on-line per usare questa funzione.</string>
+    <string name="snackbar_offline_text">Non puoi eseguire Elaborazioni mentre sei Offline</string>
+    <string name="snackbar_noparam_text">Impostare tutti i parametri prima di continuare</string>
 </resources>

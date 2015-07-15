@@ -19,8 +19,8 @@ import java.util.Random;
 
 import it.geosolutions.android.map.wfs.geojson.feature.Feature;
 import it.geosolutions.android.siigmobile.BuildConfig;
-import it.geosolutions.android.siigmobile.CRSFeatureCollection;
 import it.geosolutions.android.siigmobile.Config;
+import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.Database;
 import jsqlite.Stmt;
 
