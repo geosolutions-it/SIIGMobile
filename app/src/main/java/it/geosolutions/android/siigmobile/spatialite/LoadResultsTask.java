@@ -7,7 +7,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.geosolutions.android.siigmobile.CRSFeatureCollection;
+import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.Database;
 
 /**
@@ -17,7 +17,7 @@ import jsqlite.Database;
  *
  * Literally it queries the names table
  *
- * If this task is not for deleting unsafed result and the contains a user edited name
+ * If this task is not for deleting unsaved result and the contains a user edited name
  * it is loaded containg its geometry and added to a list of CRSFeatureCollection
 
  *
@@ -44,7 +44,7 @@ public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<CRSFea
 
         if (db != null) {
 
-            ArrayList<String[]> names = SpatialiteUtils.getSafedResultTableNames(db);
+            ArrayList<String[]> names = SpatialiteUtils.getSavedResultTableNames(db);
             if (names != null) {
                 for (String[] array : names) {
 
@@ -54,6 +54,7 @@ public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<CRSFea
                         if (result != null) {
                             result.userEditedName = array[1];
                             result.userEditedDescription = array[2];
+                            result.isPIS = ("1".equals(array[3]));
                             results.add(result);
                         }
                     }

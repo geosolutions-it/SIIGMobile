@@ -6,7 +6,7 @@
 			<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">
 				<wps:Body>
 					<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:destination="http://destination.geo-solutions.it">
-						<wfs:Query typeName="destination:rischio_1">
+						<wfs:Query typeName="destination:siig_geo_ln_arco_1">
 							<ogc:Filter>
 								<ogc:BBOX>
 									<ogc:PropertyName>geometria</ogc:PropertyName>
@@ -54,19 +54,25 @@
 		<wps:Input>
 			<ows:Identifier>kemler</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>0</wps:LiteralData>
+				<wps:LiteralData>1,2,3,4,5,6,7,8,9,10,11,12</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>level</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>3</wps:LiteralData>
+				<wps:LiteralData>1</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>materials</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>1,2,3,4,5,6,7,8,9,10,11,12</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>mobile</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>true</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>

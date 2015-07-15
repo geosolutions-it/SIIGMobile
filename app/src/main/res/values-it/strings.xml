@@ -33,11 +33,20 @@
     <string name="bb_upperleft">In alto a sinistra</string>
     <string name="bb_lowerright">In basso a destra</string>
     <string name="clear">Sgombrare</string>
-    <string name="deleting">Cancellando&#8230;</string>
+    <string name="deleting">Cancellazione in corso&#8230;</string>
     <string name="selected">selezionato</string>
     <string name="go_back">Torna alla mappa</string>
     <string name="please_wait">Si prega di aspettare un momento&#8230;</string>
     <string name="search_hint">Cerca luogo</string>
     <string name="place_not_covered">Il luogo selezionato non é coperto dalla mappa attuale.</string>
     <string name="not_online">Bisogna essere on-line per usare questa funzione.</string>
+    <string name="snackbar_offline_text">Non puoi eseguire Elaborazioni mentre sei Offline</string>
+    <string name="snackbar_noparam_text">Impostare tutti i parametri prima di continuare</string>
+    <string name="result_too_large">Il risultato dell\'elaborazione contiene troppi elementi, riprovare con un area più piccola.</string>
+    <string name="query_ongoing">Elaborazione in corso&#8230;</string>
+    <string name="saving_data">Salvataggio in corso&#8230;</string>
+    <string name="compute_error">Esecuzione fallita, si prega di riprovare più tardi.</string>
+    <string name="pis_title">Pericolosità Strada</string>
+    <string name="result_empty">Il risultato dell\'elaborazione è vuoto, riprovare con un\'altra area.</string>
+
 </resources>

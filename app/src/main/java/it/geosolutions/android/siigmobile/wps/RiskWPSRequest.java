@@ -12,6 +12,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import it.geosolutions.android.map.wfs.geojson.feature.Feature;
 import it.geosolutions.android.map.wfs.geojson.feature.FeatureCollection;
@@ -50,6 +52,31 @@ public class RiskWPSRequest extends WPSRequest{
     public static final String KEY_DAMAGEAREA = "damageArea";
     public static final String KEY_EXTENDEDSCHEMA = "extendedSchema";
     public static final String KEY_CRS = "crs";
+    public static final String KEY_MOBILE = "mobile";
+
+    private static String TAG = "RiskWPSRequest";
+
+    private static final NavigableMap<Double, String> areas = new TreeMap<>();
+    // Max values
+    static {
+        areas.put(0.00025, "destination:siig_geo_ln_arco_1");
+        areas.put(0.001, "destination:siig_geo_ln_arco_2");
+        areas.put(0.004, "destination:siig_geo_pl_arco_3");
+        areas.put(0.25, "destination:siig_geo_pl_arco_4");
+        areas.put(100.0, "destination:siig_geo_pl_arco_5");
+        //18.225263943
+    }
+
+    private static final NavigableMap<Double, Integer> levels = new TreeMap<>();
+    // Max values
+    static {
+        levels.put(0.00025, 1);
+        levels.put(0.001, 2);
+        levels.put(0.004, 3);
+        levels.put(0.25, 4);
+        levels.put(100.0, 5);
+        //18.225263943
+    }
 
     public RiskWPSRequest(final FeatureCollection _features){
 
@@ -74,7 +101,7 @@ public class RiskWPSRequest extends WPSRequest{
             final int _formula,
             final int _target,
             final int _level,
-            final int _kemler,
+            final String _kemler,
             final String _materials,
             final String _scenarios,
             final String _entities,
@@ -122,11 +149,16 @@ public class RiskWPSRequest extends WPSRequest{
             throw new IllegalArgumentException("no (boundingbox) feature provided");
         }
 
+
         final Feature f = request.featureCollection.features.get(0);
         final Envelope env = f.geometry.getEnvelopeInternal();
+
+        request.parameters.put(KEY_LEVEL, levels.ceilingEntry(env.getArea()).getValue());
         //local US necessary for dot formatting -> 12.34 instead of 12,34
         final String lowerLeftCorner = String.format(Locale.US, "%f %f", env.getMinX(), env.getMinY());
         final String upperRightCorner = String.format(Locale.US, "%f %f", env.getMaxX(), env.getMaxY());
+
+        Log.v(TAG, "Area selected: "+ String.format(Locale.US, "%f", env.getArea()));
 
         final String geometry = String.format(Locale.US,
                 "\t<ows:Identifier>gs:RiskCalculator</ows:Identifier>\n" +
@@ -136,7 +168,8 @@ public class RiskWPSRequest extends WPSRequest{
                 "\t\t\t<wps:Reference mimeType=\"text/xml\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n" +
                 "\t\t\t\t<wps:Body>\n" +
                 "\t\t\t\t\t<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\" xmlns:destination=\"http://destination.geo-solutions.it\">\n" +
-                "\t\t\t\t\t\t<wfs:Query typeName=\"destination:rischio_1\">\n" +
+                        // TODO: the ceiling value can be null
+                "\t\t\t\t\t\t<wfs:Query typeName=\""+ areas.ceilingEntry(env.getArea()).getValue()+"\">\n" +
                 "\t\t\t\t\t\t\t<ogc:Filter>\n" +
                 "\t\t\t\t\t\t\t\t<ogc:BBOX>\n" +
                 "\t\t\t\t\t\t\t\t\t<ogc:PropertyName>geometria</ogc:PropertyName>\n" +

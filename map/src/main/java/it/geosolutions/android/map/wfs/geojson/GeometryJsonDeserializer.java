@@ -35,8 +35,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * * MULTIPOINT
  * * LINESTRING
  * * POLYGON
- * Does **not** support yet:
- * * MultiLineString
+ * * MULTILINESTRING
  *
  */
 public class GeometryJsonDeserializer implements JsonDeserializer<Geometry> {

@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newrelic.agent.android.NewRelic;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
@@ -62,7 +63,7 @@ import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
 import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
-import it.geosolutions.android.siigmobile.spatialite.DeleteUnsafedResultsTask;
+import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import jsqlite.Database;
 import it.geosolutions.android.siigmobile.legend.LegendAdapter;
@@ -88,7 +89,7 @@ public class MainActivity extends MapActivityBase
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-
+    private static boolean usePIS = false;
 
     private MultiSourceOverlayManager layerManager;
 
@@ -114,6 +115,10 @@ public class MainActivity extends MapActivityBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        NewRelic.withApplicationToken(
+//                ""
+//        ).start(this.getApplication());
 
         MapFilesProvider.setBaseDir(Config.BASE_DIR_NAME);
         MAP_FILE = MapFilesProvider.getBackgroundMapFile();
@@ -151,9 +156,9 @@ public class MainActivity extends MapActivityBase
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             if(prefs.getLong(Config.PARAM_LAST_UNSAVED_DELETION,0l) < System.currentTimeMillis() + Config.UNSAVED_DELETION_INTERVAL){
                 if(BuildConfig.DEBUG){
-                    Log.d(TAG, "deleting unsafed results");
+                    Log.d(TAG, "deleting unsaved results");
                 }
-                new DeleteUnsafedResultsTask(){
+                new DeleteUnsavedResultsTask(){
                     @Override
                     public void started() {
                         showProgress(getString(R.string.please_wait));
@@ -268,7 +273,10 @@ public class MainActivity extends MapActivityBase
             hbuilder.add("Authorization", Config.DESTINATION_AUTHORIZATION);
             destinationSource.setHeaders(hbuilder.build());
 
-            WMSLayer layer = new WMSLayer(destinationSource, Config.WMS_LAYERS[currentStyle]);
+            WMSLayer layer = new WMSLayer(destinationSource, Config.WMS_LAYERS[
+                    (currentStyle >= Config.WMS_LAYERS.length ? Config.DEFAULT_STYLE:currentStyle)
+                    ]
+            );
             //layer.setTitle("Rischio Totale");
             //layer.setGroup(mlayer.group);
             layer.setVisibility(true);
@@ -294,6 +302,10 @@ public class MainActivity extends MapActivityBase
         }
 
         if(layerToCenter != null) {
+
+            if (BuildConfig.DEBUG) {
+                Log.i(TAG, "selected result arrived " + layerToCenter);
+            }
 
             // Add Result Layer
             MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
@@ -322,12 +334,12 @@ public class MainActivity extends MapActivityBase
 
                     if (layerToCenter != null && l.getTitle().equals(layerToCenter)) {
 
-                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
-
-                        if (bb != null) {
-
-                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
-                        }
+//                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
+//
+//                        if (bb != null) {
+//
+//                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
+//                        }
 
                         break; //stop looping, only this result layer interests
 
@@ -343,15 +355,25 @@ public class MainActivity extends MapActivityBase
 
         // Update the Legend Panel
         StyleManager styleManager = StyleManager.getInstance();
-        AdvancedStyle legendStyle = styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1");
+        AdvancedStyle legendStyle = usePIS
+                ? styleManager.getStyle(Config.RESULT_STYLES[3])
+                : styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1");
         legendAdapter.applyStyle(legendStyle);
-        legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
+        if(usePIS){
+            legendTitle.setText(getResources().getString(R.string.pis_title));
+        }else {
+            legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
+        }
 
         mapView.redraw();
 
     }
     //TODO get the result mode from the result itself
     public int resultModeForRiskMode(){
+
+        if(usePIS){
+            return 3;
+        }
 
         switch (currentStyle){
             case 0:
@@ -361,6 +383,8 @@ public class MainActivity extends MapActivityBase
                 return 0;
             case 2:
                 return 1;
+            case 4:
+                return 3;
             default:
                 return 2;
         }
@@ -446,7 +470,39 @@ public class MainActivity extends MapActivityBase
             // nothing to do
             return;
         }
-       switch (position){
+
+        if(usePIS){
+            currentStyle = 4;
+            switch (position){
+                case 0:
+                    currentStyle = position;
+                case 1:
+                    //reload, if an elaboration arrived center on it
+                    loadDBLayers(user_edited_layer_title);
+                    break;
+                case 2:
+
+                    final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
+                    // Start the form activity
+                    Intent formIntent = new Intent(this, ComputeFormActivity.class);
+                    formIntent.putExtra(ComputeFormActivity.PARAM_BOUNDINGBOX, bb);
+
+                    final boolean isPolygonRequest = mapView.getMapViewPosition().getZoomLevel() <= 13;
+
+                    formIntent.putExtra(ComputeFormActivity.PARAM_POLYGON, isPolygonRequest);
+
+                    startActivityForResult(formIntent, COMPUTE_REQUEST_CODE);
+                    break;
+                case 3:
+                    Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
+                    startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+        switch (position){
             case 0:
             case 1:
             case 2:
@@ -456,7 +512,6 @@ public class MainActivity extends MapActivityBase
                 loadDBLayers(user_edited_layer_title);
                 break;
             case 4:
-                Toast.makeText(getBaseContext(), "Starting Form...", Toast.LENGTH_SHORT).show();
 
                 final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
                 // Start the form activity
@@ -623,6 +678,11 @@ public class MainActivity extends MapActivityBase
             showEditElaborationTitleAndDescriptionDialog();
         } else if (id == R.id.action_clear){
 
+            if(usePIS){
+                usePIS = false;
+                currentStyle = Config.DEFAULT_STYLE;
+                mNavigationDrawerFragment.setEntries(getResources().getStringArray(R.array.drawer_items));
+            }
             clearMenu();
 
             loadDBLayers(null);
@@ -697,7 +757,10 @@ public class MainActivity extends MapActivityBase
                                 }
 
                                 //user saved, remove save button
-                                clearMenu();
+                                if(success) {
+                                    clearMenu();
+                                }
+
                                 //TODO saved, now what switch back to all risks ? -> loadDBLayers()
 
                                 Toast.makeText(getBaseContext(), success ? getString(R.string.elab_success) : getString(R.string.elab_failure),Toast.LENGTH_SHORT).show();
@@ -786,37 +849,35 @@ public class MainActivity extends MapActivityBase
         }
 
         //Result of click on a local elaboration
-        if (requestCode == RESULT_REQUEST_CODE && resultCode == RESULT_OK) {
+        if ((requestCode == RESULT_REQUEST_CODE  || requestCode == COMPUTE_REQUEST_CODE ) && resultCode == RESULT_OK) {
 
-            final String tableName = data.getStringExtra(Config.RESULT);
+            final String tableName = data.getStringExtra(Config.RESULT_TABLENAME);
+            Integer formulaType = data.getIntExtra(Config.RESULT_FORMULA, Config.FORMULA_RISK);
+            if(formulaType == Config.FORMULA_STREET){
+                usePIS = true;
+                currentStyle = 4;
+                mNavigationDrawerFragment.setEntries(new String[]{
+                                getResources().getStringArray(R.array.drawer_items)[0],
+                                getString(R.string.pis_title),
+                                getResources().getStringArray(R.array.drawer_items)[4],
+                                getResources().getStringArray(R.array.drawer_items)[5]
+                        }
+                );
+            }else{
+                if(usePIS){
+                    usePIS = false;
+                    currentStyle = Config.DEFAULT_STYLE;
+                    mNavigationDrawerFragment.setEntries(getResources().getStringArray(R.array.drawer_items));
+                }
+            }
 
             if (tableName != null) {
-
-                if (BuildConfig.DEBUG) {
-                    Log.i(TAG, "selected result arrived " + tableName);
-                }
 
                 loadDBLayers(tableName);
 
             }
 
-            invalidateMenu(tableName,false, true);
-
-            //result of a new elaboration calculation
-        } else if (requestCode == COMPUTE_REQUEST_CODE && resultCode == RESULT_OK) {
-
-            final String tableName = data.getStringExtra(Config.RESULT);
-
-            if (tableName != null) {
-
-                if (BuildConfig.DEBUG) {
-                    Log.i(TAG, "selected result arrived " + tableName);
-                }
-
-                loadDBLayers(tableName);
-
-            }
-            if (getSupportActionBar() != null) {
+            if (requestCode == COMPUTE_REQUEST_CODE && getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(getString(R.string.elab_dialog_title));
             }
 
@@ -837,6 +898,7 @@ public class MainActivity extends MapActivityBase
 
         invalidateOptionsMenu();
     }
+
     public void clearMenu(){
 
         invalidateMenu(null, false, false);

@@ -32,6 +32,7 @@ import it.geosolutions.android.map.database.SpatialDataSourceManager;
 import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.siigmobile.spatialite.LoadResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
+import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.Database;
 import jsqlite.Exception;
 
@@ -228,7 +229,10 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
                 CRSFeatureCollection item = rra.getItem(position);
 
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(Config.RESULT, item.tableName);
+                returnIntent.putExtra(Config.RESULT_TABLENAME, item.tableName);
+                if(item.isPIS){
+                    returnIntent.putExtra(Config.RESULT_FORMULA, Config.FORMULA_STREET);
+                }
                 setResult(RESULT_OK, returnIntent);
                 finish();
 

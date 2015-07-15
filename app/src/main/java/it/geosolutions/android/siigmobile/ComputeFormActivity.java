@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -19,25 +20,43 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 import org.mapsforge.core.model.BoundingBox;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import it.geosolutions.android.map.database.SpatialDataSourceManager;
 import it.geosolutions.android.map.utils.MapFilesProvider;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
+import it.geosolutions.android.map.wfs.geojson.feature.Feature;
+import it.geosolutions.android.map.wfs.geojson.feature.FeatureCollection;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
+import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
+import it.geosolutions.android.siigmobile.wps.RiskWPSRequest;
+import it.geosolutions.android.siigmobile.wps.SIIGRetrofitClient;
+import it.geosolutions.android.siigmobile.wps.SIIGWPSServices;
+import jsqlite.*;
+import jsqlite.Exception;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.OkClient;
+import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
+import retrofit.mime.TypedString;
 
 
 public class ComputeFormActivity extends AppCompatActivity
@@ -72,11 +91,21 @@ public class ComputeFormActivity extends AppCompatActivity
                 R.id.compute_navigation_drawer,
                 (DrawerLayout) findViewById(R.id.compute_drawer_layout));
 
+        mNavigationDrawerFragment.setEntries(new String[]{
+                        getString(R.string.go_back)
+                }
+        );
+
+
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
+        if(mNavigationDrawerFragment != null && position == 0){
+
+            finish();
+        }
 
         BoundingBox bb = null;
 
@@ -194,7 +223,13 @@ public class ComputeFormActivity extends AppCompatActivity
                 lr_lat_tv.setText(String.format(Locale.US, "%f",bb.minLatitude));
                 lr_lon_tv.setText(String.format(Locale.US, "%f",bb.maxLongitude));
 
+                Log.v(TAG, "Area : " + String.format(Locale.US, "%f",((bb.maxLongitude -bb.minLongitude)*(bb.maxLatitude -bb.minLatitude))) );
+
             }
+
+            // Default formula
+            // 141 - Rischio
+            final int[] formula = {Config.FORMULA_RISK};
 
             final Button computeButton = (Button) rootView.findViewById(R.id.compute_button);
             computeButton.setOnClickListener(new View.OnClickListener(){
@@ -202,9 +237,237 @@ public class ComputeFormActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v) {
 
-                    //TODO check if online -> geocoding branch
+                    if(!Util.isOnline(getActivity())){
+                        Snackbar
+                                .make(  v.getRootView().findViewById(R.id.snackbarPosition),
+                                        R.string.snackbar_offline_text,
+                                        Snackbar.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
 
-                    //TODO get bounding box using getArguments() and create the WPS request
+                    if(getArguments() == null || getArguments().get(PARAM_BOUNDINGBOX) == null){
+                        Snackbar
+                                .make(  v.getRootView().findViewById(R.id.snackbarPosition),
+                                        R.string.snackbar_offline_text,
+                                        Snackbar.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
+
+                    final BoundingBox bb = (BoundingBox) getArguments().get(PARAM_BOUNDINGBOX);
+
+                    // Prepare dummy input features
+                    Coordinate[] coords = new Coordinate[2];
+                    coords[0] = new Coordinate(bb.minLongitude, bb.minLatitude);
+                    coords[1] = new Coordinate(bb.maxLongitude, bb.maxLatitude);
+                    GeometryFactory fact = new GeometryFactory();
+                    FeatureCollection features = new FeatureCollection();
+                    features.features = new ArrayList<Feature>();
+                    Feature bbox = new Feature();
+                    bbox.geometry = fact.createLineString(coords);
+                    features.features.add(bbox);
+
+                    // Fixed Values
+                    String store = "destination";
+                    int batch = 1000;
+                    int precision = 4;
+                    int processing = 1;
+                    int target = 100;
+                    int level = 3;
+                    String kemler = "1,2,3,4,5,6,7,8,9,10,11,12";
+                    String materials = "1,2,3,4,5,6,7,8,9,10,11,12";
+                    String scenarios = "1,2,3,4,5,6,7,8,9,10,11,12,13,14";
+                    String severeness = "1,2,3,4,5";
+                    String entities = "0,1";
+                    String fp = "fp_scen_centrale";
+
+                    // Selected formula id
+
+                    RadioButton tryRadioBtn = (RadioButton) v.getRootView().findViewById(R.id.radio_street);
+                    // 22 - Pis
+                    if(tryRadioBtn != null && tryRadioBtn.isChecked()){
+                        formula[0] = Config.FORMULA_STREET;
+                    }
+
+                    // Create RiskWPSRequest
+                    RiskWPSRequest request = new RiskWPSRequest(
+                            features,
+                            store,
+                            batch,
+                            precision,
+                            processing,
+                            formula[0],
+                            target,
+                            level,
+                            kemler,
+                            materials,
+                            scenarios,
+                            entities,
+                            severeness,
+                            fp
+                    );
+
+                    request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
+                    request.setParameter(RiskWPSRequest.KEY_MOBILE, true);
+
+                    String query = RiskWPSRequest.createWPSCallFromText(request);
+
+                    Gson gson = new GsonBuilder()
+                            .disableHtmlEscaping()
+                            .registerTypeHierarchyAdapter(Geometry.class,
+                                    new GeometryJsonSerializer())
+                            .registerTypeHierarchyAdapter(Geometry.class,
+                                    new GeometryJsonDeserializer()).create();
+
+                    final OkHttpClient okHttpClient = new OkHttpClient();
+                    okHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
+                    okHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
+
+
+                    RestAdapter restAdapter = new RestAdapter.Builder()
+                            .setEndpoint(SIIGRetrofitClient.ENDPOINT)
+                            .setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
+                            .setRequestInterceptor(new RequestInterceptor() {
+                                @Override
+                                public void intercept(RequestFacade request) {
+                                    request.addHeader("Authorization", Config.DESTINATION_AUTHORIZATION);
+                                }
+                            })
+                            .setConverter(new GsonConverter(gson))
+                            .setClient(new OkClient(okHttpClient))
+                            .build();
+
+                    //wrap the xml as "TypedString"
+                    //src : http://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
+                    TypedString typedQueryString = new TypedString(query){
+                        @Override public String mimeType() {
+                            return "application/xml";
+                        }
+                    };
+
+                    SIIGWPSServices siigService = restAdapter.create(SIIGWPSServices.class);
+
+
+                    ProgressDialogCallback<CRSFeatureCollection> fcCallback = new ProgressDialogCallback<CRSFeatureCollection>() {
+
+                        @Override
+                        public void success(CRSFeatureCollection result, Response response) {
+                            if (BuildConfig.DEBUG) {
+                                Log.i("WPSCall", "success " + result.toString() + "\n" + response.toString());
+                            }
+
+                            //save response asynchronously
+                            new AsyncTask<CRSFeatureCollection,Void,Pair<Boolean,String>>(){
+
+                                @Override
+                                protected void onPreExecute() {
+                                    super.onPreExecute();
+                                    if(pd != null && pd.isShowing()) {
+                                        pd.dismiss();
+                                    }
+                                    pd = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
+                                    pd.setMessage(getActivity().getString(R.string.saving_data));
+                                    pd.setCancelable(false);
+                                    pd.setIcon(R.drawable.ic_launcher);
+                                    pd.show();
+                                }
+
+                                @Override
+                                protected Pair<Boolean,String> doInBackground(CRSFeatureCollection... param) {
+
+                                    final Database db = SpatialiteUtils.openSpatialiteDB(getActivity().getBaseContext());
+
+                                    final CRSFeatureCollection response = param[0];
+
+                                    if(response.features.size() > Config.WPS_MAX_FEATURES){
+                                        Snackbar
+                                                .make(computeButton.getRootView().findViewById(R.id.snackbarPosition),
+                                                        R.string.result_too_large,
+                                                        Snackbar.LENGTH_LONG)
+                                                .show();
+                                        return null;
+                                    }
+
+                                    if(response.features.size() <= 0){
+                                        Snackbar
+                                                .make(computeButton.getRootView().findViewById(R.id.snackbarPosition),
+                                                        R.string.result_empty,
+                                                        Snackbar.LENGTH_LONG)
+                                                .show();
+                                        return null;
+                                    }
+
+                                    final String geomType = response.features.get(0).geometry.getGeometryType().toUpperCase();
+
+                                    final Pair<Boolean, String> resultPair = SpatialiteUtils.saveResult(db, response, geomType, formula[0] == Config.FORMULA_STREET);
+                                    try {
+
+                                        db.close();
+
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "exception closing db", e);
+                                    }
+
+                                    //reload the spatial data sources to be able to load this new table in the MainActivity
+                                    SpatialDataSourceManager.getInstance().clear();
+                                    SpatialDataSourceManager.getInstance().init(MapFilesProvider.getBaseDirectoryFile());
+
+                                    return resultPair;
+                                }
+
+                                @Override
+                                protected void onPostExecute(final Pair<Boolean,String> pair) {
+                                    super.onPostExecute(pair);
+
+                                    if(pd != null && pd.isShowing()) {
+                                        pd.dismiss();
+                                    }
+
+                                    if(pair == null) {
+                                        return;
+                                    }
+
+                                    if(pair.first) {
+
+                                        Intent returnIntent = new Intent();
+                                        returnIntent.putExtra(Config.RESULT_TABLENAME, pair.second);
+                                        returnIntent.putExtra(Config.RESULT_FORMULA, formula[0]);
+                                        getActivity().setResult(RESULT_OK, returnIntent);
+                                        getActivity().finish();
+
+                                    }else{
+
+                                        Toast.makeText(getActivity().getBaseContext(),pair.second,Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            }.execute(result);
+
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                            Log.w("WPSCall", "failure " + error.getMessage());
+                            if(pd != null && pd.isShowing()) {
+                                pd.dismiss();
+                            }
+                            Snackbar
+                                    .make(computeButton.getRootView().findViewById(R.id.snackbarPosition),
+                                            R.string.compute_error,
+                                            Snackbar.LENGTH_LONG)
+                                    .show();
+                        }
+                    };
+
+                    fcCallback.pd = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
+                    fcCallback.pd.setMessage(getActivity().getString(R.string.query_ongoing));
+                    fcCallback.pd.setCancelable(false);
+                    fcCallback.pd.setIcon(R.drawable.ic_launcher);
+                    fcCallback.pd.show();
+
+                    siigService.postWPS(typedQueryString, fcCallback);
+
 
                     final boolean polygonRequest = getArguments().getBoolean(PARAM_POLYGON);
                     //TODO add geometry parameter to request polygon
@@ -213,84 +476,6 @@ public class ComputeFormActivity extends AppCompatActivity
                     if(BuildConfig.DEBUG) {
                         Log.i(TAG, "is Polygon Request " + Boolean.toString(polygonRequest));
                     }
-
-                    //TODO replace this dummy response with the real response from the Retrofit client (WPS call branch)
-                    InputStream inputStream = getActivity().getResources().openRawResource(polygonRequest ?
-                    R.raw.dummy_response_multipolygon : R.raw.dummy_response_multilinestring);
-                    CRSFeatureCollection dummyResponse = null;
-
-                    if (inputStream != null) {
-
-                        final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                        final Gson gson = new GsonBuilder()
-                                .disableHtmlEscaping()
-                                .registerTypeHierarchyAdapter(Geometry.class,
-                                        new GeometryJsonSerializer())
-                                .registerTypeHierarchyAdapter(Geometry.class,
-                                        new GeometryJsonDeserializer()).create();
-
-                        dummyResponse = gson.fromJson(reader, CRSFeatureCollection.class);
-                    }
-                    //save response asynchronously
-                    new AsyncTask<CRSFeatureCollection,Void,Pair<Boolean,String>>(){
-                        private ProgressDialog pd;
-                        @Override
-                        protected void onPreExecute() {
-                            super.onPreExecute();
-                            pd = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
-                            pd.setMessage(getActivity().getString(R.string.saving_source));
-                            pd.setCancelable(false);
-                            pd.setIcon(R.drawable.ic_launcher);
-                            pd.show();
-                        }
-
-                        @Override
-                        protected Pair<Boolean,String> doInBackground(CRSFeatureCollection... param) {
-
-                            final jsqlite.Database db = SpatialiteUtils.openSpatialiteDB(getActivity().getBaseContext());
-
-                            final CRSFeatureCollection response = param[0];
-
-                            final String geomType = response.features.get(0).geometry.getGeometryType().toUpperCase();
-
-                            final Pair<Boolean, String> resultPair = SpatialiteUtils.saveResult(db, response, geomType);
-                            try {
-
-                                db.close();
-
-                            } catch (jsqlite.Exception e) {
-                                Log.e(TAG, "exception closing db", e);
-                            }
-
-                            //reload the spatial data sources to be able to load this new table in the MainActivity
-                            SpatialDataSourceManager.getInstance().clear();
-                            SpatialDataSourceManager.getInstance().init(MapFilesProvider.getBaseDirectoryFile());
-
-                            return resultPair;
-                        }
-
-                        @Override
-                        protected void onPostExecute(final Pair<Boolean,String> pair) {
-                            super.onPostExecute(pair);
-
-                            if(pd != null && pd.isShowing()) {
-                                pd.dismiss();
-                            }
-
-                            if(pair.first) {
-
-                                Intent returnIntent = new Intent();
-                                returnIntent.putExtra(Config.RESULT, pair.second);
-                                getActivity().setResult(RESULT_OK, returnIntent);
-                                getActivity().finish();
-
-                            }else{
-
-                                Toast.makeText(getActivity().getBaseContext(),pair.second,Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }.execute(dummyResponse);
 
 
                 }
