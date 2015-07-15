@@ -252,44 +252,49 @@ public class MainActivity extends MapActivityBase
      * if @param layerToCenter is not null and among the loaded layers
      * the bounding box of this layer is calculated and the mapview centered on it
      */
-    private void loadDBLayers(final String layerToCenter){
+    private void loadDBLayers(final String layerToCenter) {
 
         ArrayList<Layer> layers = new ArrayList<>();
 
-        /**
-         * Adding WMS layers
-         */
-        WMSSource destinationSource = new WMSSource(Config.DESTINATION_WMS_URL);
+        if(layerToCenter == null || currentStyle == 0) {
 
-        // Authorization Headers
-        Headers.Builder hbuilder = new Headers.Builder();
-        hbuilder.add("Authorization", Config.DESTINATION_AUTHORIZATION);
-        destinationSource.setHeaders(hbuilder.build());
+            /**
+             * Adding WMS layers
+             */
+            WMSSource destinationSource = new WMSSource(Config.DESTINATION_WMS_URL);
 
-        WMSLayer layer = new WMSLayer(destinationSource, Config.WMS_LAYERS[currentStyle]);
-        //layer.setTitle("Rischio Totale");
-        //layer.setGroup(mlayer.group);
-        layer.setVisibility(true);
-        //TODO Now skip tiled option
-        layer.setTiled(false);
-        //create base parameters
-        HashMap<String, String> baseParams = new HashMap<String, String>();
-        baseParams.put("format", "image/png8");
-        //if(mlayer.styles != null) baseParams.put("styles",mlayer.styles );
-        //if(mlayer.buffer != null) baseParams.put("buffer",mlayer.buffer.toString() );
-        baseParams.put("transparent", "true" );
+            // Authorization Headers
+            Headers.Builder hbuilder = new Headers.Builder();
+            hbuilder.add("Authorization", Config.DESTINATION_AUTHORIZATION);
+            destinationSource.setHeaders(hbuilder.build());
 
-        // Need additional parameters
-        if(currentStyle>0) {
-            baseParams.put("ENV", Config.WMS_ENV[currentStyle]);
-            baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[currentStyle]);
-            baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[currentStyle]);
+            WMSLayer layer = new WMSLayer(destinationSource, Config.WMS_LAYERS[currentStyle]);
+            //layer.setTitle("Rischio Totale");
+            //layer.setGroup(mlayer.group);
+            layer.setVisibility(true);
+            //TODO Now skip tiled option
+            layer.setTiled(false);
+            //create base parameters
+            HashMap<String, String> baseParams = new HashMap<String, String>();
+            baseParams.put("format", "image/png8");
+            //if(mlayer.styles != null) baseParams.put("styles",mlayer.styles );
+            //if(mlayer.buffer != null) baseParams.put("buffer",mlayer.buffer.toString() );
+            baseParams.put("transparent", "true");
+
+            // Need additional parameters
+            if (currentStyle > 0) {
+                baseParams.put("ENV", Config.WMS_ENV[currentStyle]);
+                baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[currentStyle]);
+                baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[currentStyle]);
+            }
+            layer.setBaseParams(baseParams);
+
+            layers.add(layer);
+
         }
-        layer.setBaseParams(baseParams);
-
-        layers.add(layer);
 
         if(layerToCenter != null) {
+
             // Add Result Layer
             MSMMap mapConfig = SpatialDbUtils.mapFromDb(true);
             for (Layer l : mapConfig.layers) {
@@ -299,24 +304,12 @@ public class MainActivity extends MapActivityBase
                     }
                     layers.add(l);
                 }
-
-            /*
-            //show result mode, add only the layer to show
-            if (layerToCenter != null && l.getTitle().equals(layerToCenter) || (currentStyle == 0 && l.getTitle().equals(Config.GRAFO_LAYER))) {
-
-                layers.add(l);
-
-                //normal mode, add only risk layers
-            }else if (layerToCenter == null && l.getTitle().startsWith(Config.LAYERS_PREFIX)) {
-
-                layers.add(l);
-
-            }
-            */
             }
 
         }
 
+
+        // Set the styles
         for(Layer l : layers){
             if (l instanceof SpatialiteLayer) {
                 if(BuildConfig.DEBUG) {
@@ -558,7 +551,7 @@ public class MainActivity extends MapActivityBase
 
                     try {
                         //if mapview covers, center on place, zoom in and collapse search view
-                        if (mapView.getMapDatabase().getMapFileInfo().boundingBox.contains(p)) {
+                        if( mapView.getMapDatabase().hasOpenFile() && (mapView.getMapDatabase().getMapFileInfo().boundingBox.contains(p))) {
 
                             mapView.getMapViewPosition().setCenter(p);
 
