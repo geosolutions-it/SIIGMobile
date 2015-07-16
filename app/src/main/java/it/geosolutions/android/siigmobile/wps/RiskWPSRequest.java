@@ -74,7 +74,7 @@ public class RiskWPSRequest extends WPSRequest{
             final int _formula,
             final int _target,
             final int _level,
-            final int _kemler,
+            final String _kemler,
             final String _materials,
             final String _scenarios,
             final String _entities,

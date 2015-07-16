@@ -55,6 +55,7 @@ import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedString;
 
 
@@ -261,7 +262,7 @@ public class ComputeFormActivity extends AppCompatActivity
                     int formula = 26;
                     int target = 100;
                     int level = 3;
-                    int kemler = 0;
+                    String kemler = "1,2,3,4,5,6,7,8,9,10,11,12";
                     String materials = "1,2,3,4,5,6,7,8,9,10,11,12";
                     String scenarios = "1,2,3,4,5,6,7,8,9,10,11,12,13,14";
                     String entities = "1,2,3,4,5";
@@ -290,6 +291,14 @@ public class ComputeFormActivity extends AppCompatActivity
                     request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
 
                     String query = RiskWPSRequest.createWPSCallFromText(request);
+
+                    Gson gson = new GsonBuilder()
+                            .disableHtmlEscaping()
+                            .registerTypeHierarchyAdapter(Geometry.class,
+                                    new GeometryJsonSerializer())
+                            .registerTypeHierarchyAdapter(Geometry.class,
+                                    new GeometryJsonDeserializer()).create();
+
                     RestAdapter restAdapter = new RestAdapter.Builder()
                             .setEndpoint(SIIGRetrofitClient.ENDPOINT)
                             .setLogLevel(RestAdapter.LogLevel.FULL)
@@ -299,6 +308,7 @@ public class ComputeFormActivity extends AppCompatActivity
                                     request.addHeader("Authorization", Config.DESTINATION_AUTHORIZATION);
                                 }
                             })
+                            .setConverter(new GsonConverter(gson))
                             .build();
 
                     //wrap the xml as "TypedString"
