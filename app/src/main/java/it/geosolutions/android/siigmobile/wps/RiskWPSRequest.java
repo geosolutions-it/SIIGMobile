@@ -12,6 +12,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import it.geosolutions.android.map.wfs.geojson.feature.Feature;
 import it.geosolutions.android.map.wfs.geojson.feature.FeatureCollection;
@@ -50,6 +52,17 @@ public class RiskWPSRequest extends WPSRequest{
     public static final String KEY_DAMAGEAREA = "damageArea";
     public static final String KEY_EXTENDEDSCHEMA = "extendedSchema";
     public static final String KEY_CRS = "crs";
+
+    private static final NavigableMap<Double, String> areas = new TreeMap<>();
+    // Max values
+    static {
+        areas.put(0.0180733915, "destination:rischio_1");
+        areas.put(0.2902094712, "destination:rischio_2");
+        areas.put(0.7403607393, "destination:rischio_3");
+        areas.put(3.6795127024, "destination:rischio_4");
+        areas.put(18.22, "destination:rischio_5");
+        //18.225263943
+    }
 
     public RiskWPSRequest(final FeatureCollection _features){
 
@@ -136,7 +149,8 @@ public class RiskWPSRequest extends WPSRequest{
                 "\t\t\t<wps:Reference mimeType=\"text/xml\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n" +
                 "\t\t\t\t<wps:Body>\n" +
                 "\t\t\t\t\t<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\" xmlns:destination=\"http://destination.geo-solutions.it\">\n" +
-                "\t\t\t\t\t\t<wfs:Query typeName=\"destination:rischio_1\">\n" +
+                        // TODO: the ceiling value can be null
+                "\t\t\t\t\t\t<wfs:Query typeName=\""+ areas.ceilingEntry(env.getArea()).getValue()+"\">\n" +
                 "\t\t\t\t\t\t\t<ogc:Filter>\n" +
                 "\t\t\t\t\t\t\t\t<ogc:BBOX>\n" +
                 "\t\t\t\t\t\t\t\t\t<ogc:PropertyName>geometria</ogc:PropertyName>\n" +

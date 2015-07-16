@@ -253,7 +253,6 @@ public class ComputeFormActivity extends AppCompatActivity
                     bbox.geometry = fact.createLineString(coords);
                     features.features.add(bbox);
 
-
                     // Fixed Values
                     String store = "destination";
                     int batch = 1000;
