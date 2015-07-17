@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.OkHttpClient;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -38,6 +39,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import it.geosolutions.android.map.database.SpatialDataSourceManager;
 import it.geosolutions.android.map.utils.MapFilesProvider;
@@ -54,6 +56,7 @@ import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedString;
@@ -213,6 +216,8 @@ public class ComputeFormActivity extends AppCompatActivity
                 lr_lat_tv.setText(String.format(Locale.US, "%f",bb.minLatitude));
                 lr_lon_tv.setText(String.format(Locale.US, "%f",bb.maxLongitude));
 
+                Log.v(TAG, "Area : " + String.format(Locale.US, "%f",((bb.maxLongitude -bb.minLongitude)*(bb.maxLatitude -bb.minLatitude))) );
+
             }
 
             final Button computeButton = (Button) rootView.findViewById(R.id.compute_button);
@@ -264,8 +269,8 @@ public class ComputeFormActivity extends AppCompatActivity
                     String kemler = "1,2,3,4,5,6,7,8,9,10,11,12";
                     String materials = "1,2,3,4,5,6,7,8,9,10,11,12";
                     String scenarios = "1,2,3,4,5,6,7,8,9,10,11,12,13,14";
-                    String entities = "1,2,3,4,5";
-                    String severeness = "0,1";
+                    String severeness = "1,2,3,4,5";
+                    String entities = "0,1";
                     String fp = "fp_scen_centrale";
 
                     // Create RiskWPSRequest
@@ -298,9 +303,14 @@ public class ComputeFormActivity extends AppCompatActivity
                             .registerTypeHierarchyAdapter(Geometry.class,
                                     new GeometryJsonDeserializer()).create();
 
+                    final OkHttpClient okHttpClient = new OkHttpClient();
+                    okHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
+                    okHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
+
+
                     RestAdapter restAdapter = new RestAdapter.Builder()
                             .setEndpoint(SIIGRetrofitClient.ENDPOINT)
-                            .setLogLevel(RestAdapter.LogLevel.FULL)
+                            .setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
                             .setRequestInterceptor(new RequestInterceptor() {
                                 @Override
                                 public void intercept(RequestInterceptor.RequestFacade request) {
@@ -308,6 +318,7 @@ public class ComputeFormActivity extends AppCompatActivity
                                 }
                             })
                             .setConverter(new GsonConverter(gson))
+                            .setClient(new OkClient(okHttpClient))
                             .build();
 
                     //wrap the xml as "TypedString"

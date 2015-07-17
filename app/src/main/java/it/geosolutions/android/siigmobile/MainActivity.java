@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newrelic.agent.android.NewRelic;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
@@ -114,6 +115,10 @@ public class MainActivity extends MapActivityBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        NewRelic.withApplicationToken(
+//                ""
+//        ).start(this.getApplication());
 
         MapFilesProvider.setBaseDir(Config.BASE_DIR_NAME);
         MAP_FILE = MapFilesProvider.getBackgroundMapFile();

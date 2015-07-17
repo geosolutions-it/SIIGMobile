@@ -21,8 +21,8 @@ import it.geosolutions.android.map.wfs.geojson.feature.Feature;
 import it.geosolutions.android.siigmobile.BuildConfig;
 import it.geosolutions.android.siigmobile.Config;
 import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
-import jsqlite.Database;
-import jsqlite.Stmt;
+import jsqlite.*;
+import jsqlite.Exception;
 
 /**
  * Created by Robert Oehler on 29.06.15.
@@ -393,7 +393,7 @@ public class SpatialiteUtils {
         Stmt stmt = null;
         try {
 
-            int id, arc_id;
+            int id, arc_id, total_inserted = 0;
             double risk1, risk2;
 
             //save feature to table
@@ -408,7 +408,6 @@ public class SpatialiteUtils {
                     Log.e(TAG, "geometry object null");
                     return new Pair<>(false,"geometry object null");
                 }
-
                 stmt = db.prepare("INSERT INTO " + tableName +
                         " (" + RESULT_ID + ", " + ID + ", " + ID_GEO_ARCO + ", " + RISCHIO1 + ", " + RISCHIO2 + ", " + CRS + ", " + GEOMETRY + ")" +
                         " VALUES (NULL, " + id + " , " + arc_id + " , " + risk1 + " , " + risk2 + " , " + crs_id + ", " +
@@ -416,6 +415,10 @@ public class SpatialiteUtils {
 
                 stmt.step();
 
+                total_inserted+=1;
+                if(total_inserted % 100 == 0){
+                    Log.d(TAG, "Inserted "+total_inserted);
+                }
             }
             if(stmt != null) {
                 stmt.close();
@@ -425,6 +428,7 @@ public class SpatialiteUtils {
 
 
         } catch (jsqlite.Exception e) {
+
             Log.e(TAG, "exception closing stmt", e);
             return new Pair<>(false,"exception inserting values into table "+tableName);
 

@@ -53,14 +53,27 @@ public class RiskWPSRequest extends WPSRequest{
     public static final String KEY_EXTENDEDSCHEMA = "extendedSchema";
     public static final String KEY_CRS = "crs";
 
+    private static String TAG = "RiskWPSRequest";
+
     private static final NavigableMap<Double, String> areas = new TreeMap<>();
     // Max values
     static {
-        areas.put(0.0180733915, "destination:rischio_1");
-        areas.put(0.2902094712, "destination:rischio_2");
-        areas.put(0.7403607393, "destination:rischio_3");
-        areas.put(3.6795127024, "destination:rischio_4");
-        areas.put(18.22, "destination:rischio_5");
+        areas.put(0.00025, "destination:siig_geo_ln_arco_1");
+        areas.put(0.001, "destination:siig_geo_ln_arco_2");
+        areas.put(0.004, "destination:siig_geo_pl_arco_3");
+        areas.put(0.25, "destination:siig_geo_pl_arco_4");
+        areas.put(100.0, "destination:siig_geo_pl_arco_5");
+        //18.225263943
+    }
+
+    private static final NavigableMap<Double, Integer> levels = new TreeMap<>();
+    // Max values
+    static {
+        levels.put(0.00025, 1);
+        levels.put(0.001, 2);
+        levels.put(0.004, 3);
+        levels.put(0.25, 4);
+        levels.put(100.0, 5);
         //18.225263943
     }
 
@@ -135,11 +148,16 @@ public class RiskWPSRequest extends WPSRequest{
             throw new IllegalArgumentException("no (boundingbox) feature provided");
         }
 
+
         final Feature f = request.featureCollection.features.get(0);
         final Envelope env = f.geometry.getEnvelopeInternal();
+
+        request.parameters.put(KEY_LEVEL, levels.ceilingEntry(env.getArea()).getValue());
         //local US necessary for dot formatting -> 12.34 instead of 12,34
         final String lowerLeftCorner = String.format(Locale.US, "%f %f", env.getMinX(), env.getMinY());
         final String upperRightCorner = String.format(Locale.US, "%f %f", env.getMaxX(), env.getMaxY());
+
+        Log.v(TAG, "Area selected: "+ String.format(Locale.US, "%f", env.getArea()));
 
         final String geometry = String.format(Locale.US,
                 "\t<ows:Identifier>gs:RiskCalculator</ows:Identifier>\n" +
