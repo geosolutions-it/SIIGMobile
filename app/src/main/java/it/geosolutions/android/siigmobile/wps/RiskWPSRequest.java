@@ -52,6 +52,7 @@ public class RiskWPSRequest extends WPSRequest{
     public static final String KEY_DAMAGEAREA = "damageArea";
     public static final String KEY_EXTENDEDSCHEMA = "extendedSchema";
     public static final String KEY_CRS = "crs";
+    public static final String KEY_MOBILE = "mobile";
 
     private static String TAG = "RiskWPSRequest";
 

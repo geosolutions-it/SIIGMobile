@@ -51,6 +51,12 @@
             </wps:Data>
         </wps:Input>
         <wps:Input>
+            <ows:Identifier>mobile</ows:Identifier>
+            <wps:Data>
+                <wps:LiteralData>true</wps:LiteralData>
+            </wps:Data>
+        </wps:Input>
+        <wps:Input>
             <ows:Identifier>entities</ows:Identifier>
             <wps:Data>
                 <wps:LiteralData>1,2,3,4,5</wps:LiteralData>

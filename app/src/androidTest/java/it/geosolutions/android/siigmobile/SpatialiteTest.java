@@ -77,7 +77,7 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
         }
 
         //assert insertion success
-        Pair<Boolean,String> resultPair = SpatialiteUtils.saveResult(spatialiteDatabase, response, "MULTILINESTRING");
+        Pair<Boolean,String> resultPair = SpatialiteUtils.saveResult(spatialiteDatabase, response, "MULTILINESTRING", false);
 
         assertTrue(resultPair.first);
 
@@ -134,7 +134,7 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
         }
 
         //assert insertion success
-        final Pair<Boolean,String> resultPair = SpatialiteUtils.saveResult(spatialiteDatabase, response, "MULTILINESTRING");
+        final Pair<Boolean,String> resultPair = SpatialiteUtils.saveResult(spatialiteDatabase, response, "MULTILINESTRING", false);
 
         assertTrue(resultPair.first);
 
@@ -161,11 +161,11 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
 
     /**
      * tests that a result for which a user edited name was entered is found
-     * by getSafedResultTableNames
+     * by getSavedResultTableNames
      * that a table which has not been edited is not returned by the prior
      * and that the latter is deleted by DeleteUnsafedResultsTask
      */
-    public void testUnsafedResultTableDeletion(){
+    public void testUnsavedResultTableDeletion(){
 
         final Context context = getInstrumentation().getTargetContext();
 
@@ -181,8 +181,8 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
         assertNotNull(editedResult);
 
         //assert insertion success
-        final Pair<Boolean,String> uneditedWriteResultPair = SpatialiteUtils.saveResult(spatialiteDatabase, unEditedResult, "MULTILINESTRING");
-        final Pair<Boolean,String> editedWriteResultPair = SpatialiteUtils.saveResult(spatialiteDatabase, editedResult, "MULTILINESTRING");
+        final Pair<Boolean,String> uneditedWriteResultPair = SpatialiteUtils.saveResult(spatialiteDatabase, unEditedResult, "MULTILINESTRING", false);
+        final Pair<Boolean,String> editedWriteResultPair = SpatialiteUtils.saveResult(spatialiteDatabase, editedResult, "MULTILINESTRING", false);
 
         assertTrue(uneditedWriteResultPair.first);
         assertNotNull(uneditedWriteResultPair.second);
@@ -195,7 +195,7 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
 
         assertTrue(SpatialiteUtils.updateNameTableWithUserData(spatialiteDatabase, editedWriteResultPair.second, userEditedName, userEditedDesc));
 
-        final ArrayList<String[]> userEditedTables = SpatialiteUtils.getSafedResultTableNames(spatialiteDatabase);
+        final ArrayList<String[]> userEditedTables = SpatialiteUtils.getSavedResultTableNames(spatialiteDatabase);
 
         assertNotNull(userEditedTables);
 
@@ -225,7 +225,7 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
 
                 final Database db = SpatialiteUtils.openSpatialiteDB(getInstrumentation().getTargetContext());
 
-                ArrayList<String> uneditedTables = SpatialiteUtils.getUnSafedResultTableNames(db);
+                ArrayList<String> uneditedTables = SpatialiteUtils.getUnSavedResultTableNames(db);
 
                 //this list must not be null
                 assertNotNull(uneditedTables);

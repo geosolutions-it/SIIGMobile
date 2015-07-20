@@ -285,4 +285,19 @@ public class NavigationDrawerFragment extends Fragment {
          */
         void onNavigationDrawerItemSelected(int position);
     }
+
+    public void setEntries(final String[] newEntries){
+
+        mDrawerListView.setAdapter(new ArrayAdapter<>(
+                getActionBar().getThemedContext(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1,
+                newEntries));
+        if(mDrawerListView.getAdapter() instanceof ArrayAdapter<?>){
+
+            ((ArrayAdapter<?>)mDrawerListView.getAdapter()).notifyDataSetChanged();
+        }
+
+
+    }
 }

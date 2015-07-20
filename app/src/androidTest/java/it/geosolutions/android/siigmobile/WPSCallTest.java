@@ -5,8 +5,10 @@ import android.test.ActivityUnitTestCase;
 import android.util.Log;
 
 import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.examples.RecursiveElementNameAndTextQualifier;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -93,6 +95,7 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
 
         // Set parameter
         request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
+        request.setParameter(RiskWPSRequest.KEY_MOBILE, true);
 
         //Ensure parameters are correctly set
         Map<String, Object> parameters = request.getParameters();
@@ -169,6 +172,9 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
         // Set parameter
         request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
 
+        // Set parameter
+        request.setParameter(RiskWPSRequest.KEY_MOBILE, true);
+
         //Create the query
         final String query = RiskWPSRequest.createWPSCallFromText(request);
 
@@ -178,9 +184,11 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
         try {
 
             String response  = getRawResourceAsString(getInstrumentation().getTargetContext(), R.raw.dummy_wps);
+            XMLUnit.setIgnoreWhitespace(true);
+            //XMLUnit.setCompareUnmatched(false);
 
             Diff myDiff = new Diff(response, query);
-            XMLUnit.setIgnoreWhitespace(true);
+            myDiff.overrideElementQualifier(new RecursiveElementNameAndTextQualifier());
             assertTrue("XML are similar " + myDiff, myDiff.similar());
 
         } catch (IOException e) {
@@ -222,6 +230,7 @@ public class WPSCallTest extends ActivityUnitTestCase<MainActivity> {
         );
 
         request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
+        request.setParameter(RiskWPSRequest.KEY_MOBILE, true);
 
         String query = RiskWPSRequest.createWPSCallFromText(request);
 

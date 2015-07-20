@@ -44,7 +44,7 @@ public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<CRSFea
 
         if (db != null) {
 
-            ArrayList<String[]> names = SpatialiteUtils.getSafedResultTableNames(db);
+            ArrayList<String[]> names = SpatialiteUtils.getSavedResultTableNames(db);
             if (names != null) {
                 for (String[] array : names) {
 
@@ -54,6 +54,7 @@ public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<CRSFea
                         if (result != null) {
                             result.userEditedName = array[1];
                             result.userEditedDescription = array[2];
+                            result.isPIS = (array[3] == "1");
                             results.add(result);
                         }
                     }

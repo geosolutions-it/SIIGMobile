@@ -48,6 +48,10 @@
     <string name="please_wait">Please wait a moment&#8230;</string>
     <string name="snackbar_offline_text">You are Offline</string>
     <string name="snackbar_noparam_text">Incomplete parameters</string>
-
+    <string name="result_too_large">Query result has too much features, please retry with a smaller area.</string>
+    <string name="query_ongoing">Querying&#8230;</string>
+    <string name="saving_data">Saving&#8230;</string>
+    <string name="compute_error">Server response is invalid, please try again later</string>
+    <string name="pis_title">Street Risk</string>
 
 </resources>

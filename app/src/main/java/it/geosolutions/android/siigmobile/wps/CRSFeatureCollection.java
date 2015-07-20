@@ -14,6 +14,7 @@ public class CRSFeatureCollection extends FeatureCollection {
     public String tableName;
     public String userEditedName;
     public String userEditedDescription;
+    public boolean isPIS;
 
     public static class Crs {
 

@@ -5,6 +5,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.util.Pair;
 
+import com.newrelic.agent.android.instrumentation.Trace;
+import com.newrelic.agent.android.instrumentation.MetricCategory;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -47,6 +49,7 @@ public class SpatialiteUtils {
     private final static String ID_GEO_ARCO = "id_geo_arco";
     private final static String RISCHIO1 = "rischio1";
     private final static String RISCHIO2 = "rischio2";
+    private final static String ISPIS = "ispis";
     private final static String ID = "id";
 
 
@@ -157,7 +160,8 @@ public class SpatialiteUtils {
                 "'" + RESULT_ID + "' INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "'" + CREATED_TABLE_NAME + "' TEXT, " +
                 "'" + USER_RESULT_NAME + "' TEXT, " +
-                "'" + USER_RESULT_DESCRIPTION + "' TEXT);");
+                "'" + USER_RESULT_DESCRIPTION + "' TEXT,"+
+                "'" + ISPIS + "' BOOLEAN);");
 
     }
 
@@ -167,9 +171,11 @@ public class SpatialiteUtils {
      * @param createdTableName the name of the table
      * @return if this operation was successful, i.e. without exceptions
      */
-    public static boolean insertIntoNamesTable(final Database db, final String createdTableName){
+    public static boolean insertIntoNamesTable(final Database db, final String createdTableName, boolean ispis){
 
-        return exec(db,"INSERT INTO " + NAMES_TABLE+ "("+RESULT_ID+","+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+")"+" VALUES (NULL,'"+createdTableName+"',NULL,NULL)");
+        return exec(db,"INSERT INTO " + NAMES_TABLE+
+                "("+RESULT_ID+","+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+","+ISPIS+")"+
+                " VALUES (NULL,'"+createdTableName+"',NULL,NULL,"+(ispis?"1":"0")+")");
 
     }
 
@@ -223,11 +229,12 @@ public class SpatialiteUtils {
      * @param db the db to work on
      * @return a list of pairs
      */
-    public static ArrayList<String[]> getSafedResultTableNames(final Database db){
+    @Trace(category = MetricCategory.DATABASE)
+    public static ArrayList<String[]> getSavedResultTableNames(final Database db){
 
         try{
             ArrayList<String[]> names = new ArrayList<>();
-            Stmt stmt = db.prepare("SELECT "+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+" FROM "+ NAMES_TABLE +" WHERE "+USER_RESULT_NAME+" IS NOT NULL;");
+            Stmt stmt = db.prepare("SELECT "+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+","+ISPIS+" FROM "+ NAMES_TABLE +" WHERE "+USER_RESULT_NAME+" IS NOT NULL;");
             while(stmt.step()){
 
                 names.add(new String[]{stmt.column_string(0),stmt.column_string(1),stmt.column_string(2)});
@@ -247,7 +254,7 @@ public class SpatialiteUtils {
      * @param db the db to work on
      * @return a list of pairs
      */
-    public static ArrayList<String> getUnSafedResultTableNames(final Database db){
+    public static ArrayList<String> getUnSavedResultTableNames(final Database db){
 
         try{
             ArrayList<String> names = new ArrayList<>();
@@ -356,7 +363,7 @@ public class SpatialiteUtils {
      * @param result the data to write
      * @return  a Pair containing if the operation was successful, i.e.without exceptions and the name of the created table in case of success
      */
-    public static Pair<Boolean,String> saveResult(final Database db, final CRSFeatureCollection result, final String geomType) {
+    public static Pair<Boolean,String> saveResult(final Database db, final CRSFeatureCollection result, final String geomType, boolean ispis) {
 
         String tableName;
 
@@ -379,7 +386,7 @@ public class SpatialiteUtils {
         }
 
         //save tableName
-        if(!insertIntoNamesTable(db,tableName)){
+        if(!insertIntoNamesTable(db,tableName, ispis)){
             Log.w(TAG, "could not save table name "+tableName);
             return new Pair<>(false, "error inserting "+tableName+" into names table");
         }
@@ -441,6 +448,7 @@ public class SpatialiteUtils {
      * @param tableName the internal name of the table
      * @return the result as CRSFeatureCollection
      */
+    @Trace(category = MetricCategory.DATABASE)
     public static CRSFeatureCollection loadResult(final Database db, final String tableName){
 
         try {

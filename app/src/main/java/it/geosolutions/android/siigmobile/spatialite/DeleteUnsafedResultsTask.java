@@ -35,7 +35,7 @@ public abstract class DeleteUnsafedResultsTask extends AsyncTask<Context,Void,Vo
 
         final Database db = SpatialiteUtils.openSpatialiteDB(params[0]);
 
-        final ArrayList<String> names = SpatialiteUtils.getUnSafedResultTableNames(db);
+        final ArrayList<String> names = SpatialiteUtils.getUnSavedResultTableNames(db);
 
         if (names != null) {
             for (String name : names) {

@@ -229,7 +229,7 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
                 CRSFeatureCollection item = rra.getItem(position);
 
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(Config.RESULT, item.tableName);
+                returnIntent.putExtra(Config.RESULT_TABLENAME, item.tableName);
                 setResult(RESULT_OK, returnIntent);
                 finish();
 
