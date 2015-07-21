@@ -49,6 +49,13 @@ public class SpatialiteUtils {
     private final static String ID_GEO_ARCO = "id_geo_arco";
     private final static String RISCHIO1 = "rischio1";
     private final static String RISCHIO2 = "rischio2";
+    private final static String LABEL_SOCIALE = "label_sociale";
+    private final static String LABEL_AMBIENTALE = "label_ambientale";
+    private final static String LABEL_TOTALE = "label_totale";
+    private final static String THEMA_SOCIALE = "thema_sociale";
+    private final static String THEMA_AMBIENTALE = "thema_ambientale";
+    private final static String THEMA_TOTALE = "thema_totale";
+
     private final static String ISPIS = "ispis";
     private final static String ID = "id";
 
@@ -237,7 +244,7 @@ public class SpatialiteUtils {
             Stmt stmt = db.prepare("SELECT "+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+","+ISPIS+" FROM "+ NAMES_TABLE +" WHERE "+USER_RESULT_NAME+" IS NOT NULL;");
             while(stmt.step()){
 
-                names.add(new String[]{stmt.column_string(0),stmt.column_string(1),stmt.column_string(2)});
+                names.add(new String[]{stmt.column_string(0),stmt.column_string(1),stmt.column_string(2),stmt.column_string(3)});
             }
 
             return names;
@@ -314,6 +321,12 @@ public class SpatialiteUtils {
                 "'" + ID_GEO_ARCO + "' INTEGER, "+
                 "'" + RISCHIO1 + "' DOUBLE, "+
                 "'" + RISCHIO2 + "' DOUBLE, "+
+                "'" + LABEL_SOCIALE + "' TEXT, "+
+                "'" + LABEL_AMBIENTALE + "' TEXT, "+
+                "'" + LABEL_TOTALE + "' TEXT, "+
+                "'" + THEMA_SOCIALE + "' INTEGER, "+
+                "'" + THEMA_AMBIENTALE + "' INTEGER, "+
+                "'" + THEMA_TOTALE + "' INTEGER, "+
                 "'" + CRS + "' INTEGER);";
 
 
@@ -401,8 +414,9 @@ public class SpatialiteUtils {
         try {
 
             int id, arc_id, total_inserted = 0;
-            double risk1, risk2;
-
+            double risk1, risk2, thema_soc, thema_amb, thema_tot;
+            String label_soc, label_amb, label_tot;
+            
             //save feature to table
             for (Feature feature : result.features) {
 
@@ -410,14 +424,37 @@ public class SpatialiteUtils {
                 arc_id = (int) Math.rint((Double) feature.properties.get(ID_GEO_ARCO)); //is parsed by GSON as double, why ?
                 risk1 = (Double) feature.properties.get(RISCHIO1);
                 risk2 = (Double) feature.properties.get(RISCHIO2);
+                thema_soc = (Double) feature.properties.get(THEMA_SOCIALE);
+                thema_amb = (Double) feature.properties.get(THEMA_AMBIENTALE);
+                thema_tot = (Double) feature.properties.get(THEMA_TOTALE);
+                label_soc = (String) feature.properties.get(LABEL_SOCIALE);
+                label_amb = (String) feature.properties.get(LABEL_AMBIENTALE);
+                label_tot = (String) feature.properties.get(LABEL_TOTALE);
+
+
 
                 if(feature.geometry == null){
                     Log.e(TAG, "geometry object null");
                     return new Pair<>(false,"geometry object null");
                 }
                 stmt = db.prepare("INSERT INTO " + tableName +
-                        " (" + RESULT_ID + ", " + ID + ", " + ID_GEO_ARCO + ", " + RISCHIO1 + ", " + RISCHIO2 + ", " + CRS + ", " + GEOMETRY + ")" +
-                        " VALUES (NULL, " + id + " , " + arc_id + " , " + risk1 + " , " + risk2 + " , " + crs_id + ", " +
+                        " (" + RESULT_ID + ", " + ID + ", " + ID_GEO_ARCO + ", " + RISCHIO1 + ", " + RISCHIO2 + ", "
+                        + LABEL_SOCIALE + ", "
+                        + LABEL_AMBIENTALE + ", "
+                        + LABEL_TOTALE + ", "
+                        + THEMA_SOCIALE + ", "
+                        + THEMA_AMBIENTALE + ", "
+                        + THEMA_TOTALE + ", "
+                        + CRS + ", " + GEOMETRY + ")" +
+                        " VALUES (NULL, " + id + " , " + arc_id + " , " + risk1 + " , " + risk2 +
+                        " , '" + label_soc + "', '"
+                        + label_amb + "', '"
+                        + label_tot + "', "
+                        + thema_soc + ", "
+                        + thema_amb + ", "
+                        + thema_tot + ", "
+
+                        + crs_id + ", " +
                         "ST_GeomFromText('" + feature.geometry.toString() + "', " + crs_id + "));");
 
                 stmt.step();

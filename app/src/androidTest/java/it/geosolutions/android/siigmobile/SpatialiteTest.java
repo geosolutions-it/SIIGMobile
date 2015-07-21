@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
-import it.geosolutions.android.siigmobile.spatialite.DeleteUnsafedResultsTask;
+import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.*;
@@ -163,7 +163,7 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
      * tests that a result for which a user edited name was entered is found
      * by getSavedResultTableNames
      * that a table which has not been edited is not returned by the prior
-     * and that the latter is deleted by DeleteUnsafedResultsTask
+     * and that the latter is deleted by DeleteUnsavedResultsTask
      */
     public void testUnsavedResultTableDeletion(){
 
@@ -218,7 +218,7 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        new DeleteUnsafedResultsTask(){
+        new DeleteUnsavedResultsTask(){
 
             @Override
             public void done() {

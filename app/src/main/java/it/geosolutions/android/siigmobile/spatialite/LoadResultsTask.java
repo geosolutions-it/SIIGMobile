@@ -17,7 +17,7 @@ import jsqlite.Database;
  *
  * Literally it queries the names table
  *
- * If this task is not for deleting unsafed result and the contains a user edited name
+ * If this task is not for deleting unsaved result and the contains a user edited name
  * it is loaded containg its geometry and added to a list of CRSFeatureCollection
 
  *

@@ -11,14 +11,14 @@ import jsqlite.Database;
 /**
  * Created by Robert Oehler on 09.07.15.
  *
- * Deletes all currently unsafed results in the database
+ * Deletes all currently unsaved results in the database
  *
  * "unsaved" means the entry in the names table does not contain a user edited name
  *
  */
-public abstract class DeleteUnsafedResultsTask extends AsyncTask<Context,Void,Void> {
+public abstract class DeleteUnsavedResultsTask extends AsyncTask<Context,Void,Void> {
 
-    private final static String TAG = DeleteUnsafedResultsTask.class.getSimpleName();
+    private final static String TAG = DeleteUnsavedResultsTask.class.getSimpleName();
 
     public abstract void done();
     public abstract void started();

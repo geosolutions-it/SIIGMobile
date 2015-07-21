@@ -51,7 +51,7 @@ public class Config {
     public static String BASE_PACKAGE_URL = "http://demo.geo-solutions.it/share/csi_piemonte/destination_plus/mobile/siig_mobile.zip";
     public static long REQUIRED_SPACE = 1150000000L;
 
-    public static final String PARAM_LAST_UNSAVED_DELETION = "last_unsafed_deletion";
+    public static final String PARAM_LAST_UNSAVED_DELETION = "last_unsaved_deletion";
     public static final long  UNSAVED_DELETION_INTERVAL = 24 * 60 * 60 * 1000; //one day
 
 }

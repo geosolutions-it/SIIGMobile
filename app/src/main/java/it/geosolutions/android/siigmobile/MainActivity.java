@@ -63,7 +63,7 @@ import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
 import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
-import it.geosolutions.android.siigmobile.spatialite.DeleteUnsafedResultsTask;
+import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import jsqlite.Database;
 import it.geosolutions.android.siigmobile.legend.LegendAdapter;
@@ -156,9 +156,9 @@ public class MainActivity extends MapActivityBase
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             if(prefs.getLong(Config.PARAM_LAST_UNSAVED_DELETION,0l) < System.currentTimeMillis() + Config.UNSAVED_DELETION_INTERVAL){
                 if(BuildConfig.DEBUG){
-                    Log.d(TAG, "deleting unsafed results");
+                    Log.d(TAG, "deleting unsaved results");
                 }
-                new DeleteUnsafedResultsTask(){
+                new DeleteUnsavedResultsTask(){
                     @Override
                     public void started() {
                         showProgress(getString(R.string.please_wait));
@@ -331,12 +331,12 @@ public class MainActivity extends MapActivityBase
 
                     if (layerToCenter != null && l.getTitle().equals(layerToCenter)) {
 
-                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
-
-                        if (bb != null) {
-
-                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
-                        }
+//                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
+//
+//                        if (bb != null) {
+//
+//                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
+//                        }
 
                         break; //stop looping, only this result layer interests
 
@@ -748,7 +748,10 @@ public class MainActivity extends MapActivityBase
                                 }
 
                                 //user saved, remove save button
-                                clearMenu();
+                                if(success) {
+                                    clearMenu();
+                                }
+
                                 //TODO saved, now what switch back to all risks ? -> loadDBLayers()
 
                                 Toast.makeText(getBaseContext(), success ? getString(R.string.elab_success) : getString(R.string.elab_failure),Toast.LENGTH_SHORT).show();

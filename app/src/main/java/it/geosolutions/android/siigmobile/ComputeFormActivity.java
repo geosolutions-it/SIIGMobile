@@ -309,7 +309,7 @@ public class ComputeFormActivity extends AppCompatActivity
                     );
 
                     request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
-                    //request.setParameter(RiskWPSRequest.KEY_MOBILE, true);
+                    request.setParameter(RiskWPSRequest.KEY_MOBILE, true);
 
                     String query = RiskWPSRequest.createWPSCallFromText(request);
 
@@ -384,6 +384,15 @@ public class ComputeFormActivity extends AppCompatActivity
                                         Snackbar
                                                 .make(computeButton.getRootView().findViewById(R.id.snackbarPosition),
                                                         R.string.result_too_large,
+                                                        Snackbar.LENGTH_LONG)
+                                                .show();
+                                        return null;
+                                    }
+
+                                    if(response.features.size() <= 0){
+                                        Snackbar
+                                                .make(computeButton.getRootView().findViewById(R.id.snackbarPosition),
+                                                        R.string.result_empty,
                                                         Snackbar.LENGTH_LONG)
                                                 .show();
                                         return null;
