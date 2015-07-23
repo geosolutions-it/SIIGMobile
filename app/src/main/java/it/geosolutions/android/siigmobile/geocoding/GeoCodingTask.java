@@ -6,6 +6,8 @@ import android.location.Address;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
+import org.mapsforge.core.model.BoundingBox;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -34,18 +36,20 @@ public abstract class GeoCodingTask extends AsyncTask<Void,Void,Cursor> {
     private volatile boolean cancelled = false;
     private IGeoCoder mGeoCoder;
     private String mQuery;
+    private BoundingBox mBB;
 
-    public GeoCodingTask(final IGeoCoder geoCoder, final String query){
+    public GeoCodingTask(final IGeoCoder geoCoder, final String query, final BoundingBox bb){
 
         this.mGeoCoder = geoCoder;
         this.mQuery    = query;
+        this.mBB       = bb;
     }
 
     @Override
     protected Cursor doInBackground(Void... params) {
 
 
-        final List<Address> addresses = mGeoCoder.getFromLocationName(mQuery, Config.SUGGESTIONS_THRESHOLD, Locale.getDefault());
+        final List<Address> addresses = mGeoCoder.getFromLocationName(mQuery, mBB, Config.SUGGESTIONS_THRESHOLD, Locale.getDefault());
 
         if (!cancelled && addresses != null && addresses.size() > 0) {
             //Searchview supports only CursorAdapter

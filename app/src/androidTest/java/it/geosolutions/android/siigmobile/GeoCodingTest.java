@@ -4,6 +4,8 @@ import android.database.Cursor;
 import android.test.ActivityUnitTestCase;
 import android.util.Log;
 
+import org.mapsforge.core.model.BoundingBox;
+
 import java.util.concurrent.CountDownLatch;
 
 import it.geosolutions.android.siigmobile.geocoding.AndroidGeoCoder;
@@ -48,9 +50,11 @@ public class GeoCodingTest extends ActivityUnitTestCase<MainActivity> {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        final String query = "Pisa";
+        final String query = "Bergamo";
 
-        final GeoCodingTask geoCodingTask = new GeoCodingTask(geoCoder,query) {
+        final BoundingBox bb = new BoundingBox(Config.LATITUDE_MIN,Config.LONGITUDE_MIN,Config.LATITUDE_MAX,Config.LONGITUDE_MAX);
+
+        final GeoCodingTask geoCodingTask = new GeoCodingTask(geoCoder,query, bb) {
             @Override
             public void done(Cursor cursor) {
 
@@ -64,9 +68,9 @@ public class GeoCodingTest extends ActivityUnitTestCase<MainActivity> {
 
                 assertTrue(title.toLowerCase().contains(query.toLowerCase()));
 
-                assertTrue(lat.startsWith("43.7"));
+                assertTrue(lat.startsWith("45.69"));
 
-                assertTrue(lon.startsWith("10.4"));
+                assertTrue(lon.startsWith("9.67"));
 
                 //release
                 latch.countDown();

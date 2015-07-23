@@ -33,6 +33,9 @@ import com.newrelic.agent.android.NewRelic;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
+import org.mapsforge.android.maps.overlay.ListOverlay;
+import org.mapsforge.android.maps.overlay.Marker;
+import org.mapsforge.android.maps.overlay.OverlayItem;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 import org.mapsforge.core.model.MapPosition;
@@ -40,6 +43,7 @@ import org.mapsforge.core.model.MapPosition;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import it.geosolutions.android.map.activities.MapActivityBase;
 import it.geosolutions.android.map.control.CoordinateControl;
@@ -63,11 +67,11 @@ import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
 import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
+import it.geosolutions.android.siigmobile.legend.LegendAdapter;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import jsqlite.Database;
 import it.geosolutions.android.siigmobile.legend.LegendAdapter;
-
 
 public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -111,6 +115,8 @@ public class MainActivity extends MapActivityBase
     private GeoCodingTask mGeoCodingTask;
     private LegendAdapter legendAdapter;
     private TextView legendTitle;
+    private BoundingBox geoCodingBoundingBox;
+    private Marker geoCodingMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -608,6 +614,8 @@ public class MainActivity extends MapActivityBase
                         //if mapview covers, center on place, zoom in and collapse search view
                         if( mapView.getMapDatabase().hasOpenFile() && (mapView.getMapDatabase().getMapFileInfo().boundingBox.contains(p))) {
 
+                            createOrUpdateGeoCodingMarker(p);
+
                             mapView.getMapViewPosition().setCenter(p);
 
                             mapView.getMapViewPosition().setZoomLevel(Config.PLACE_SELECTED_ZOOM_TO_LEVEL);
@@ -653,7 +661,7 @@ public class MainActivity extends MapActivityBase
             mGeoCodingTask.cancel(true);
         }
 
-        mGeoCodingTask = new GeoCodingTask(mGeoCoder, query) {
+        mGeoCodingTask = new GeoCodingTask(mGeoCoder, query, getGeoCodingBoundingBox()) {
             @Override
             public void done(Cursor cursor) {
 
@@ -661,6 +669,49 @@ public class MainActivity extends MapActivityBase
             }
         };
         mGeoCodingTask.execute();
+    }
+
+    /**
+     * @return the bounding box of the current map file if available otherwise the bounding box containing the whole world
+     */
+    public BoundingBox getGeoCodingBoundingBox()
+    {
+        if(geoCodingBoundingBox == null){
+            if(mapView.getMapDatabase() != null &&
+                    mapView.getMapDatabase().getMapFileInfo() != null &&
+                    mapView.getMapDatabase().getMapFileInfo().boundingBox != null &&
+                    mapView.getMapDatabase().hasOpenFile()){
+                geoCodingBoundingBox = mapView.getMapDatabase().getMapFileInfo().boundingBox;
+            }else{
+                geoCodingBoundingBox = new BoundingBox(Config.LATITUDE_MIN,Config.LONGITUDE_MIN,Config.LATITUDE_MAX,Config.LONGITUDE_MAX);
+            }
+
+        }
+        return geoCodingBoundingBox;
+    }
+
+    /**
+     * creates or updates a marker inside a marker overlay
+     * @param p the GeoPoint to create the marker with / center it
+     */
+    public void createOrUpdateGeoCodingMarker(final GeoPoint p) {
+
+        if(geoCodingMarker == null){
+
+            geoCodingMarker = new Marker(p, Marker.boundCenterBottom(getResources().getDrawable(R.drawable.pin_red)));
+
+            //This is the default Mapsforge 0.3.x way to create and add an overlay
+            final ListOverlay overlay = new ListOverlay();
+            List<OverlayItem> overlayItems = overlay.getOverlayItems();
+
+            overlayItems.add(geoCodingMarker);
+
+            mapView.getOverlays().add(overlay);
+        }   else{
+
+            geoCodingMarker.setGeoPoint(p);
+        }
+
     }
 
     @Override
