@@ -7,6 +7,6 @@
           app:showAsAction="always|collapseActionView" />
     <!--item android:id="@+id/action_map" android:title="@string/action_map"
         app:showAsAction="withText|ifRoom" /-->
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    <!--item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" /-->
 </menu>

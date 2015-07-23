@@ -629,7 +629,7 @@ public class MainActivity extends MapActivityBase
 
                     try {
                         //if mapview covers, center on place, zoom in and collapse search view
-                        if( mapView.getMapDatabase().hasOpenFile() && (mapView.getMapDatabase().getMapFileInfo().boundingBox.contains(p))) {
+                        if( getGeoCodingBoundingBox().contains(p)) {
 
                             createOrUpdateGeoCodingMarker(p);
 
@@ -694,15 +694,20 @@ public class MainActivity extends MapActivityBase
     public BoundingBox getGeoCodingBoundingBox()
     {
         if(geoCodingBoundingBox == null){
-            if(mapView.getMapDatabase() != null &&
+            try{
+                if( mapView.getMapDatabase() != null &&
+                    mapView.getMapDatabase().hasOpenFile() &&
                     mapView.getMapDatabase().getMapFileInfo() != null &&
-                    mapView.getMapDatabase().getMapFileInfo().boundingBox != null &&
-                    mapView.getMapDatabase().hasOpenFile()){
-                geoCodingBoundingBox = mapView.getMapDatabase().getMapFileInfo().boundingBox;
-            }else{
+                    mapView.getMapDatabase().getMapFileInfo().boundingBox != null )
+                {
+                    geoCodingBoundingBox = mapView.getMapDatabase().getMapFileInfo().boundingBox;
+                }else{
+                    geoCodingBoundingBox = new BoundingBox(Config.LATITUDE_MIN,Config.LONGITUDE_MIN,Config.LATITUDE_MAX,Config.LONGITUDE_MAX);
+                }
+            }catch (IllegalStateException ise){
+                // The map is not loaded
                 geoCodingBoundingBox = new BoundingBox(Config.LATITUDE_MIN,Config.LONGITUDE_MIN,Config.LATITUDE_MAX,Config.LONGITUDE_MAX);
             }
-
         }
         return geoCodingBoundingBox;
     }
@@ -724,7 +729,7 @@ public class MainActivity extends MapActivityBase
             overlayItems.add(geoCodingMarker);
 
             mapView.getOverlays().add(overlay);
-        }   else{
+        }   else {
 
             geoCodingMarker.setGeoPoint(p);
         }
@@ -739,9 +744,10 @@ public class MainActivity extends MapActivityBase
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_save) {
+//        if (id == R.id.action_settings) {
+//            return true;
+//        } else
+        if (id == R.id.action_save) {
 
             showEditElaborationTitleAndDescriptionDialog();
         } else if (id == R.id.action_clear){
