@@ -5,6 +5,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
 
+import org.mapsforge.core.model.BoundingBox;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -29,10 +31,10 @@ public class AndroidGeoCoder implements IGeoCoder {
     }
 
     @Override
-    public List<Address> getFromLocationName(String query, int results, final Locale locale) {
+    public List<Address> getFromLocationName(String query,final BoundingBox bb, int results, final Locale locale) {
 
         try {
-            return this.mGeoCoder.getFromLocationName(query, results);
+            return this.mGeoCoder.getFromLocationName(query,results,bb.minLatitude,bb.minLongitude,bb.maxLatitude,bb.maxLongitude);
         }catch(IOException e){
             Log.e(AndroidGeoCoder.class.getSimpleName(), "exception getFromLocationName",e);
             return null;

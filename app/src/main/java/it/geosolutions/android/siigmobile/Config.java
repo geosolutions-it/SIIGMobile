@@ -54,4 +54,24 @@ public class Config {
     public static final String PARAM_LAST_UNSAVED_DELETION = "last_unsaved_deletion";
     public static final long  UNSAVED_DELETION_INTERVAL = 24 * 60 * 60 * 1000; //one day
 
+    /**
+     * Maximum possible latitude coordinate for this project.
+     */
+    public static final double LATITUDE_MAX = 47.1205788012735;
+
+    /**
+     * Minimum possible latitude coordinate for this project.
+     */
+    public static final double LATITUDE_MIN = 44.034474283395;
+
+    /**
+     * Maximum possible longitude coordinate for this project.
+     */
+    public static final double LONGITUDE_MAX = 12.5041443854095;
+
+    /**
+     * Minimum possible longitude coordinate for this project.
+     */
+    public static final double LONGITUDE_MIN = 6.59220922465439;
+
 }
