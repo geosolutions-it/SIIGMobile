@@ -48,5 +48,6 @@
     <string name="compute_error">Esecuzione fallita, si prega di riprovare più tardi.</string>
     <string name="pis_title">Pericolosità Strada</string>
     <string name="result_empty">Il risultato dell\'elaborazione è vuoto, riprovare con un\'altra area.</string>
+    <string name="snackbar_missing_map_text">Area non rilevata</string>
 
 </resources>

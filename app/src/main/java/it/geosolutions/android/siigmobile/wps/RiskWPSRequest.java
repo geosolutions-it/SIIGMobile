@@ -17,6 +17,7 @@ import java.util.TreeMap;
 
 import it.geosolutions.android.map.wfs.geojson.feature.Feature;
 import it.geosolutions.android.map.wfs.geojson.feature.FeatureCollection;
+import it.geosolutions.android.siigmobile.BuildConfig;
 
 /**
  * Models a gs:RiskCalculator request to GeoServer using WPS
@@ -136,7 +137,7 @@ public class RiskWPSRequest extends WPSRequest{
      * @return the created XML as String
      * @throws IllegalArgumentException if no boundingbox is provided in the request
      */
-    public static String createWPSCallFromText(final WPSRequest request){
+    public static String createWPSCallFromText(final WPSRequest request) throws IllegalArgumentException {
 
         final StringBuilder builder = new StringBuilder();
 
@@ -153,7 +154,21 @@ public class RiskWPSRequest extends WPSRequest{
         final Feature f = request.featureCollection.features.get(0);
         final Envelope env = f.geometry.getEnvelopeInternal();
 
-        request.parameters.put(KEY_LEVEL, levels.ceilingEntry(env.getArea()).getValue());
+        try {
+            request.parameters.put(KEY_LEVEL, levels.ceilingEntry(env.getArea()).getValue());
+        }catch(ClassCastException cce){
+            if(BuildConfig.DEBUG){
+                Log.e(TAG, "Conversion error: "+ cce.getLocalizedMessage());
+            }
+            throw new IllegalArgumentException("Bad Area Value");
+        }catch(NullPointerException npe){
+            if(BuildConfig.DEBUG){
+                Log.e(TAG, "Area in NULL: "+ npe.getLocalizedMessage());
+            }
+            throw new IllegalArgumentException("Area is empty");
+        }
+
+
         //local US necessary for dot formatting -> 12.34 instead of 12,34
         final String lowerLeftCorner = String.format(Locale.US, "%f %f", env.getMinX(), env.getMinY());
         final String upperRightCorner = String.format(Locale.US, "%f %f", env.getMaxX(), env.getMaxY());

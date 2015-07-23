@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -297,9 +298,9 @@ public class MainActivity extends MapActivityBase
 
             // Need additional parameters
             if (currentStyle > 0) {
-                baseParams.put("ENV", Config.WMS_ENV[currentStyle]);
-                baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[currentStyle]);
-                baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[currentStyle]);
+                baseParams.put("ENV", Config.WMS_ENV[(currentStyle >= Config.WMS_ENV.length ? Config.DEFAULT_STYLE:currentStyle)]);
+                baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[(currentStyle >= Config.WMS_RISKPANEL.length ? Config.DEFAULT_STYLE:currentStyle)]);
+                baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[(currentStyle >= Config.WMS_DEFAULTENV.length ? Config.DEFAULT_STYLE:currentStyle)]);
             }
             layer.setBaseParams(baseParams);
 
@@ -488,6 +489,14 @@ public class MainActivity extends MapActivityBase
                     break;
                 case 2:
 
+                    if(mapView == null || mapView.getMapViewPosition() == null){
+                        Snackbar
+                                .make(getWindow().getDecorView().findViewById(R.id.snackbarPosition),
+                                        R.string.snackbar_missing_map_text,
+                                        Snackbar.LENGTH_LONG)
+                                .show();
+                        break;
+                    }
                     final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
                     // Start the form activity
                     Intent formIntent = new Intent(this, ComputeFormActivity.class);
@@ -519,6 +528,14 @@ public class MainActivity extends MapActivityBase
                 break;
             case 4:
 
+                if(mapView == null || mapView.getMapViewPosition() == null){
+                    Snackbar
+                            .make(getWindow().getDecorView().findViewById(R.id.snackbarPosition),
+                                    R.string.snackbar_missing_map_text,
+                                    Snackbar.LENGTH_LONG)
+                            .show();
+                    break;
+                }
                 final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
                 // Start the form activity
                 Intent formIntent = new Intent(this, ComputeFormActivity.class);

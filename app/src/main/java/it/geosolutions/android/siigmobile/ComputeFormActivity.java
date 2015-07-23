@@ -311,8 +311,27 @@ public class ComputeFormActivity extends AppCompatActivity
                     request.setParameter(RiskWPSRequest.KEY_EXTENDEDSCHEMA, false);
                     request.setParameter(RiskWPSRequest.KEY_MOBILE, true);
 
-                    String query = RiskWPSRequest.createWPSCallFromText(request);
+                    String query = null;
+                    try {
+                        query = RiskWPSRequest.createWPSCallFromText(request);
 
+                    }catch (IllegalArgumentException iae){
+                        Snackbar
+                                .make(  v.getRootView().findViewById(R.id.snackbarPosition),
+                                        R.string.snackbar_noparam_text,
+                                        Snackbar.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
+
+                    if(query == null){
+                        Snackbar
+                                .make(  v.getRootView().findViewById(R.id.snackbarPosition),
+                                        R.string.snackbar_noparam_text,
+                                        Snackbar.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
                     Gson gson = new GsonBuilder()
                             .disableHtmlEscaping()
                             .registerTypeHierarchyAdapter(Geometry.class,
