@@ -55,5 +55,7 @@
     <string name="saving_data">Saving&#8230;</string>
     <string name="compute_error">Server response is invalid, please try again later</string>
     <string name="pis_title">Street Risk</string>
+    <string name="success_saving">Successfully saved the processing %1$s for %2$s</string>
+    <string name="error_saving">Error saving the processing %s</string>
 
 </resources>

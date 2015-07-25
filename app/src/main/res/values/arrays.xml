@@ -6,6 +6,7 @@
         <item>Environmental Risk</item>
         <item>Social Risk</item>
         <item>Total Risk</item>
+        <item>Street Risk</item>
         <item>Standard Elaboration</item>
         <item>Load Elaboration</item>
     </string-array>

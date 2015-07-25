@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -30,7 +29,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.newrelic.agent.android.NewRelic;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
@@ -45,6 +43,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import it.geosolutions.android.map.activities.MapActivityBase;
 import it.geosolutions.android.map.control.CoordinateControl;
@@ -64,15 +63,14 @@ import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
 import it.geosolutions.android.map.wms.WMSLayer;
 import it.geosolutions.android.map.wms.WMSSource;
+import it.geosolutions.android.siigmobile.elaboration.ElaborationResult;
+import it.geosolutions.android.siigmobile.elaboration.Elaborator;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
 import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
 import it.geosolutions.android.siigmobile.legend.LegendAdapter;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
-import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
-import jsqlite.Database;
-import it.geosolutions.android.siigmobile.legend.LegendAdapter;
 
 public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -94,7 +92,6 @@ public class MainActivity extends MapActivityBase
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-    private static boolean usePIS = false;
 
     private MultiSourceOverlayManager layerManager;
 
@@ -102,10 +99,8 @@ public class MainActivity extends MapActivityBase
     public OverlayManager overlayManager;
 
     private final static int RESULT_REQUEST_CODE = 1234;
-    private final static int COMPUTE_REQUEST_CODE = 2345;
 
     private String  user_edited_layer_title;
-    private boolean user_layer_saveable = false;
     private boolean user_layer_clearable = false;
     
     private static int currentStyle = Config.DEFAULT_STYLE;// Start with "Rischio Totale" theme
@@ -327,7 +322,6 @@ public class MainActivity extends MapActivityBase
 
         }
 
-
         // Set the styles
         for(Layer l : layers){
             if (l instanceof SpatialiteLayer) {
@@ -362,11 +356,11 @@ public class MainActivity extends MapActivityBase
 
         // Update the Legend Panel
         StyleManager styleManager = StyleManager.getInstance();
-        AdvancedStyle legendStyle = usePIS
+        AdvancedStyle legendStyle = currentStyle == 4
                 ? styleManager.getStyle(Config.RESULT_STYLES[3])
                 : styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1");
         legendAdapter.applyStyle(legendStyle);
-        if(usePIS){
+        if(currentStyle == 4){
             legendTitle.setText(getResources().getString(R.string.pis_title));
         }else {
             legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
@@ -377,10 +371,6 @@ public class MainActivity extends MapActivityBase
     }
     //TODO get the result mode from the result itself
     public int resultModeForRiskMode(){
-
-        if(usePIS){
-            return 3;
-        }
 
         switch (currentStyle){
             case 0:
@@ -478,57 +468,19 @@ public class MainActivity extends MapActivityBase
             return;
         }
 
-        if(usePIS){
-            currentStyle = 4;
-            switch (position){
-                case 0:
-                    currentStyle = position;
-                case 1:
-                    //reload, if an elaboration arrived center on it
-                    loadDBLayers(user_edited_layer_title);
-                    break;
-                case 2:
-
-                    if(mapView == null || mapView.getMapViewPosition() == null){
-                        Snackbar
-                                .make(getWindow().getDecorView().findViewById(R.id.snackbarPosition),
-                                        R.string.snackbar_missing_map_text,
-                                        Snackbar.LENGTH_LONG)
-                                .show();
-                        break;
-                    }
-                    final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
-                    // Start the form activity
-                    Intent formIntent = new Intent(this, ComputeFormActivity.class);
-                    formIntent.putExtra(ComputeFormActivity.PARAM_BOUNDINGBOX, bb);
-
-                    final boolean isPolygonRequest = mapView.getMapViewPosition().getZoomLevel() <= 13;
-
-                    formIntent.putExtra(ComputeFormActivity.PARAM_POLYGON, isPolygonRequest);
-
-                    startActivityForResult(formIntent, COMPUTE_REQUEST_CODE);
-                    break;
-                case 3:
-                    Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
-                    startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
-                    break;
-                default:
-                    break;
-            }
-            return;
-        }
-        switch (position){
+        switch (position) {
             case 0:
             case 1:
             case 2:
             case 3:
+            case 4:
                 currentStyle = position;
                 //reload, if an elaboration arrived center on it
                 loadDBLayers(user_edited_layer_title);
                 break;
-            case 4:
+            case 5:
 
-                if(mapView == null || mapView.getMapViewPosition() == null){
+                if (mapView == null || mapView.getMapViewPosition() == null) {
                     Snackbar
                             .make(getWindow().getDecorView().findViewById(R.id.snackbarPosition),
                                     R.string.snackbar_missing_map_text,
@@ -537,20 +489,15 @@ public class MainActivity extends MapActivityBase
                     break;
                 }
                 final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
-                // Start the form activity
-                Intent formIntent = new Intent(this, ComputeFormActivity.class);
-                formIntent.putExtra(ComputeFormActivity.PARAM_BOUNDINGBOX, bb);
-
                 final boolean isPolygonRequest = mapView.getMapViewPosition().getZoomLevel() <= 13;
 
-                formIntent.putExtra(ComputeFormActivity.PARAM_POLYGON, isPolygonRequest);
+                showEditElaborationTitleAndDescriptionDialog(bb, isPolygonRequest);
 
-                startActivityForResult(formIntent, COMPUTE_REQUEST_CODE);
                 break;
-           case 5:
-               Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
-               startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
-               break;
+            case 6:
+                Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
+                startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
+                break;
             default:
                 /*
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -582,12 +529,10 @@ public class MainActivity extends MapActivityBase
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            if(user_layer_saveable ){
-                getMenuInflater().inflate(R.menu.saveable, menu);
-            }
-            if(user_layer_clearable){
+            if (user_layer_clearable) {
                 getMenuInflater().inflate(R.menu.clearable, menu);
             }
+
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
 
@@ -599,12 +544,12 @@ public class MainActivity extends MapActivityBase
                 @Override
                 public void doQuery(String query) {
 
-                    if(Util.isOnline(getBaseContext())){
+                    if (Util.isOnline(getBaseContext())) {
 
                         populateAdapter(query);
 
-                    }else{
-                        Toast.makeText(getBaseContext(),getString(R.string.not_online),Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getBaseContext(), getString(R.string.not_online), Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -615,10 +560,10 @@ public class MainActivity extends MapActivityBase
                     cur.moveToPosition(position);
 
                     final String title = cur.getString(cur.getColumnIndex(Config.CURSOR_TITLE));
-                    final String lat   = cur.getString(cur.getColumnIndex(Config.CURSOR_LAT));
-                    final String lon   = cur.getString(cur.getColumnIndex(Config.CURSOR_LON));
+                    final String lat = cur.getString(cur.getColumnIndex(Config.CURSOR_LAT));
+                    final String lon = cur.getString(cur.getColumnIndex(Config.CURSOR_LON));
 
-                    if(BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG) {
                         Log.i(TAG, "selected " + title + " lat : " + lat + " lon " + lon);
                     }
 
@@ -629,7 +574,7 @@ public class MainActivity extends MapActivityBase
 
                     try {
                         //if mapview covers, center on place, zoom in and collapse search view
-                        if( getGeoCodingBoundingBox().contains(p)) {
+                        if (getGeoCodingBoundingBox().contains(p)) {
 
                             createOrUpdateGeoCodingMarker(p);
 
@@ -654,10 +599,10 @@ public class MainActivity extends MapActivityBase
                                         }
                                     })
                                     .create();
-                             dialog.show();
+                            dialog.show();
                         }
-                    }catch(IllegalArgumentException e){
-                        Log.e(TAG," error checking the map views bounds, is no map file open ?",e);
+                    } catch (IllegalArgumentException e) {
+                        Log.e(TAG, " error checking the map views bounds, is no map file open ?", e);
                     }
                 }
             });
@@ -747,17 +692,10 @@ public class MainActivity extends MapActivityBase
 //        if (id == R.id.action_settings) {
 //            return true;
 //        } else
-        if (id == R.id.action_save) {
+        if (id == R.id.action_clear) {
 
-            showEditElaborationTitleAndDescriptionDialog();
-        } else if (id == R.id.action_clear){
-
-            if(usePIS){
-                usePIS = false;
-                currentStyle = Config.DEFAULT_STYLE;
-                mNavigationDrawerFragment.setEntries(getResources().getStringArray(R.array.drawer_items));
-            }
             clearMenu();
+            currentStyle = Config.DEFAULT_STYLE;
 
             loadDBLayers(null);
         }
@@ -765,7 +703,7 @@ public class MainActivity extends MapActivityBase
         return super.onOptionsItemSelected(item);
     }
 
-    public void showEditElaborationTitleAndDescriptionDialog(){
+    public void showEditElaborationTitleAndDescriptionDialog(final BoundingBox bb, final boolean isPolygon){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.elab_dialog_title));
@@ -775,6 +713,23 @@ public class MainActivity extends MapActivityBase
         final View editView = inflater.inflate(R.layout.enter_title_layout, null);
 
         builder.setView(editView);
+
+        final TextView ul_lat_tv = (TextView) editView.findViewById(R.id.tv_upper_left_lat);
+        final TextView ul_lon_tv = (TextView) editView.findViewById(R.id.tv_upper_left_lon);
+        final TextView lr_lat_tv = (TextView) editView.findViewById(R.id.tv_lower_right_lat);
+        final TextView lr_lon_tv = (TextView) editView.findViewById(R.id.tv_lower_right_lon);
+
+        if(bb != null){
+
+            ul_lat_tv.setText(String.format(Locale.US, "%f",bb.maxLatitude));
+            ul_lon_tv.setText(String.format(Locale.US, "%f",bb.minLongitude));
+
+            lr_lat_tv.setText(String.format(Locale.US, "%f",bb.minLatitude));
+            lr_lon_tv.setText(String.format(Locale.US, "%f", bb.maxLongitude));
+
+            //Log.v(TAG, "Area : " + String.format(Locale.US, "%f",((bb.maxLongitude -bb.minLongitude)*(bb.maxLatitude -bb.minLatitude))) );
+
+        }
 
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
@@ -792,64 +747,40 @@ public class MainActivity extends MapActivityBase
                             dialog.dismiss();//release
 
                             //reshow
-                            showEditElaborationTitleAndDescriptionDialog();
+                            showEditElaborationTitleAndDescriptionDialog(bb, isPolygon);
                             return;
                         }
 
-                        new AsyncTask<Void,Void,Boolean>() {
-                            private ProgressDialog pd;
+                        final Elaborator elaborator = new Elaborator(MainActivity.this) {
+                            private String tableToCenter;
                             @Override
-                            protected void onPreExecute() {
-                                super.onPreExecute();
-                                pd = new ProgressDialog(MainActivity.this, ProgressDialog.STYLE_SPINNER);
-                                pd.setMessage(getBaseContext().getString(R.string.saving_source));
-                                pd.setCancelable(false);
-                                pd.setIcon(R.drawable.ic_launcher);
-                                pd.show();
+                            public void showError(int resource) {
+                                MainActivity.this.showSnackBar(resource);
                             }
 
                             @Override
-                            protected Boolean doInBackground(Void... params) {
-
-                                final Database db = SpatialiteUtils.openSpatialiteDB(getBaseContext());
-                                final boolean result = SpatialiteUtils.updateNameTableWithUserData(db, user_edited_layer_title, title,desc);
-
-                                try {
-                                    db.close();
-                                }catch (jsqlite.Exception e) {
-                                    Log.e(TAG, "exception closing db",e);
-                                }
-                                return result;
+                            public void showMessage(String message) {
+                                Snackbar
+                                        .make(MainActivity.this.findViewById(R.id.snackbarPosition),
+                                                message,
+                                                Snackbar.LENGTH_LONG)
+                                        .show();
                             }
 
                             @Override
-                            protected void onPostExecute(Boolean success) {
-                                super.onPostExecute(success);
+                            public void done(ElaborationResult result) {
 
-                                if(pd != null && pd.isShowing()) {
-                                    pd.dismiss();
-                                }
-
-                                //user saved, remove save button
-                                if(success) {
-                                    clearMenu();
-                                }
-
-                                //TODO saved, now what switch back to all risks ? -> loadDBLayers()
-
-                                Toast.makeText(getBaseContext(), success ? getString(R.string.elab_success) : getString(R.string.elab_failure),Toast.LENGTH_SHORT).show();
-
+                                applyResult(result);
                             }
-                        }.execute();
+                        };
 
-
+                        elaborator.startCalc(bb, isPolygon, title, desc);
 
                         dialog.dismiss();
                     }
                 }
 
-        );
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
+        ).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
 
                 {
                     @Override
@@ -865,6 +796,16 @@ public class MainActivity extends MapActivityBase
         final AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+    }
+
+
+
+    public void showSnackBar(int stringResource){
+        Snackbar
+                .make(findViewById(R.id.snackbarPosition),
+                        stringResource,
+                        Snackbar.LENGTH_LONG)
+                .show();
     }
 
     /**
@@ -923,61 +864,40 @@ public class MainActivity extends MapActivityBase
         }
 
         //Result of click on a local elaboration
-        if ((requestCode == RESULT_REQUEST_CODE  || requestCode == COMPUTE_REQUEST_CODE ) && resultCode == RESULT_OK) {
+        if ((requestCode == RESULT_REQUEST_CODE  ) && resultCode == RESULT_OK) {
 
-            final String tableName = data.getStringExtra(Config.RESULT_TABLENAME);
-            Integer formulaType = data.getIntExtra(Config.RESULT_FORMULA, Config.FORMULA_RISK);
-            if(formulaType == Config.FORMULA_STREET){
-                usePIS = true;
-                currentStyle = 4;
-                mNavigationDrawerFragment.setEntries(new String[]{
-                                getResources().getStringArray(R.array.drawer_items)[0],
-                                getString(R.string.pis_title),
-                                getResources().getStringArray(R.array.drawer_items)[4],
-                                getResources().getStringArray(R.array.drawer_items)[5]
-                        }
-                );
-            }else{
-                if(usePIS){
-                    usePIS = false;
-                    currentStyle = Config.DEFAULT_STYLE;
-                    mNavigationDrawerFragment.setEntries(getResources().getStringArray(R.array.drawer_items));
-                }
-            }
-
-            if (tableName != null) {
-
-                loadDBLayers(tableName);
-
-            }
-
-            if (requestCode == COMPUTE_REQUEST_CODE && getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(getString(R.string.elab_dialog_title));
-            }
-
-            invalidateMenu(tableName, true, true);
+            //final String tableName = data.getStringExtra(Config.RESULT_TABLENAME);
+            ElaborationResult result = (ElaborationResult) data.getSerializableExtra(Config.RESULT_ITEM);
+            applyResult(result);
         }
     }
 
+    public void applyResult(ElaborationResult result){
+        if(currentStyle == 4){//PIS
+            loadDBLayers(result.getStreetTableName());
+            invalidateMenu(result.getStreetTableName(), true);
+        }else{
+            loadDBLayers(result.getRiskTableName());
+            invalidateMenu(result.getRiskTableName(),  true);
+        }
+    }
 
     /**
      * removes the save button from the toolbar
      */
-    public void invalidateMenu(final String user_edited_table, final boolean saveable, final boolean clearable){
+    public void invalidateMenu(final String tableName, final boolean clearable) {
+        user_edited_layer_title = tableName;
 
-        user_edited_layer_title = user_edited_table;
-
-        user_layer_saveable  = saveable;
         user_layer_clearable = clearable;
 
         invalidateOptionsMenu();
     }
 
-    public void clearMenu(){
+    public void clearMenu() {
 
-        invalidateMenu(null, false, false);
-
+        invalidateMenu(null, false);
     }
+
 
     public void showProgress(final String message){
 

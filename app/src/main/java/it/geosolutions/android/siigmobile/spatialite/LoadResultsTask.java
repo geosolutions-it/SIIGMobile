@@ -5,9 +5,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
+import it.geosolutions.android.siigmobile.elaboration.ElaborationResult;
 import jsqlite.Database;
 
 /**
@@ -22,9 +24,9 @@ import jsqlite.Database;
 
  *
  */
-public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<CRSFeatureCollection>>
+public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<ElaborationResult>>
 {
-    public abstract void done(List<CRSFeatureCollection> results);
+    public abstract void done(List<ElaborationResult> results);
     public abstract void started();
 
 
@@ -36,27 +38,38 @@ public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<CRSFea
     }
 
     @Override
-    protected List<CRSFeatureCollection> doInBackground(Context... params) {
+    protected List<ElaborationResult> doInBackground(Context... params) {
 
-        List<CRSFeatureCollection> results = new ArrayList<>();
+
+        List<ElaborationResult> results = new ArrayList<>();
 
         final Database db = SpatialiteUtils.openSpatialiteDB(params[0]);
 
         if (db != null) {
 
-            ArrayList<String[]> names = SpatialiteUtils.getSavedResultTableNames(db);
-            if (names != null) {
-                for (String[] array : names) {
+            HashMap<String,ArrayList<String[]>> namePropsMap = SpatialiteUtils.getUnifiedSavedResultTableNames(db);
+            if (namePropsMap != null) {
+                for(Map.Entry<String,ArrayList<String[]>> entry : namePropsMap.entrySet()){
+                    ArrayList<String[]> entries = entry.getValue();
+                    if(entries.size() == 2){
+                        String[] table0 = entries.get(0);
+                        String[] table1 = entries.get(1);
 
-                    //if internal and user edited name available, load detailed result
-                    if (array[0] != null && array[1] != null) {
-                        CRSFeatureCollection result = SpatialiteUtils.loadResult(db, array[0]);
-                        if (result != null) {
-                            result.userEditedName = array[1];
-                            result.userEditedDescription = array[2];
-                            result.isPIS = ("1".equals(array[3]));
-                            results.add(result);
+                        String streetTableName;
+                        String riskTableName;
+
+                        if(table0[3].equals("1")){//table 0 is pis
+                            streetTableName = table0[0];
+                            riskTableName   = table1[0];
+                        }else{
+                            riskTableName   = table0[0];
+                            streetTableName  = table1[0];
                         }
+
+                        results.add(new ElaborationResult(table0[1],table0[2],riskTableName,streetTableName));
+
+                    }else{
+                        Log.w(LoadResultsTask.class.getSimpleName(), "unexpected arraylist size");
                     }
                 }
             }
@@ -70,7 +83,7 @@ public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<CRSFea
     }
 
     @Override
-    protected void onPostExecute(List<CRSFeatureCollection> results) {
+    protected void onPostExecute(List<ElaborationResult> results) {
         super.onPostExecute(results);
 
         done(results);

@@ -237,17 +237,26 @@ public class SpatialiteUtils {
      * @return a list of pairs
      */
     @Trace(category = MetricCategory.DATABASE)
-    public static ArrayList<String[]> getSavedResultTableNames(final Database db){
+    public static HashMap<String,ArrayList<String[]>> getUnifiedSavedResultTableNames(final Database db){
 
+        HashMap<String,ArrayList<String[]>> results = new HashMap<>();
         try{
-            ArrayList<String[]> names = new ArrayList<>();
             Stmt stmt = db.prepare("SELECT "+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+","+ISPIS+" FROM "+ NAMES_TABLE +" WHERE "+USER_RESULT_NAME+" IS NOT NULL;");
             while(stmt.step()){
 
-                names.add(new String[]{stmt.column_string(0),stmt.column_string(1),stmt.column_string(2),stmt.column_string(3)});
+                if(results.containsKey(stmt.column_string(1))){
+                    ArrayList<String[]> names = results.get(stmt.column_string(1));
+                    names.add(new String[]{stmt.column_string(0), stmt.column_string(1), stmt.column_string(2), stmt.column_string(3)});
+                    results.put(stmt.column_string(1),names);
+
+                }else{
+                    ArrayList<String[]> names = new ArrayList<>();
+                    names.add(new String[]{stmt.column_string(0), stmt.column_string(1), stmt.column_string(2), stmt.column_string(3)});
+                    results.put(stmt.column_string(1),names);
+                }
             }
 
-            return names;
+            return results;
 
         } catch (jsqlite.Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
