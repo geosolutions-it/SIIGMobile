@@ -2,11 +2,11 @@
 <resources>
 
     <string-array name="drawer_items">
-        <item>Grafo stradale</item>
+        <item>Grafo Stradale</item>
         <item>Rischio Ambientale</item>
         <item>Rischio Sociale</item>
         <item>Rischio Totale</item>
-        <item>Pericolosità intrinseca</item>
+        <item>Pericolosità Intrinseca</item>
         <item>Elaborazione Standard</item>
         <item>Carica Elaborazione</item>
     </string-array>

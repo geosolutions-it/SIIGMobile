@@ -105,7 +105,7 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
 
                 new AlertDialog.Builder(LoadResultsActivity.this)
                         .setTitle(getString(R.string.app_name))
-                        .setMessage("Do you really want to delete these processings ?")
+                        .setMessage(R.string.delete_results_message)
                         .setPositiveButton(getString(R.string.ok_string), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -149,22 +149,22 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
                                             for (ElaborationResult result : selectedItems) {
 
 
-                                                if (!SpatialiteUtils.deleteResult(db, result.getRiskTableName())) {
+                                                if (result.getRiskTableName() != null && !SpatialiteUtils.deleteResult(db, result.getRiskTableName())) {
                                                     Log.w(TAG, "error deleting result " + result.getRiskTableName());
                                                     return false;
                                                 }
 
-                                                if (!SpatialiteUtils.deleteResult(db, result.getStreetTableName())) {
+                                                if (result.getStreetTableName() != null && !SpatialiteUtils.deleteResult(db, result.getStreetTableName())) {
                                                     Log.w(TAG, "error deleting result " + result.getRiskTableName());
                                                     return false;
                                                 }
 
-                                                if (!SpatialiteUtils.deleteResultFromNamesTable(db, result.getRiskTableName())) {
+                                                if (result.getRiskTableName() != null && !SpatialiteUtils.deleteResultFromNamesTable(db, result.getRiskTableName())) {
                                                     Log.w(TAG, "error deleting result from names table " + result.getRiskTableName());
                                                     return false;
                                                 }
 
-                                                if (!SpatialiteUtils.deleteResultFromNamesTable(db, result.getStreetTableName())) {
+                                                if (result.getStreetTableName() != null && !SpatialiteUtils.deleteResultFromNamesTable(db, result.getStreetTableName())) {
                                                     Log.w(TAG, "error deleting result from names table " + result.getStreetTableName());
                                                     return false;
                                                 }
@@ -238,7 +238,6 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
                 ElaborationResult item = rra.getItem(position);
 
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(Config.RESULT_ITEM, item);
                 returnIntent.putExtra(Config.RESULT_ITEM, item);
 
                 setResult(RESULT_OK, returnIntent);

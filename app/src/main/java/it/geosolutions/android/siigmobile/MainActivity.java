@@ -873,10 +873,10 @@ public class MainActivity extends MapActivityBase
     }
 
     public void applyResult(ElaborationResult result){
-        if(currentStyle == 4){//PIS
+        if(currentStyle == 4 && result.getStreetTableName() != null ){//PIS
             loadDBLayers(result.getStreetTableName());
             invalidateMenu(result.getStreetTableName(), true);
-        }else{
+        }else if(result.getRiskTableName() != null){
             loadDBLayers(result.getRiskTableName());
             invalidateMenu(result.getRiskTableName(),  true);
         }

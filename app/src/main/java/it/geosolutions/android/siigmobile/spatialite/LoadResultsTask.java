@@ -51,7 +51,17 @@ public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<Elabor
             if (namePropsMap != null) {
                 for(Map.Entry<String,ArrayList<String[]>> entry : namePropsMap.entrySet()){
                     ArrayList<String[]> entries = entry.getValue();
-                    if(entries.size() == 2){
+                    if(entries.size() == 1){
+                        // This is added for backward compatibility
+                        String[] tableRecord = entries.get(0);
+
+                        if(tableRecord[3].equals("1")){//table 0 is pis
+                            results.add(new ElaborationResult(tableRecord[1],tableRecord[2],null,tableRecord[0]));
+                        }else{
+                            results.add(new ElaborationResult(tableRecord[1],tableRecord[2],tableRecord[0],null));
+                        }
+
+                    }else if(entries.size() == 2){
                         String[] table0 = entries.get(0);
                         String[] table1 = entries.get(1);
 
