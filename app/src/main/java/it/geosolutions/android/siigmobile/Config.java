@@ -45,8 +45,9 @@ public class Config {
             "low:1.53216e-11;medium:0.0002868048076608;max:0.0005736096",
             "lowsociale:1.53216e-11;mediumsociale:0.0002868048076608;maxsociale:0.0005736096;lowambientale:5.994576e-9;mediumambientale:0.015552002997288;maxambientale:0.031104" };
 
-    public static final String RESULT_TABLENAME = "result_tableName";
-    public static final String RESULT_FORMULA = "result_formula";
+    public static final String RESULT_ITEM = "result_item";
+    //public static final String RESULT_TABLENAME = "result_tableName";
+    //public static final String RESULT_FORMULA = "result_formula";
 
     public static String BASE_PACKAGE_URL = "http://demo.geo-solutions.it/share/csi_piemonte/destination_plus/mobile/siig_mobile_2.zip";
     public static long REQUIRED_SPACE = 290_000_000L;

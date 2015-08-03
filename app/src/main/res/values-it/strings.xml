@@ -15,7 +15,7 @@
 
     <string name="download_base_data_title">Download</string>
     <string name="download_base_data">Saranno scaricati i dati necessari al funzionamento della mappa, procedere?</string>
-    <string name="not_enough_space">Impossibile scaricare i dati necessari.\nSono richiesti almeno 1,2Gb di spazio liberi.</string>
+    <string name="not_enough_space">Impossibile scaricare i dati necessari.\nSono richiesti almeno 200Mb di spazio liberi.</string>
     <string name="map_config_error">Impossibile configurare la mappa</string>
     <string name="ok_string">OK</string>
 
@@ -49,5 +49,8 @@
     <string name="pis_title">Pericolosità Strada</string>
     <string name="result_empty">Il risultato dell\'elaborazione è vuoto, riprovare con un\'altra area.</string>
     <string name="snackbar_missing_map_text">Area non rilevata</string>
+    <string name="success_saving">Elaborazione %1$s per %2$s calcolata e salvata con successo</string>
+    <string name="error_saving">Errore salvando elaborazione %s </string>
+    <string name="delete_results_message">Vuoi eliminare questi risultati ?</string>
 
 </resources>

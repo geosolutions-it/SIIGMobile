@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
@@ -22,7 +24,8 @@ import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
-import jsqlite.*;
+import jsqlite.Database;
+import jsqlite.Stmt;
 
 /**
  * Created by Robert Oehler on 30.06.15.
@@ -195,24 +198,28 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
 
         assertTrue(SpatialiteUtils.updateNameTableWithUserData(spatialiteDatabase, editedWriteResultPair.second, userEditedName, userEditedDesc));
 
-        final ArrayList<String[]> userEditedTables = SpatialiteUtils.getSavedResultTableNames(spatialiteDatabase);
+        HashMap<String,ArrayList<String[]>> results = SpatialiteUtils.getUnifiedSavedResultTableNames(spatialiteDatabase);
 
-        assertNotNull(userEditedTables);
+        assertNotNull(results);
 
-        assertTrue(userEditedTables.size() > 0);
+        assertTrue(results.size() > 0);
 
         //assert the user edited tables list contains the edited table
         boolean contains = false;
-        for(String[] array : userEditedTables){
+        for(Map.Entry<String,ArrayList<String[]>> entry : results.entrySet()) {
+            ArrayList<String[]> entries = entry.getValue();
+            for (String[] array : entries) {
 
-            //assert the unedited table is not inside this result list
-            assertTrue(array[0] != null && (!array[0].equals(uneditedWriteResultPair.second)));
+                //assert the unedited table is not inside this result list
+                assertTrue(array[0] != null && (!array[0].equals(uneditedWriteResultPair.second)));
 
-            //find instead the edited table
-            if(array[1] != null && array[1].equals(userEditedName) && array[2] != null && array[2].equals(userEditedDesc)){
-                contains = true;
+                //find instead the edited table
+                if (array[1] != null && array[1].equals(userEditedName) && array[2] != null && array[2].equals(userEditedDesc)) {
+                    contains = true;
+                }
             }
         }
+
 
         assertTrue(contains);
 

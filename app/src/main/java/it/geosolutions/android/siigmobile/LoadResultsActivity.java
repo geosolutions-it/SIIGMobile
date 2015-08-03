@@ -30,9 +30,9 @@ import java.util.Locale;
 
 import it.geosolutions.android.map.database.SpatialDataSourceManager;
 import it.geosolutions.android.map.utils.MapFilesProvider;
+import it.geosolutions.android.siigmobile.elaboration.ElaborationResult;
 import it.geosolutions.android.siigmobile.spatialite.LoadResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
-import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.Database;
 import jsqlite.Exception;
 
@@ -65,7 +65,7 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
         lv.setItemsCanFocus(false);
         lv.setEmptyView(findViewById(R.id.empty));
 
-        rra = new RiskResultAdapter(getBaseContext(), new ArrayList<CRSFeatureCollection>());
+        rra = new RiskResultAdapter(getBaseContext(), new ArrayList<ElaborationResult>());
 
         lv.setAdapter(rra);
 
@@ -105,14 +105,14 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
 
                 new AlertDialog.Builder(LoadResultsActivity.this)
                         .setTitle(getString(R.string.app_name))
-                        .setMessage("Do you really want to delete these processings ?")
+                        .setMessage(R.string.delete_results_message)
                         .setPositiveButton(getString(R.string.ok_string), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
                                 SparseBooleanArray checked = lv.getCheckedItemPositions();
 
-                                final ArrayList<CRSFeatureCollection> selectedItems = new ArrayList<>();
+                                final ArrayList<ElaborationResult> selectedItems = new ArrayList<>();
                                 for (int i = 0; i < checked.size(); i++) {
                                     int pos = checked.keyAt(i);
 
@@ -120,8 +120,8 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
                                         selectedItems.add(rra.getItem(pos));
                                     }
                                 }
-                                for(CRSFeatureCollection cfc : selectedItems){
-                                    Log.i(TAG, "selected "+cfc.tableName);
+                                for(ElaborationResult result : selectedItems){
+                                    Log.i(TAG, "selected "+result.getUserEditedName());
                                 }
 
                                 new AsyncTask<Void,Void,Boolean>(){
@@ -146,19 +146,28 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
                                         final Database db = SpatialiteUtils.openSpatialiteDB(getBaseContext());
                                         try {
 
-                                            for (CRSFeatureCollection cfc : selectedItems) {
+                                            for (ElaborationResult result : selectedItems) {
 
 
-                                                if (!SpatialiteUtils.deleteResult(db, cfc.tableName)) {
-                                                    Log.w(TAG, "error deleting result " + cfc.tableName);
+                                                if (result.getRiskTableName() != null && !SpatialiteUtils.deleteResult(db, result.getRiskTableName())) {
+                                                    Log.w(TAG, "error deleting result " + result.getRiskTableName());
                                                     return false;
                                                 }
 
-                                                if (!SpatialiteUtils.deleteResultFromNamesTable(db, cfc.tableName)) {
-                                                    Log.w(TAG, "error deleting result from names table " + cfc.tableName);
+                                                if (result.getStreetTableName() != null && !SpatialiteUtils.deleteResult(db, result.getStreetTableName())) {
+                                                    Log.w(TAG, "error deleting result " + result.getRiskTableName());
                                                     return false;
                                                 }
 
+                                                if (result.getRiskTableName() != null && !SpatialiteUtils.deleteResultFromNamesTable(db, result.getRiskTableName())) {
+                                                    Log.w(TAG, "error deleting result from names table " + result.getRiskTableName());
+                                                    return false;
+                                                }
+
+                                                if (result.getStreetTableName() != null && !SpatialiteUtils.deleteResultFromNamesTable(db, result.getStreetTableName())) {
+                                                    Log.w(TAG, "error deleting result from names table " + result.getStreetTableName());
+                                                    return false;
+                                                }
                                             }
                                             return true;
                                         } finally {
@@ -226,13 +235,11 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
                     Log.i(TAG, "item " + position + " clicked");
                 }
 
-                CRSFeatureCollection item = rra.getItem(position);
+                ElaborationResult item = rra.getItem(position);
 
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(Config.RESULT_TABLENAME, item.tableName);
-                if(item.isPIS){
-                    returnIntent.putExtra(Config.RESULT_FORMULA, Config.FORMULA_STREET);
-                }
+                returnIntent.putExtra(Config.RESULT_ITEM, item);
+
                 setResult(RESULT_OK, returnIntent);
                 finish();
 
@@ -264,7 +271,7 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
             }
 
             @Override
-            public void done(List<CRSFeatureCollection> results) {
+            public void done(List<ElaborationResult> results) {
 
                 hideProgress();
 
@@ -291,11 +298,11 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
         }
     }
 
-    public class RiskResultAdapter extends ArrayAdapter<CRSFeatureCollection>
+    public class RiskResultAdapter extends ArrayAdapter<ElaborationResult>
     {
         private HashMap<Integer, Boolean> selection = new HashMap<>();
 
-        public RiskResultAdapter(Context context,  List<CRSFeatureCollection> objects) {
+        public RiskResultAdapter(Context context,  List<ElaborationResult> objects) {
             super(context, R.layout.risk_result_item, objects);
         }
 
@@ -339,22 +346,13 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
 
             final TextView left_tv   = (TextView) v.findViewById(R.id.id_tv);
             final TextView center_tv = (TextView) v.findViewById(R.id.crs_tv);
-            final TextView right_tv  = (TextView) v.findViewById(R.id.feature_count_tv);
-
-            final CRSFeatureCollection item = getItem(position);
+            final ElaborationResult item = getItem(position);
 
             //title -> usereditedname
-            left_tv.setText(String.format(Locale.getDefault(), "%s", item.userEditedName));
+            left_tv.setText(String.format(Locale.getDefault(), "%s", item.getUserEditedName()));
             //if a user edited description is available use it
-            if(item.userEditedDescription != null) {
-                center_tv.setText(item.userEditedDescription);
-            }else {//otherwise use the crs ?!
-                if (item.crs != null && item.crs.properties != null && item.crs.properties.containsKey("name")) {
-                    center_tv.setText(String.format(Locale.getDefault(), "%s", item.crs.properties.get("name")));
-                }
-            }
-            if(item.totalFeatures != null){
-                right_tv.setText(String.format(Locale.getDefault(), "Features : %d", item.totalFeatures));
+            if(item.getUserEditedDescription() != null) {
+                center_tv.setText(item.getUserEditedDescription());
             }
 
             return v;

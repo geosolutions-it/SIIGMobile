@@ -450,8 +450,10 @@ public class ComputeFormActivity extends AppCompatActivity
                                     if(pair.first) {
 
                                         Intent returnIntent = new Intent();
-                                        returnIntent.putExtra(Config.RESULT_TABLENAME, pair.second);
-                                        returnIntent.putExtra(Config.RESULT_FORMULA, formula[0]);
+                                        //as this activity is no longer used I simply comment this here
+                                        //if you want to use it again update the return items
+                                        //returnIntent.putExtra(Config.RESULT_TABLENAME, pair.second);
+                                        //returnIntent.putExtra(Config.RESULT_FORMULA, formula[0]);
                                         getActivity().setResult(RESULT_OK, returnIntent);
                                         getActivity().finish();
 

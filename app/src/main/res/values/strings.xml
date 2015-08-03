@@ -21,7 +21,7 @@
 
     <string name="download_base_data">Map files will be downloaded, do you want to proceed?</string>
     <string name="download_base_data_title">Download</string>
-    <string name="not_enough_space">This application needs at least 1.2 Gb of free space to work.\nCannot download required data.</string>
+    <string name="not_enough_space">This application needs at least 200Mb of free space to work.\nCannot download required data.</string>
     <string name="map_config_error">Cannot configure the map</string>
     <string name="ok_string">OK</string>
     <string name="search_hint">Search location</string>
@@ -55,5 +55,8 @@
     <string name="saving_data">Saving&#8230;</string>
     <string name="compute_error">Server response is invalid, please try again later</string>
     <string name="pis_title">Street Risk</string>
+    <string name="success_saving">Successfully saved the processing %1$s for %2$s</string>
+    <string name="error_saving">Error saving the processing %s</string>
+    <string name="delete_results_message">Do you really want to delete these processings ?</string>
 
 </resources>
