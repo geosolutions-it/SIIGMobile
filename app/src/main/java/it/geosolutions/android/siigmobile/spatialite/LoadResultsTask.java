@@ -20,8 +20,7 @@ import jsqlite.Database;
  * Literally it queries the names table
  *
  * If this task is not for deleting unsaved result and the contains a user edited name
- * it is loaded containg its geometry and added to a list of CRSFeatureCollection
-
+ * it is loaded with its geometry and added to a list of CRSFeatureCollection
  *
  */
 public abstract class LoadResultsTask extends AsyncTask<Context,Void,List<ElaborationResult>>

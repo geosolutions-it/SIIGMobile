@@ -71,6 +71,7 @@ import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
 import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
 import it.geosolutions.android.siigmobile.legend.LegendAdapter;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
+import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 
 public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -335,12 +336,11 @@ public class MainActivity extends MapActivityBase
 
                     if (layerToCenter != null && l.getTitle().equals(layerToCenter)) {
 
-//                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
-//
-//                        if (bb != null) {
-//
-//                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
-//                        }
+                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
+
+                        if (bb != null) {
+                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
+                        }
 
                         break; //stop looping, only this result layer interests
 
@@ -356,9 +356,10 @@ public class MainActivity extends MapActivityBase
 
         // Update the Legend Panel
         StyleManager styleManager = StyleManager.getInstance();
-        AdvancedStyle legendStyle = currentStyle == 4
-                ? styleManager.getStyle(Config.RESULT_STYLES[3])
-                : styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1");
+        AdvancedStyle legendStyle = currentStyle == 0
+                ? styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1")
+                : styleManager.getStyle(Config.RESULT_STYLES[currentStyle - 1]) ;
+        
         legendAdapter.applyStyle(legendStyle);
         if(currentStyle == 4){
             legendTitle.setText(getResources().getString(R.string.pis_title));

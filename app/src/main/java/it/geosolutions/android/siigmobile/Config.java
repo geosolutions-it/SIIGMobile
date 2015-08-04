@@ -32,12 +32,13 @@ public class Config {
     public static final String[] RESULT_STYLES = {"result_ambientale", "result_sociale", "result_totale", "result_pis" };
     public static final int DEFAULT_STYLE = 3;
 
-    public static final String[] WMS_LAYERS = {"grafo_stradale", "rischio_totale_ambientale", "rischio_totale_sociale", "rischio_totale" };
+    public static final String[] WMS_LAYERS = {"grafo_stradale", "rischio_totale_ambientale", "rischio_totale_sociale", "rischio_totale", "pis" };
     public static final String[] WMS_ENV = {
             "false",
             "low:5.994576e-9;medium:0.015552002997288;max:0.031104",
             "low:1.53216e-11;medium:0.0002868048076608;max:0.0005736096",
-            "lowsociale:1.53216e-11;mediumsociale:0.0002868048076608;maxsociale:0.0005736096;lowambientale:5.994576e-9;mediumambientale:0.015552002997288;maxambientale:0.031104" };
+            "lowsociale:1.53216e-11;mediumsociale:0.0002868048076608;maxsociale:0.0005736096;lowambientale:5.994576e-9;mediumambientale:0.015552002997288;maxambientale:0.031104",
+            "low:0.005;medium:2.0;max:4.0"};
     public static final String[] WMS_RISKPANEL = {"true", "true", "true", "true" };
     public static final String[] WMS_DEFAULTENV = {
             "false",
