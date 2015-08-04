@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -675,7 +676,7 @@ public class MainActivity extends MapActivityBase
 
         if(geoCodingMarker == null){
 
-            geoCodingMarker = new Marker(p, Marker.boundCenterBottom(getResources().getDrawable(R.drawable.pin_red)));
+            geoCodingMarker = new Marker(p, Marker.boundCenterBottom(ContextCompat.getDrawable(getBaseContext(), R.drawable.pin_red)));
 
             //This is the default Mapsforge 0.3.x way to create and add an overlay
             final ListOverlay overlay = new ListOverlay();
