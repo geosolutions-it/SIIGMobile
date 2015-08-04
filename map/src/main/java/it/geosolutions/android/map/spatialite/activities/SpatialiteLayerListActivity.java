@@ -91,7 +91,9 @@ public class SpatialiteLayerListActivity extends AppCompatActivity {
 
     public void onCreate( Bundle icicle ) {
         super.onCreate(icicle);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
         //set title
         String layerStoreName = getIntent().getStringExtra(PARAMS.LAYERSTORE_NAME);

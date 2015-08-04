@@ -32,13 +32,13 @@
     <string name="bb_latitude">Latitudine</string>
     <string name="bb_upperleft">In alto a sinistra</string>
     <string name="bb_lowerright">In basso a destra</string>
-    <string name="clear">Sgombrare</string>
+    <string name="clear">Vista base</string>
     <string name="deleting">Cancellazione in corso&#8230;</string>
     <string name="selected">selezionato</string>
     <string name="go_back">Torna alla mappa</string>
-    <string name="please_wait">Si prega di aspettare un momento&#8230;</string>
+    <string name="please_wait">Si prega di attendere&#8230;</string>
     <string name="search_hint">Cerca luogo</string>
-    <string name="place_not_covered">Il luogo selezionato non é coperto dalla mappa attuale.</string>
+    <string name="place_not_covered">Il luogo selezionato non é coperto dalla mappa.</string>
     <string name="not_online">Bisogna essere on-line per usare questa funzione.</string>
     <string name="snackbar_offline_text">Non puoi eseguire Elaborazioni mentre sei Offline</string>
     <string name="snackbar_noparam_text">Impostare tutti i parametri prima di continuare</string>
@@ -52,5 +52,7 @@
     <string name="success_saving">Elaborazione %1$s per %2$s calcolata e salvata con successo</string>
     <string name="error_saving">Errore salvando elaborazione %s </string>
     <string name="delete_results_message">Vuoi eliminare questi risultati ?</string>
+    <string name="formula_street">PIS</string>
+    <string name="formula_risk">Rischio</string>
 
 </resources>

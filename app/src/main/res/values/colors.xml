@@ -6,4 +6,9 @@
 
     <color name="grafo">#ff0000ff</color>
 
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="toolbargrey">#ff555555</color>
+
+
 </resources>

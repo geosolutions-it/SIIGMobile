@@ -26,7 +26,9 @@ import it.geosolutions.android.map.model.query.BBoxQuery;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
 import it.geosolutions.android.map.utils.ConversionUtilities;
 import it.geosolutions.android.map.view.AdvancedMapView;
+import it.geosolutions.android.map.wms.WMSLayer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -94,9 +96,16 @@ public class MapInfoListener implements OnTouchListener {
 			final double e, byte zoomLevel) {
 		try {
 			ArrayList<Layer> layerNames = getLayers();
+            ArrayList<Layer> sanitizedNames = new ArrayList<Layer>();
+			for(Layer l : layerNames){
+                // WMS GetFeatureInfo is not currently implemented
+				if(!( l  instanceof WMSLayer)){
+                    sanitizedNames.add(l);
+                }
+			}
 			Intent i = new Intent(view.getContext(),
 					GetFeatureInfoLayerListActivity.class);
-			i.putExtra(Constants.ParamKeys.LAYERS, layerNames);
+			i.putExtra(Constants.ParamKeys.LAYERS, sanitizedNames);
 			BBoxQuery query = new BBoxQuery();
 			query.setE(e);
 			query.setN(n);

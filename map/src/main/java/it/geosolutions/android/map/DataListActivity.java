@@ -76,8 +76,9 @@ public class DataListActivity extends AppCompatActivity {
 
     public void onCreate( Bundle icicle ) {
         super.onCreate(icicle);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         setContentView(R.layout.map_data_list);
         
        

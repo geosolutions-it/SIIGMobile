@@ -58,5 +58,7 @@
     <string name="success_saving">Successfully saved the processing %1$s for %2$s</string>
     <string name="error_saving">Error saving the processing %s</string>
     <string name="delete_results_message">Do you really want to delete these processings ?</string>
+    <string name="formula_street">PIS formula</string>
+    <string name="formula_risk">Risk formula</string>
 
 </resources>

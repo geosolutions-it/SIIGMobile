@@ -45,10 +45,12 @@ public class GetFeatureInfoAttributeActivity  extends AppCompatActivity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		overridePendingTransition(R.anim.in_from_right,
-                R.anim.out_to_left);
+				R.anim.out_to_left);
 
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if(getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
     	FragmentManager fm = getSupportFragmentManager();
  	  	
     	// During initial setup, plug in the details fragment.

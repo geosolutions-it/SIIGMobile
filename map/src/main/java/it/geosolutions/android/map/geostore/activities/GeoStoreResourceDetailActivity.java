@@ -46,7 +46,9 @@ public class GeoStoreResourceDetailActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if(getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 		if (savedInstanceState == null) {
 			// During initial setup, plug in the details fragment.
 			GeoStoreResourceDetailsFragment detail = new GeoStoreResourceDetailsFragment();

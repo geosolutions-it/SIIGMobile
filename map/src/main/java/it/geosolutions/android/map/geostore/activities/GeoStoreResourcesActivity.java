@@ -56,8 +56,9 @@ public class GeoStoreResourcesActivity extends AppCompatActivity {
 		String layerStoreName = getIntent().getExtras().getString(PARAMS.LAYERSTORE_NAME);
 		setTitle(layerStoreName +  " - " + getString(R.string.available_maps));
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+		if(getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 		if (savedInstanceState == null) {
 			// During initial setup, plug in the details fragment.
 			GeoStoreResourceListFragment resources = new GeoStoreResourceListFragment();

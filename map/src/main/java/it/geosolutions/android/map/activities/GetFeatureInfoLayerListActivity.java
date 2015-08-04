@@ -48,7 +48,9 @@ public class GetFeatureInfoLayerListActivity  extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         requestWindowFeature(Window.FEATURE_PROGRESS);
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if(getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
         FragmentManager fm = getSupportFragmentManager();
         
    	 	// During initial setup, plug in the details fragment.

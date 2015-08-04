@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -82,6 +83,22 @@ public class ComputeFormActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compute_form);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.m_toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        // Set an OnMenuItemClickListener to handle menu item clicks
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                // Handle the menu item
+                return true;
+            }
+        });
+
+        // Inflate a menu to be displayed in the toolbar
+        toolbar.inflateMenu(R.menu.main);
+
         mNavigationDrawerFragment = (ComputeNavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.compute_navigation_drawer);
         mTitle = getTitle();
@@ -89,12 +106,18 @@ public class ComputeFormActivity extends AppCompatActivity
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.compute_navigation_drawer,
+                toolbar,
                 (DrawerLayout) findViewById(R.id.compute_drawer_layout));
 
         mNavigationDrawerFragment.setEntries(new String[]{
                         getString(R.string.go_back)
                 }
         );
+
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
 
     }
@@ -346,7 +369,7 @@ public class ComputeFormActivity extends AppCompatActivity
 
                     RestAdapter restAdapter = new RestAdapter.Builder()
                             .setEndpoint(SIIGRetrofitClient.ENDPOINT)
-                            .setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
+                            //.setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
                             .setRequestInterceptor(new RequestInterceptor() {
                                 @Override
                                 public void intercept(RequestFacade request) {

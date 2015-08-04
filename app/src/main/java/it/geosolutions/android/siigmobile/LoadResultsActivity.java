@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -58,6 +59,22 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.risk_result_layout);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.m_toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        // Set an OnMenuItemClickListener to handle menu item clicks
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                // Handle the menu item
+                return true;
+            }
+        });
+
+        // Inflate a menu to be displayed in the toolbar
+        toolbar.inflateMenu(R.menu.main);
 
         final ListView lv = (ListView) findViewById(R.id.result_lv);
 
@@ -223,7 +240,13 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
             @Override
             public void onDestroyActionMode(ActionMode mode) {
 
-
+                // Unselect all the records
+                if(rra != null){
+                    int size = rra.getCount();
+                    for(int i = 0; i < size; i++ ) {
+                        rra.unselect(i);
+                    }
+                }
             }
         });
 
@@ -252,12 +275,18 @@ public class LoadResultsActivity extends AppCompatActivity  implements ComputeNa
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.result_navigation_drawer,
+                toolbar,
                 (DrawerLayout) findViewById(R.id.result_drawer_layout));
 
         mNavigationDrawerFragment.setEntries(new String[]{
                         getString(R.string.go_back)
                 }
         );
+
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
     }
 

@@ -234,8 +234,8 @@ public class MapsActivity extends MapActivityBase {
 	protected void onCreate(Bundle savedInstanceState) {
 		 // setup loading 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        getSupportActionBar();
-        setSupportProgressBarIndeterminateVisibility(false); 
+        //getSupportActionBar();
+        //setSupportProgressBarIndeterminateVisibility(false);
 		super.onCreate(savedInstanceState);
 		
 		if(getIntent() != null && getIntent().hasExtra(PARAMETERS.DRAWER_MODE)){
@@ -432,8 +432,10 @@ public class MapsActivity extends MapActivityBase {
 			
 			// Set the drawer toggle as the DrawerListener
 			mDrawerLayout.setDrawerListener(mDrawerToggle);
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-			getSupportActionBar().setHomeButtonEnabled(true);
+			if(getSupportActionBar() != null) {
+				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+				getSupportActionBar().setHomeButtonEnabled(true);
+			}
 			
 			//layerList
 			break;

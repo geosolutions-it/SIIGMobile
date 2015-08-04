@@ -42,8 +42,9 @@ FeatureDetailsFragment details=null;
 protected void onCreate(Bundle savedInstanceState) {
     overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
     super.onCreate(savedInstanceState);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+    if(getSupportActionBar() != null) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
     if (savedInstanceState == null) {
         // During initial setup, plug in the details fragment.
         details = new FeatureDetailsFragment();

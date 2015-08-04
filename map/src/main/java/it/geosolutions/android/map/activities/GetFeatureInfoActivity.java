@@ -32,8 +32,10 @@ public class GetFeatureInfoActivity extends AppCompatActivity{
 	    @Override
 	    protected void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
-	        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	        if (savedInstanceState == null) {
+			if(getSupportActionBar() != null) {
+				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			}
+			if (savedInstanceState == null) {
 	            // During initial setup, plug in the details fragment.
 	        	GetFeatureInfoFragment details = new GetFeatureInfoFragment();
 	            details.setArguments(getIntent().getExtras());

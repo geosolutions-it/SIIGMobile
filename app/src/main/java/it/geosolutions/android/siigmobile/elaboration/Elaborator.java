@@ -100,7 +100,7 @@ public abstract class Elaborator {
      */
     private void calc(final BoundingBox bb, final int pFormula,final boolean isPolygon){
 
-        final String userFormula = pFormula == Config.FORMULA_STREET ? "Formula Street" : "Formula Risk";
+        final String userFormula = pFormula == Config.FORMULA_STREET ? mContext.getString(R.string.formula_street) : mContext.getString(R.string.formula_risk);
 
         final int[] formula = {pFormula};
         // Prepare dummy input features
@@ -179,7 +179,7 @@ public abstract class Elaborator {
 
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(SIIGRetrofitClient.ENDPOINT)
-                .setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
+                //.setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestFacade request) {
