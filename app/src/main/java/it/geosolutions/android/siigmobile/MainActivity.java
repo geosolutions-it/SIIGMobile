@@ -114,6 +114,7 @@ public class MainActivity extends MapActivityBase
     private TextView legendTitle;
     private BoundingBox geoCodingBoundingBox;
     private Marker geoCodingMarker;
+    private ElaborationResult elaborationResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -336,12 +337,6 @@ public class MainActivity extends MapActivityBase
 
                     if (layerToCenter != null && l.getTitle().equals(layerToCenter)) {
 
-                        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), layerToCenter);
-
-                        if (bb != null) {
-                            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
-                        }
-
                         break; //stop looping, only this result layer interests
 
                     }
@@ -359,7 +354,7 @@ public class MainActivity extends MapActivityBase
         AdvancedStyle legendStyle = currentStyle == 0
                 ? styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1")
                 : styleManager.getStyle(Config.RESULT_STYLES[currentStyle - 1]) ;
-        
+
         legendAdapter.applyStyle(legendStyle);
         if(currentStyle == 4){
             legendTitle.setText(getResources().getString(R.string.pis_title));
@@ -477,7 +472,13 @@ public class MainActivity extends MapActivityBase
             case 4:
                 currentStyle = position;
                 //reload, if an elaboration arrived center on it
-                loadDBLayers(user_edited_layer_title);
+                if(elaborationResult == null){
+                    loadDBLayers(null);
+                }else if(position == 4){
+                    loadDBLayers(elaborationResult.getStreetTableName());
+                }else {
+                    loadDBLayers(elaborationResult.getRiskTableName());
+                }
                 break;
             case 5:
 
@@ -868,12 +869,17 @@ public class MainActivity extends MapActivityBase
         if ((requestCode == RESULT_REQUEST_CODE  ) && resultCode == RESULT_OK) {
 
             //final String tableName = data.getStringExtra(Config.RESULT_TABLENAME);
-            ElaborationResult result = (ElaborationResult) data.getSerializableExtra(Config.RESULT_ITEM);
-            applyResult(result);
+            elaborationResult = (ElaborationResult) data.getSerializableExtra(Config.RESULT_ITEM);
+
+            applyResult(elaborationResult);
+
         }
     }
 
     public void applyResult(ElaborationResult result){
+
+        elaborationResult = result;
+
         if(currentStyle == 4 && result.getStreetTableName() != null ){//PIS
             loadDBLayers(result.getStreetTableName());
             invalidateMenu(result.getStreetTableName(), true);
@@ -881,17 +887,36 @@ public class MainActivity extends MapActivityBase
             loadDBLayers(result.getRiskTableName());
             invalidateMenu(result.getRiskTableName(),  true);
         }
+
+
+        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(
+                getBaseContext(),
+                result.getRiskTableName() != null
+                        ? result.getRiskTableName()
+                        : result.getStreetTableName());
+
+        if (bb != null) {
+            mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
+        }
     }
 
     /**
      * removes the save button from the toolbar
      */
     public void invalidateMenu(final String tableName, final boolean clearable) {
+        if(tableName == null){
+            elaborationResult = null;
+        }
         user_edited_layer_title = tableName;
 
         user_layer_clearable = clearable;
 
         invalidateOptionsMenu();
+
+        if(mNavigationDrawerFragment != null){
+            mNavigationDrawerFragment.setItemSelected(currentStyle);
+        }
+
     }
 
     public void clearMenu() {

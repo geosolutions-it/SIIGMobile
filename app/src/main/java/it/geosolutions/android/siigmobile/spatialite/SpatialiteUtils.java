@@ -636,6 +636,10 @@ public class SpatialiteUtils {
      */
     public static BoundingBox getBoundingBoxForSpatialiteTable(final Context context, final String tableName){
 
+        if(tableName == null){
+            return null;
+        }
+
         try {
             final Database db = SpatialiteUtils.openSpatialiteDB(context);
 
