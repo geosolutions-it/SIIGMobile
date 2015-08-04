@@ -83,6 +83,7 @@ public class MainActivity extends MapActivityBase
      * Tag for Logging
      */
     private static final String TAG = "MainActivity";
+    private static final String KEY_RESULT = "ELABORATION_RESULT";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -101,7 +102,6 @@ public class MainActivity extends MapActivityBase
 
     private final static int RESULT_REQUEST_CODE = 1234;
 
-    private String  user_edited_layer_title;
     private boolean user_layer_clearable = false;
     
     private static int currentStyle = Config.DEFAULT_STYLE;// Start with "Rischio Totale" theme
@@ -235,10 +235,18 @@ public class MainActivity extends MapActivityBase
 
             // Location Control
             LocationControl lc  =new LocationControl(mapView);
-            lc.setActivationButton((ImageButton)findViewById(R.id.ButtonLocation));
+            lc.setActivationButton((ImageButton) findViewById(R.id.ButtonLocation));
             mapView.addControl(lc);
 
-            loadDBLayers(null);
+            if (elaborationResult == null) {
+                loadDBLayers(null);
+            } else if (currentStyle == 4) {
+                loadDBLayers(elaborationResult.getStreetTableName());
+                invalidateMenu(elaborationResult.getStreetTableName(), true);
+            } else {
+                loadDBLayers(elaborationResult.getRiskTableName());
+                invalidateMenu(elaborationResult.getRiskTableName(), true);
+            }
 
         }else{
 
@@ -907,8 +915,6 @@ public class MainActivity extends MapActivityBase
         if(tableName == null){
             elaborationResult = null;
         }
-        user_edited_layer_title = tableName;
-
         user_layer_clearable = clearable;
 
         invalidateOptionsMenu();
@@ -941,5 +947,23 @@ public class MainActivity extends MapActivityBase
         if(pd != null && pd.isShowing()){
             pd.dismiss();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        if(elaborationResult != null){
+            outState.putSerializable(KEY_RESULT, elaborationResult);
+        }
+
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        elaborationResult = (ElaborationResult) savedInstanceState.getSerializable(KEY_RESULT);
     }
 }
