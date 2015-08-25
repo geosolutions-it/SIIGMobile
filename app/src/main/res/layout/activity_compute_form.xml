@@ -13,9 +13,11 @@
         android:minHeight="?attr/actionBarSize">
 
     </android.support.v7.widget.Toolbar>
-    <android.support.v4.widget.DrawerLayout  android:id="@+id/compute_drawer_layout"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context="it.geosolutions.android.siigmobile.ComputeFormActivity">
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/compute_drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="it.geosolutions.android.siigmobile.ComputeFormActivity">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
