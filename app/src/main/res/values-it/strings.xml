@@ -19,7 +19,7 @@
     <string name="map_config_error">Impossibile configurare la mappa</string>
     <string name="ok_string">OK</string>
 
-    <string name="elab_dialog_title">Nuova elaborazione</string>
+    <string name="elab_dialog_title">Nuova Elaborazione</string>
     <string name="elab_dialog_enter_title">Inserisci un nome per questa elaborazione.</string>
     <string name="elab_name">Nome</string>
     <string name="elab_description">Descrizione</string>

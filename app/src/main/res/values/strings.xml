@@ -17,7 +17,7 @@
     <string name="road_risk_description_title">Road Risk Option Description</string>
     <string name="road_risk_description" translatable="false">Donec in justo eget justo feugiat maximus. Proin eleifend pretium turpis ac interdum.</string>
     <string name="title_activity_compute_form" translatable="false">ComputeFormActivity</string>
-    <string name="title_activity_results">Load Elaboration</string>
+    <string name="title_activity_results">Load Result</string>
 
     <string name="download_base_data">Map files will be downloaded, do you want to proceed?</string>
     <string name="download_base_data_title">Download</string>
@@ -28,14 +28,14 @@
     <string name="place_not_covered">The selected place is not covered by the map file</string>
     <string name="not_online">You need to be online to use this service</string>
 
-    <string name="elab_dialog_title">New processing</string>
-    <string name="elab_dialog_enter_title">Enter a name for this processing.</string>
+    <string name="elab_dialog_title">New Process</string>
+    <string name="elab_dialog_enter_title">Enter a name for this process.</string>
     <string name="elab_name">Name</string>
     <string name="elab_description">Description</string>
     <string name="elab_enter_title">Enter a name please</string>
     <string name="elab_success">Name successfully saved</string>
-    <string name="elab_failure">Failed to save the name for this processing</string>
-    <string name="elab_no_results">No processings available yet</string>
+    <string name="elab_failure">Failed to save the name for this process</string>
+    <string name="elab_no_results">No processes available yet</string>
 
     <string name="bb_longitude">Longitude</string>
     <string name="bb_latitude">Latitude</string>
@@ -55,9 +55,9 @@
     <string name="saving_data">Saving&#8230;</string>
     <string name="compute_error">Server response is invalid, please try again later</string>
     <string name="pis_title">Street Risk</string>
-    <string name="success_saving">Successfully saved the processing %1$s for %2$s</string>
-    <string name="error_saving">Error saving the processing %s</string>
-    <string name="delete_results_message">Do you really want to delete these processings ?</string>
+    <string name="success_saving">Successfully saved the process %1$s for %2$s</string>
+    <string name="error_saving">Error saving the process %s</string>
+    <string name="delete_results_message">Do you really want to delete these results ?</string>
     <string name="formula_street">PIS formula</string>
     <string name="formula_risk">Risk formula</string>
 
