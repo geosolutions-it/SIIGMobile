@@ -54,5 +54,6 @@
     <string name="delete_results_message">Vuoi eliminare questi risultati ?</string>
     <string name="formula_street">PIS</string>
     <string name="formula_risk">Rischio</string>
+    <string name="title_activity_results">Carica Elaborazione</string>
 
 </resources>

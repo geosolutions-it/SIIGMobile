@@ -17,7 +17,7 @@
     <string name="road_risk_description_title">Road Risk Option Description</string>
     <string name="road_risk_description" translatable="false">Donec in justo eget justo feugiat maximus. Proin eleifend pretium turpis ac interdum.</string>
     <string name="title_activity_compute_form" translatable="false">ComputeFormActivity</string>
-    <string name="title_activity_results" translatable="false">RiskResultsActivity</string>
+    <string name="title_activity_results">Load Elaboration</string>
 
     <string name="download_base_data">Map files will be downloaded, do you want to proceed?</string>
     <string name="download_base_data_title">Download</string>
