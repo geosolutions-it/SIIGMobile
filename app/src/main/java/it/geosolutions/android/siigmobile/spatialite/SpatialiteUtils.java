@@ -163,12 +163,16 @@ public class SpatialiteUtils {
      */
     public static boolean createNamesTable(final Database db){
 
-        return exec(db,"CREATE TABLE '"+ NAMES_TABLE + "'(" +
-                "'" + RESULT_ID + "' INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'" + CREATED_TABLE_NAME + "' TEXT, " +
-                "'" + USER_RESULT_NAME + "' TEXT, " +
-                "'" + USER_RESULT_DESCRIPTION + "' TEXT,"+
-                "'" + ISPIS + "' BOOLEAN);");
+        StringBuilder sb = new StringBuilder(200);
+        sb.append("CREATE TABLE '").append(NAMES_TABLE)
+                .append("'(")
+                .append("'").append(RESULT_ID).append("' INTEGER PRIMARY KEY AUTOINCREMENT, ")
+                .append("'").append( CREATED_TABLE_NAME ).append( "' TEXT, " )
+                .append("'").append( USER_RESULT_NAME ).append( "' TEXT, " )
+                .append("'").append( USER_RESULT_DESCRIPTION ).append( "' TEXT," )
+                .append("'").append( ISPIS ).append( "' BOOLEAN);");
+
+        return exec(db,sb.toString());
 
     }
 
@@ -180,9 +184,21 @@ public class SpatialiteUtils {
      */
     public static boolean insertIntoNamesTable(final Database db, final String createdTableName, boolean ispis){
 
-        return exec(db,"INSERT INTO " + NAMES_TABLE+
-                "("+RESULT_ID+","+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+","+ISPIS+")"+
-                " VALUES (NULL,'"+createdTableName+"',NULL,NULL,"+(ispis?"1":"0")+")");
+        StringBuilder sb = new StringBuilder(200);
+        sb.append("INSERT INTO " ).append( NAMES_TABLE)
+                .append("(")
+                .append(RESULT_ID).append(",")
+                .append(CREATED_TABLE_NAME).append(",")
+                .append(USER_RESULT_NAME).append(",")
+                .append(USER_RESULT_DESCRIPTION).append(",")
+                .append(ISPIS).append(")")
+                .append(" VALUES (NULL,'")
+                .append(createdTableName)
+                .append("',NULL,NULL,")
+                .append((ispis ? "1" : "0"))
+                .append(")");
+        
+        return exec(db, sb.toString());
 
     }
 
@@ -196,7 +212,14 @@ public class SpatialiteUtils {
      */
     public static boolean updateNameTableWithUserData(final Database db, final String createdTableName, final String userResultName, final String userResultDescription){
 
-        return exec(db,"UPDATE "+ NAMES_TABLE + " SET "+USER_RESULT_NAME+" = '"+userResultName+"' , "+USER_RESULT_DESCRIPTION+" = '"+userResultDescription+"' WHERE "+ CREATED_TABLE_NAME + " = '" + createdTableName+"';");
+        StringBuilder sb = new StringBuilder(200);
+        sb.append("UPDATE ").append( NAMES_TABLE )
+                .append(" SET ")
+                .append(USER_RESULT_NAME).append(" = '").append(userResultName).append("' , ")
+                .append(USER_RESULT_DESCRIPTION).append(" = '").append(userResultDescription)
+                .append("' WHERE ").append( CREATED_TABLE_NAME ).append( " = '" ).append( createdTableName).append("';");
+        
+        return exec(db,sb.toString());
     }
 
     /**
@@ -207,7 +230,11 @@ public class SpatialiteUtils {
      */
     public static boolean deleteNamesTableEntry(final Database db, final String createdTableName){
 
-        return exec(db,"DELETE FROM "+NAMES_TABLE+" WHERE "+CREATED_TABLE_NAME+"="+createdTableName);
+        StringBuilder sb = new StringBuilder(100);
+        sb.append("DELETE FROM ").append(NAMES_TABLE)
+                .append(" WHERE ").append(CREATED_TABLE_NAME).append("=").append(createdTableName);
+        
+        return exec(db,sb.toString());
     }
 
     /**
@@ -240,8 +267,13 @@ public class SpatialiteUtils {
     public static HashMap<String,ArrayList<String[]>> getUnifiedSavedResultTableNames(final Database db){
 
         HashMap<String,ArrayList<String[]>> results = new HashMap<>();
+        StringBuilder sb = new StringBuilder(100);
+        sb.append("SELECT ").append(CREATED_TABLE_NAME).append(",").append(USER_RESULT_NAME).append(",").append(USER_RESULT_DESCRIPTION).append(",").append(ISPIS)
+                .append(" FROM ").append( NAMES_TABLE )
+                .append(" WHERE ").append(USER_RESULT_NAME).append(" IS NOT NULL;");
+        
         try{
-            Stmt stmt = db.prepare("SELECT "+CREATED_TABLE_NAME+","+USER_RESULT_NAME+","+USER_RESULT_DESCRIPTION+","+ISPIS+" FROM "+ NAMES_TABLE +" WHERE "+USER_RESULT_NAME+" IS NOT NULL;");
+            Stmt stmt = db.prepare(sb.toString());
             while(stmt.step()){
 
                 if(results.containsKey(stmt.column_string(1))){
@@ -274,7 +306,13 @@ public class SpatialiteUtils {
 
         try{
             ArrayList<String> names = new ArrayList<>();
-            Stmt stmt = db.prepare("SELECT "+CREATED_TABLE_NAME+" FROM "+ NAMES_TABLE +" WHERE "+USER_RESULT_NAME+" IS NULL;");
+            
+            StringBuilder sb = new StringBuilder(100);
+            sb.append("SELECT ").append(CREATED_TABLE_NAME)
+                    .append(" FROM ").append( NAMES_TABLE )
+                    .append(" WHERE ").append(USER_RESULT_NAME).append(" IS NULL;");
+            
+            Stmt stmt = db.prepare(sb.toString());
             while(stmt.step()){
 
                 names.add(stmt.column_string(0));
@@ -295,11 +333,13 @@ public class SpatialiteUtils {
      */
     public static Pair<String,String> getTableUserNameAndDescription(final Database db, final String createdTableName){
 
-        final String sql = "SELECT "+USER_RESULT_NAME+" , "+USER_RESULT_DESCRIPTION+" FROM "+NAMES_TABLE+" WHERE "+CREATED_TABLE_NAME+"='"+createdTableName+"';";
-
+        StringBuilder sb = new StringBuilder(100);
+        sb.append("SELECT ").append(USER_RESULT_NAME).append(" , ").append(USER_RESULT_DESCRIPTION)
+                .append(" FROM ").append(NAMES_TABLE)
+                .append(" WHERE ").append(CREATED_TABLE_NAME).append("='").append(createdTableName).append("';");
 
         try{
-            final Stmt stmt = db.prepare(sql);
+            final Stmt stmt = db.prepare(sb.toString());
 
             if (stmt.step()) {
                 final String name = stmt.column_string(0);
@@ -324,23 +364,23 @@ public class SpatialiteUtils {
      */
     public static boolean createResultTable(final Database db, final String tableName, final int crs, final String geometryType) {
 
-        final String create_resultTable_stmt = "CREATE TABLE '" + tableName + "' (" +
-                "'" + RESULT_ID + "' INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "'" + ID + "' INTEGER, "+
-                "'" + ID_GEO_ARCO + "' INTEGER, "+
-                "'" + RISCHIO1 + "' DOUBLE, "+
-                "'" + RISCHIO2 + "' DOUBLE, "+
-                "'" + LABEL_SOCIALE + "' TEXT, "+
-                "'" + LABEL_AMBIENTALE + "' TEXT, "+
-                "'" + LABEL_TOTALE + "' TEXT, "+
-                "'" + THEMA_SOCIALE + "' INTEGER, "+
-                "'" + THEMA_AMBIENTALE + "' INTEGER, "+
-                "'" + THEMA_TOTALE + "' INTEGER, "+
-                "'" + CRS + "' INTEGER);";
-
+        StringBuilder sb = new StringBuilder(600);
+        sb.append("CREATE TABLE '" ).append( tableName ).append( "' (" ).append(
+                "'" ).append( RESULT_ID ).append( "' INTEGER PRIMARY KEY AUTOINCREMENT, " ).append(
+                "'" ).append( ID ).append( "' INTEGER, ").append(
+                "'" ).append( ID_GEO_ARCO ).append( "' INTEGER, ").append(
+                "'" ).append( RISCHIO1 ).append( "' DOUBLE, ").append(
+                "'" ).append( RISCHIO2 ).append( "' DOUBLE, ").append(
+                "'" ).append( LABEL_SOCIALE ).append( "' TEXT, ").append(
+                "'" ).append( LABEL_AMBIENTALE ).append( "' TEXT, ").append(
+                "'" ).append( LABEL_TOTALE ).append( "' TEXT, ").append(
+                "'" ).append( THEMA_SOCIALE ).append( "' INTEGER, ").append(
+                "'" ).append( THEMA_AMBIENTALE ).append( "' INTEGER, ").append(
+                "'" ).append( THEMA_TOTALE ).append( "' INTEGER, ").append(
+                "'" ).append( CRS ).append("' INTEGER);");
 
         try {
-            Stmt stmt01 = db.prepare(create_resultTable_stmt);
+            Stmt stmt01 = db.prepare(sb.toString());
             if (stmt01.step()) {
                 if (BuildConfig.DEBUG) {
                     Log.v(TAG, "Result Table created");
@@ -428,6 +468,24 @@ public class SpatialiteUtils {
             int id, arc_id, total_inserted = 0;
             double risk1, risk2, thema_soc, thema_amb, thema_tot;
             String label_soc, label_amb, label_tot;
+
+            StringBuilder sb = new StringBuilder(1000);
+            sb.append("INSERT INTO " ).append( tableName ).append(
+                    " (" ).append( RESULT_ID ).append( ", " )
+                    .append(ID).append( ", " )
+                    .append(ID_GEO_ARCO).append( ", " )
+                    .append(RISCHIO1).append( ", " )
+                    .append(RISCHIO2).append( ", "
+                    ).append( LABEL_SOCIALE ).append( ", "
+                    ).append( LABEL_AMBIENTALE ).append( ", "
+                    ).append( LABEL_TOTALE ).append( ", "
+                    ).append( THEMA_SOCIALE ).append( ", "
+                    ).append( THEMA_AMBIENTALE ).append( ", "
+                    ).append( THEMA_TOTALE ).append( ", "
+                    ).append( CRS ).append( ", " )
+                    .append(GEOMETRY).append(")");
+            
+            int baseLength = sb.length();
             
             //save feature to table
             for (Feature feature : result.features) {
@@ -449,25 +507,23 @@ public class SpatialiteUtils {
                     Log.e(TAG, "geometry object null");
                     return new Pair<>(false,"geometry object null");
                 }
-                stmt = db.prepare("INSERT INTO " + tableName +
-                        " (" + RESULT_ID + ", " + ID + ", " + ID_GEO_ARCO + ", " + RISCHIO1 + ", " + RISCHIO2 + ", "
-                        + LABEL_SOCIALE + ", "
-                        + LABEL_AMBIENTALE + ", "
-                        + LABEL_TOTALE + ", "
-                        + THEMA_SOCIALE + ", "
-                        + THEMA_AMBIENTALE + ", "
-                        + THEMA_TOTALE + ", "
-                        + CRS + ", " + GEOMETRY + ")" +
-                        " VALUES (NULL, " + id + " , " + arc_id + " , " + risk1 + " , " + risk2 +
-                        " , '" + label_soc + "', '"
-                        + label_amb + "', '"
-                        + label_tot + "', "
-                        + thema_soc + ", "
-                        + thema_amb + ", "
-                        + thema_tot + ", "
 
-                        + crs_id + ", " +
-                        "ST_GeomFromText('" + feature.geometry.toString() + "', " + crs_id + "));");
+                sb.setLength(baseLength);
+                sb.append(" VALUES (NULL, " )
+                        .append(id).append( " , " )
+                        .append(arc_id).append( " , " )
+                        .append(risk1).append( " , " )
+                        .append(risk2).append(" , '" )
+                        .append(label_soc).append( "', '")
+                        .append(label_amb).append( "', '")
+                        .append(label_tot).append( "', ")
+                        .append(thema_soc).append( ", ")
+                        .append(thema_amb).append( ", ")
+                        .append(thema_tot).append( ", ")
+                        .append(crs_id).append( ", " )
+                        .append("ST_GeomFromText('").append( feature.geometry.toString() ).append("', ").append( crs_id ).append("));");
+                
+                stmt = db.prepare(sb.toString());
 
                 stmt.step();
 
@@ -510,7 +566,17 @@ public class SpatialiteUtils {
 
             result.tableName = tableName;
 
-            Stmt stmt = db.prepare("SELECT "+RESULT_ID+" , "+ ID+" , "+ID_GEO_ARCO+" , "+RISCHIO1+" , "+RISCHIO2+" , "+CRS+" , ST_AsBinary(CastToXY("+GEOMETRY+")) as "+GEOMETRY+" FROM "+tableName+" asc;");
+            StringBuilder sb = new StringBuilder(200);
+            sb.append("SELECT ")
+                    .append(RESULT_ID).append(" , ")
+                    .append( ID).append(" , ")
+                    .append(ID_GEO_ARCO).append(" , ")
+                    .append(RISCHIO1).append(" , ")
+                    .append(RISCHIO2).append(" , ")
+                    .append(CRS).append(" , ST_AsBinary(CastToXY(").append(GEOMETRY).append(")) as ").append(GEOMETRY)
+                    .append(" FROM ").append(tableName).append(" asc;");
+            
+            Stmt stmt = db.prepare(sb.toString());
 
             int featureCount = 0;
 
