@@ -436,9 +436,9 @@ public class SpatialiteUtils {
                 arc_id = (int) Math.rint((Double) feature.properties.get(ID_GEO_ARCO)); //is parsed by GSON as double, why ?
                 risk1 = (Double) feature.properties.get(RISCHIO1);
                 risk2 = (Double) feature.properties.get(RISCHIO2);
-                thema_soc = (Double) feature.properties.get(THEMA_SOCIALE);
-                thema_amb = (Double) feature.properties.get(THEMA_AMBIENTALE);
-                thema_tot = (Double) feature.properties.get(THEMA_TOTALE);
+                thema_soc = feature.properties.containsKey(THEMA_SOCIALE) ? (Double) feature.properties.get(THEMA_SOCIALE) : 0;
+                thema_amb = feature.properties.containsKey(THEMA_AMBIENTALE) ? (Double) feature.properties.get(THEMA_AMBIENTALE) : 0;
+                thema_tot = feature.properties.containsKey(THEMA_TOTALE) ? (Double) feature.properties.get(THEMA_TOTALE) : 0;
                 label_soc = (String) feature.properties.get(LABEL_SOCIALE);
                 label_amb = (String) feature.properties.get(LABEL_AMBIENTALE);
                 label_tot = (String) feature.properties.get(LABEL_TOTALE);

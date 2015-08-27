@@ -50,16 +50,18 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug{
+            testCoverageEnabled = true
+        }
     }
+
     packagingOptions{
         exclude 'COPYING'
         exclude 'COPYING.LESSER'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE.txt'
     }
-
-
-
 }
 
 task copyNativeLibs(type: Copy) {
@@ -87,13 +89,12 @@ dependencies {
 
     //Retrofit
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0-SNAPSHOT'
-    compile 'com.squareup.okhttp:okhttp:2.5.0-SNAPSHOT'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
 
     compile 'com.newrelic.agent.android:android-agent:5.+'
 
     androidTestCompile 'xmlunit:xmlunit:1.6'
-
 }
 
 def String getProjectProperty(String propertyName)

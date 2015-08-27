@@ -70,7 +70,7 @@ public class GeoCodingTest extends ActivityUnitTestCase<MainActivity> {
 
                 assertTrue(lat.startsWith("45.69"));
 
-                assertTrue(lon.startsWith("9.67"));
+                assertTrue(lon.startsWith("9.6"));
 
                 //release
                 latch.countDown();
