@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newrelic.agent.android.NewRelic;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
@@ -124,9 +125,22 @@ public class MainActivity extends MapActivityBase
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        NewRelic.withApplicationToken(
-//                ""
-//        ).start(this.getApplication());
+        if(!BuildConfig.NEWRELIC_APPLICATION_TOKEN.isEmpty()) {
+
+            if(BuildConfig.DEBUG){
+                Log.v(TAG, "NewRelic App Token: "+ BuildConfig.NEWRELIC_APPLICATION_TOKEN);
+            }
+
+            // Start NewRelic monitoring
+            NewRelic.withApplicationToken(
+                    BuildConfig.NEWRELIC_APPLICATION_TOKEN
+            ).start(this.getApplication());
+
+        }else{
+            if(BuildConfig.DEBUG){
+                Log.v(TAG, "NewRelic App Token not found");
+            }
+        }
 
         MapFilesProvider.setBaseDir(Config.BASE_DIR_NAME);
         MAP_FILE = MapFilesProvider.getBackgroundMapFile();
