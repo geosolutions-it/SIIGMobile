@@ -63,7 +63,6 @@ public class ValutazioneDannoWPSTest extends ActivityUnitTestCase<ComputeFormAct
 
         final ValutazioneDannoWPSRequest request = new ValutazioneDannoWPSRequest(
                 features,
-                bufferWidth,
                 materials,
                 accident,
                 entities);

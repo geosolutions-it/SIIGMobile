@@ -104,7 +104,7 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
 		
 		//Calculate radius of one point selection
         float radius_pixel = (float)pref.getInt("OnePointSelectionRadius", 10);
-        double fin_x = ConversionUtilities.convertFromPixelsToLongitude(view, startX+radius_pixel); 
+        double fin_x = ConversionUtilities.convertFromPixelsToLongitude(view, startX+radius_pixel);
         radius = Math.abs(fin_x - lon);
         Log.v("MAPINFOTOOL", "circle: center (" + lon + "," + lat + ") radius " + radius);
     	infoDialogCircle(lon,lat,radius,view.getMapViewPosition().getZoomLevel());

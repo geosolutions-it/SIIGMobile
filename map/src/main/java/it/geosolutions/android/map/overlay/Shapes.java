@@ -24,6 +24,7 @@ import android.graphics.Paint;
 import com.vividsolutions.jts.android.PointTransformation;
 import com.vividsolutions.jts.android.ShapeWriter;
 import com.vividsolutions.jts.android.geom.DrawableShape;
+import com.vividsolutions.jts.android.geom.PathShape;
 import com.vividsolutions.jts.geom.Geometry;
 
 import eu.geopaparazzi.spatialite.database.spatial.core.GeometryIterator;
@@ -40,7 +41,16 @@ public class Shapes {
 	private Canvas canvas;
 	private AdvancedStyle style4Table;
 	private GeometryIterator geometryIterator;
-	
+
+    /**
+     * a horizontal label offset of 10 resolves some rendering issues with drawTextonPath()
+     */
+    private final static int LABEL_H_OFFSET = 10;
+    /**
+     * a vertical label offset of 10 centers the label on the path
+     */
+    private final static int LABEL_V_OFFSET = 10;
+
 	/**
 	 * Constructor for class shapes
 	 * @param pointTransformer
@@ -59,8 +69,9 @@ public class Shapes {
 	/**
 	 * Method used to draw a line on map.
      * @param advancedStyle
+     * @param currentZoomLevel the current zoom level of the map view
      */
-	public void drawLines(AdvancedStyle advancedStyle){
+	public void drawLines(AdvancedStyle advancedStyle, byte currentZoomLevel){
         Paint stroke = StyleManager.getStrokePaint4Style(advancedStyle);
         Paint textStroke = StyleManager.getTextStrokePaint4Style(advancedStyle);
         ShapeWriter wr = new ShapeWriter(pointTransformer);
@@ -78,8 +89,16 @@ public class Shapes {
                 shape.draw(canvas, stroke);
             }
 
-            if(textStroke != null){
-                //canvas.drawTextOnPath();
+            //draw labels if zoom level fits and data is available
+            if(currentZoomLevel >= advancedStyle.label_minZoom &&
+                    textStroke != null &&
+                    shape instanceof PathShape &&
+                    geom.getUserData() != null ){
+
+                    Object userData = geom.getUserData();
+
+                    canvas.drawTextOnPath(userData.toString(), ((PathShape) shape).getPath(), LABEL_H_OFFSET, LABEL_V_OFFSET, textStroke);
+
             }
         }
 	}
@@ -140,7 +159,7 @@ public class Shapes {
 		}
 	}
 
-    public void drawLines(Symbolizer symbolizer) {
+    public void drawLines(Symbolizer symbolizer, byte currentZoomLevel) {
         AdvancedStyle astyle = new AdvancedStyle();
         astyle.dashed = symbolizer.dashed;
         astyle.decimationFactor = symbolizer.decimationFactor;
@@ -155,7 +174,8 @@ public class Shapes {
         astyle.textfillcolor = symbolizer.textfillcolor;
         astyle.textstrokecolor = symbolizer.textstrokecolor;
         astyle.width = symbolizer.width;
-        this.drawLines(astyle);
+        astyle.label_minZoom = symbolizer.label_minZoom;
+        this.drawLines(astyle, currentZoomLevel);
     }
 
 
