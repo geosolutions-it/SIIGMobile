@@ -18,7 +18,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,7 +53,6 @@ import java.util.Locale;
 
 import it.geosolutions.android.map.activities.GetFeatureInfoAttributeActivity;
 import it.geosolutions.android.map.activities.MapActivityBase;
-import it.geosolutions.android.map.control.CoordinateControl;
 import it.geosolutions.android.map.control.LocationControl;
 import it.geosolutions.android.map.control.MapControl;
 import it.geosolutions.android.map.control.MapInfoControl;
@@ -75,7 +73,6 @@ import it.geosolutions.android.map.wms.GetFeatureInfoConfiguration;
 import it.geosolutions.android.map.wms.WMSLayer;
 import it.geosolutions.android.map.wms.WMSSource;
 import it.geosolutions.android.siigmobile.elaboration.ElaborationResult;
-import it.geosolutions.android.siigmobile.elaboration.Elaborator;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
@@ -127,6 +124,7 @@ public class MainActivity extends MapActivityBase
     private BoundingBox geoCodingBoundingBox;
     private Marker geoCodingMarker;
     private ElaborationResult elaborationResult;
+    private FixedShapeMapInfoControl invisibleLocationAcquireControl;
 
     private Toolbar mToolbar;
 
@@ -303,12 +301,9 @@ public class MainActivity extends MapActivityBase
 
             if (elaborationResult == null) {
                 loadDBLayers(null);
-            } else if (currentStyle == 4) {
-                loadDBLayers(elaborationResult.getStreetTableName());
-                invalidateMenu(elaborationResult.getStreetTableName(), true);
             } else {
-                loadDBLayers(elaborationResult.getRiskTableName());
-                invalidateMenu(elaborationResult.getRiskTableName(), true);
+                loadDBLayers(elaborationResult.getResultTableName());
+                invalidateMenu(elaborationResult.getResultTableName(), true);
             }
 
         }else{
@@ -649,22 +644,37 @@ public class MainActivity extends MapActivityBase
             return;
         }
 
-        if(position == getResources().getStringArray(R.array.drawer_items).length - 2){ // valutazione danno
-            //TODO configure for valutazione danno flavour
-            if (mapView == null || mapView.getMapViewPosition() == null) {
-                Snackbar
-                        .make(getWindow().getDecorView().findViewById(R.id.snackbarPosition),
-                                R.string.snackbar_missing_map_text,
-                                Snackbar.LENGTH_LONG)
-                        .show();
-            }
-            final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
-            final boolean isPolygonRequest = mapView.getMapViewPosition().getZoomLevel() <= 13;
 
-            showEditElaborationTitleAndDescriptionDialog(bb, isPolygonRequest);
+        if(position == getResources().getStringArray(R.array.drawer_items).length - 2){ // valutazione danno
+
+            // creates a mapInfoControl which is not tied to an imageview but "invisible"
+            invisibleLocationAcquireControl = FixedShapeMapInfoControl.createOnePointControl(
+                    mapView,
+                    this,
+                    FixedShapeMapInfoControl.DONT_CONNECT,
+                    getString(R.string.touch_point),
+                    new FixedShapeMapInfoControl.OnePointSelectionCallback() {
+                @Override
+                public void pointSelected(double lat, double lon, float pixel_x, float pixel_y, double radius, byte zoomLevel) {
+
+                    mapView.removeControl(invisibleLocationAcquireControl);
+                    invisibleLocationAcquireControl = null;
+
+                    final GeoPoint p = new GeoPoint(lat,lon);
+
+                    Intent i = new Intent(MainActivity.this, ComputeFormActivity.class);
+                    i.putExtra(ComputeFormActivity.PARAM_POINT, p);
+
+                    startActivityForResult(i, RESULT_REQUEST_CODE);
+
+                }
+            });
+            //it is enabled by code
+            invisibleLocationAcquireControl.setEnabled(true);
+
 
         }else if(position == getResources().getStringArray(R.array.drawer_items).length - 1){ // carica elaborazione
-            //TODO configure for valutazione danno flavour
+          
             Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
             startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
 
@@ -673,10 +683,8 @@ public class MainActivity extends MapActivityBase
             //reload, if an elaboration arrived center on it
             if(elaborationResult == null){
                 loadDBLayers(null);
-            }else if(position == 4){
-                loadDBLayers(elaborationResult.getStreetTableName());
-            }else {
-                loadDBLayers(elaborationResult.getRiskTableName());
+            } else {
+                loadDBLayers(elaborationResult.getResultTableName());
             }
         }
 
@@ -906,100 +914,7 @@ public class MainActivity extends MapActivityBase
         return super.onOptionsItemSelected(item);
     }
 */
-    public void showEditElaborationTitleAndDescriptionDialog(final BoundingBox bb, final boolean isPolygon){
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.elab_dialog_title));
-
-        LayoutInflater inflater = LayoutInflater.from(getBaseContext());
-
-        final View editView = inflater.inflate(R.layout.enter_title_layout, null);
-
-        builder.setView(editView);
-
-        final TextView ul_lat_tv = (TextView) editView.findViewById(R.id.tv_upper_left_lat);
-        final TextView ul_lon_tv = (TextView) editView.findViewById(R.id.tv_upper_left_lon);
-        final TextView lr_lat_tv = (TextView) editView.findViewById(R.id.tv_lower_right_lat);
-        final TextView lr_lon_tv = (TextView) editView.findViewById(R.id.tv_lower_right_lon);
-
-        if(bb != null){
-
-            ul_lat_tv.setText(String.format(Locale.US, "%f",bb.maxLatitude));
-            ul_lon_tv.setText(String.format(Locale.US, "%f",bb.minLongitude));
-
-            lr_lat_tv.setText(String.format(Locale.US, "%f",bb.minLatitude));
-            lr_lon_tv.setText(String.format(Locale.US, "%f", bb.maxLongitude));
-
-            //Log.v(TAG, "Area : " + String.format(Locale.US, "%f",((bb.maxLongitude -bb.minLongitude)*(bb.maxLatitude -bb.minLatitude))) );
-
-        }
-
-        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        final EditText title_ed = (EditText) editView.findViewById(R.id.title_field);
-                        final EditText desc_ed = (EditText) editView.findViewById(R.id.description_field);
-
-                        final String title = title_ed.getText().toString();
-                        final String desc = desc_ed.getText().toString();
-
-                        if (TextUtils.isEmpty(title)) {
-
-                            Toast.makeText(getBaseContext(), getString(R.string.elab_enter_title), Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();//release
-
-                            //reshow
-                            showEditElaborationTitleAndDescriptionDialog(bb, isPolygon);
-                            return;
-                        }
-
-                        final Elaborator elaborator = new Elaborator(MainActivity.this) {
-                            private String tableToCenter;
-                            @Override
-                            public void showError(int resource) {
-                                MainActivity.this.showSnackBar(resource);
-                            }
-
-                            @Override
-                            public void showMessage(String message) {
-                                Snackbar
-                                        .make(MainActivity.this.findViewById(R.id.snackbarPosition),
-                                                message,
-                                                Snackbar.LENGTH_LONG)
-                                        .show();
-                            }
-
-                            @Override
-                            public void done(ElaborationResult result) {
-
-                                applyResult(result);
-                            }
-                        };
-
-                        elaborator.startCalc(bb, isPolygon, title, desc);
-
-                        dialog.dismiss();
-                    }
-                }
-
-        ).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
-
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-
-                    }
-                }
-
-        );
-
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-
-    }
 
     public void showSnackBar(int stringResource){
         Snackbar
@@ -1065,7 +980,7 @@ public class MainActivity extends MapActivityBase
         }
 
         //Result of click on a local elaboration
-        if ((requestCode == RESULT_REQUEST_CODE  ) && resultCode == RESULT_OK) {
+        if (requestCode == RESULT_REQUEST_CODE && resultCode == RESULT_OK) {
 
             //final String tableName = data.getStringExtra(Config.RESULT_TABLENAME);
             elaborationResult = (ElaborationResult) data.getSerializableExtra(Config.RESULT_ITEM);
@@ -1080,15 +995,19 @@ public class MainActivity extends MapActivityBase
 
         boolean quit = true;
         for (MapControl control : mapView.getControls()) {
-            if(control.isEnabled()){
+
+            if (control.isEnabled()) {
                 control.disable();
-                if(control.getActivationButton() != null) {
+                if (control.getActivationButton() != null) {
                     control.getActivationButton().setSelected(false);
+                }
+                if(control.equals(invisibleLocationAcquireControl)){
+                    Toast.makeText(getBaseContext(), R.string.position_acquirement_cancelled, Toast.LENGTH_SHORT).show();
                 }
                 quit = false;
             }
         }
-        if(quit) {
+        if (quit) {
             super.onBackPressed();
         }
     }
@@ -1121,21 +1040,11 @@ public class MainActivity extends MapActivityBase
     public void applyResult(ElaborationResult result){
 
         elaborationResult = result;
-        //TODO adjust to valutazione danno flavour
-        if(currentStyle == 4 && result.getStreetTableName() != null ){//PIS
-            loadDBLayers(result.getStreetTableName());
-            invalidateMenu(result.getStreetTableName(), true);
-        }else if(result.getRiskTableName() != null){
-            loadDBLayers(result.getRiskTableName());
-            invalidateMenu(result.getRiskTableName(),  true);
-        }
 
+        loadDBLayers(result.getResultTableName());
+        invalidateMenu(result.getResultTableName(),  true);
 
-        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(
-                getBaseContext(),
-                result.getRiskTableName() != null
-                        ? result.getRiskTableName()
-                        : result.getStreetTableName());
+        final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), result.getResultTableName());
 
         if (bb != null) {
             mapView.getMapViewPosition().setCenter(bb.getCenterPoint());

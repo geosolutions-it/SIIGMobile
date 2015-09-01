@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+<ows:Identifier>gs:RiskCalculator</ows:Identifier>
+<wps:DataInputs>
+	<wps:Input>
+		<ows:Identifier>features</ows:Identifier>
+		<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">
+			<wps:Body>
+				<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:destination="http://destination.geo-solutions.it">
+					<wfs:Query typeName="destination:siig_geo_ln_arco_1">
+						<ogc:Filter>
+							<ogc:Intersects>
+								<ogc:PropertyName>geometria</ogc:PropertyName>
+								<gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+									<gml:outerBoundaryIs>
+										<gml:LinearRing>
+											<gml:coordinates decimal="." cs="," ts=" ">
+												9.054283,45.821871 9.056862,45.821871 9.056862,45.823668 9.054283,45.823668 9.054283,45.821871
+											</gml:coordinates>
+										</gml:LinearRing>
+									</gml:outerBoundaryIs>
+								</gml:Polygon>
+							</ogc:Intersects>
+						</ogc:Filter>
+					</wfs:Query>
+				</wfs:GetFeature>
+			</wps:Body>
+		</wps:Reference>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>batch</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>1000</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>damageArea</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>POLYGON ((9.054283 45.821871, 9.056862 45.821871, 9.056862 45.823668, 9.054283 45.823668, 9.054283 45.821871))</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>entities</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>42</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>extendedSchema</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>false</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>formula</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>124</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>fp</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>fp_scen_centrale</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>kemler</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>0</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>level</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>1</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>materials</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>0</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>mobile</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>true</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>precision</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>4</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>processing</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>4</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>scenarios</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>0</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>severeness</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>1,2,3,4,5</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>store</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>destination</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+	<wps:Input>
+		<ows:Identifier>target</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>100</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>
+</wps:DataInputs>
+	<wps:ResponseForm>
+		<wps:RawDataOutput mimeType="application/json">
+			<ows:Identifier>result</ows:Identifier>
+		</wps:RawDataOutput>
+	</wps:ResponseForm>
+</wps:Execute>

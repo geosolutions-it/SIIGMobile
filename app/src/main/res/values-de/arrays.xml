@@ -1,39 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="drawer_items">
-        <item>Grafo Stradale</item>
-        <item>Rischio Ambientale</item>
-        <item>Rischio Sociale</item>
-        <item>Rischio Totale</item>
-        <item>Pericolosità Della Strada</item>
-        <item>Salva Elaborazione Corrente</item>
-        <item>Carica Elaborazione</item>
-    </string-array>
-
-    <string-array name="grafo">
-        <item>Strada</item>
-    </string-array>
-
-    <string-array name="val_method_options">
-        <item>Buffer</item>
-        <item>Seletiona Scenario</item>
-    </string-array>
-
     <string-array name="val_scenarios_options">
-        <item>Tutte le classi</item>
-        <item>AZOTO COMPRESSO</item>
-        <item>AZOTO LIQUIDO REFRIGERATO</item>
-        <item>IDROGENO COMPRESSO</item>
-        <item>OSSIGENO COMPRESSO</item>
-        <item>GAS DI PETROLIO LIQUEFATTO</item>
-        <item>OSSIDO DI ETILENE (+AZOTO)</item>
-        <item>AMMONIACA ANIDRA</item>
-        <item>OSSIGENO LIQUIDO REFRIGERATO</item>
-        <item>GASOLIO</item>
-        <item>BENZINA</item>
-        <item>METANOLO</item>
-        <item>EPICLORIDRINA</item>
+        <item>Alle Klassen</item>
+        <item>Stickstoff, Druck</item>
+        <item>Stickstoff, tiefgekühlt, flüssig</item>
+        <item>Wasserstoff, verdichtet</item>
+        <item>Sauerstoff, verdichtet</item>
+        <item>Flüssiggas</item>
+        <item>Ethylenoxyd </item>
+        <item>Amoniak, wasserfrei</item>
+        <item>Sauerstoff, tiefkalt verflüssigt</item>
+        <item>Diesel</item>
+        <item>Benzin</item>
+        <item>Metanol</item>
+        <item>Epichlorhydrin</item>
         <item>gas tossico</item>
         <item>gas liquefatto refrigerato, infiammabile</item>
         <item>gas infiammabile, corrosivo</item>
@@ -75,27 +56,27 @@
     </string-array>
 
     <string-array name="val_accidents_options">
-        <item>Seleziona uno&#8230;</item>
-        <item>DISPERSIONE DI VAPORI DI GAS LIQUEFATTO TOSSICO</item>
-        <item>DISPERSIONE DI VAPORI DI LIQUIDO TOSSICO</item>
-        <item>JET FIRE DI GAS ESTREMAMENTE INFIAMMABILE</item>
-        <item>FLASH FIRE/VCE DI VAPORI DI GAS LIQUEFATTO INFIAMMABILE</item>
-        <item>FLASH FIRE/VCE DI VAPORI DI GAS LIQUEFATTO ESTREMAMENTE INFIAMMABILE</item>
-        <item>JET FIRE DI VAPORI DI GAS LIQUEFATTO ESTREMAMENTE INFIAMMABILE</item>
-        <item>FIRE BALL</item>
-        <item>DISPERSIONE DI GAS COMBURENTE</item>
-        <item>DISPERSIONE DI GAS ASFISSIANTE</item>
-        <item>RILASCIO SUL SUOLO E NELLE ACQUE</item>
-        <item>POOL FIRE DI LIQUIDO INFIAMMABILE</item>
-        <item>FLASH FIRE/VCE DI VAPORI DI LIQUIDO INFIAMMABILE</item>
-        <item>POOL FIRE DI LIQUIDO ESTREMAMENTE INFIAMMABILE</item>
-        <item>FLASH FIRE/VCE DI VAPORI DI LIQUIDO ESTREMAMENTE INFIAMMABILE</item>
+        <item>Wähle&#8230;</item>
+        <item>Dispersion von giftigen Flüssiggas Dämpfen</item>
+        <item>Dispersion von Dampfen einer giftigen Flüssigkeit</item>
+        <item>Feuerstrahl eines hochentzündlichen Gases</item>
+        <item>Flash fire/VCE von entzündbarem Flüssiggas Dämpfen</item>
+        <item>Flash fire/VCE von hochentzündlichen Flüssiggas Dämpfen</item>
+        <item>Feuerstrahl von Dämpfen eines hochentzündlichen Flüssiggases</item>
+        <item>Feuerball</item>
+        <item>Dispersion eines brandfördernden Gases</item>
+        <item>Dispersion eines erstickenden Gases</item>
+        <item>Freisetzung am Boden und in Gewässer</item>
+        <item>Lachenbrand einer brennbaren Flüssigkeit</item>
+        <item>Flash fire/VCE von Dämpfen einer brennbaren Flüssigkeit</item>
+        <item>Lachenbrand einer hochentzündlichen Flüssigkeit</item>
+        <item>Flash fire/VCE von Dämpfen einer hochentzündlichen Flüssigkeit</item>
     </string-array>
-    
+
     <string-array name="val_entities_options">
-        <item>Tutte le entità</item>
-        <item>Lieve</item>
-        <item>Grave</item>
+        <item>Alle Ausmasse</item>
+        <item>Geringfügig</item>
+        <item>Schwerwiegend</item>
     </string-array>
 
 </resources>

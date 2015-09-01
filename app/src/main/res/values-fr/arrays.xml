@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="val_scenarios_options">
+        <item>Toutes les classes</item>
+        <item>AZOTE COMPRIME</item>
+        <item>AZOTE LIQUIDE REFRIGERE</item>
+        <item>HYDROGENE COMPRIME</item>
+        <item>OXYGENE COMPRIM?</item>
+        <item>GAZ DE PETROLE LIQUEFIE</item>
+        <item>OXYDE D\'ETHYLENE (+AZOTE)</item>
+        <item>AMMONIAC ANHYDRE</item>
+        <item>OXYGENE LIQUIDE REFRIGERE</item>
+        <item>GAZOLE</item>
+        <item>ESSENCE</item>
+        <item>METHANOL</item>
+        <item>PYCHLORHYDRINE</item>
+        <item>gas tossico</item>
+        <item>gas liquefatto refrigerato, infiammabile</item>
+        <item>gas infiammabile, corrosivo</item>
+        <item>gas infiammabile, che pu? produrre spontaneamente una reazione violenta</item>
+        <item>gas tossico e comburente (favorisce l\'incendio)</item>
+        <item>materia liquida infiammabile che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile che reagisce pericolosamente con l\'acqua con sviluppo di gas infiammabili</item>
+        <item>materia liquida piroforica</item>
+        <item>materia liquida piroforica che reagisce pericolosamente con l\'acqua</item>
+        <item>materia liquida molto infiammabile e corrosiva</item>
+        <item>materia liquida molto infiammabile e corrosiva, che reagisce pericolosamente con l\'acqua</item>
+        <item>materia liquida molto infiammabile, che pu? produrre spontaneamente una reazione violenta</item>
+        <item>materia liquida infiammabile (punto d?infiammabilit? compreso tra 23?C e 60?C), debolmente tossica, o materia liquida autoriscaldante e tossica</item>
+        <item>materia liquida infiammabile e tossica, che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile e tossica, che reagisce pericolosamente con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile tossica e corrosiva</item>
+        <item>materia liquida infiammabile (punto d?infiammabilit? compreso tra 23?C e 60?C), debolmente corrosiva, o materia liquida autoriscaldante e corrosiva</item>
+        <item>materia liquida infiammabile e corrosiva, che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile, che pu? produrre spontaneamente una reazione violenta</item>
+        <item>materia comburente (favorisce l\'incendio)</item>
+        <item>perossido organico infiammabile</item>
+        <item>materia molto comburente (favorisce l\'incendio)</item>
+        <item>materia molto comburente (favorisce l\'incendio) e tossica</item>
+        <item>materia molto comburente (favorisce l\'incendio) e corrosiva</item>
+        <item>materia molto comburente (favorisce l\'incendio) che pu? produrre spontaneamente una reazione violenta</item>
+        <item>materia comburente (favorisce l\'incendio) e tossica</item>
+        <item>materia comburente (favorisce l\'incendio) e tossica e corrosiva</item>
+        <item>materia comburente (favorisce l\'incendio) e corrosiva</item>
+        <item>materia comburente (favorisce l\'incendio) che pu? produrre spontaneamente una reazione violenta</item>
+        <item>materia tossica o debolmente tossica</item>
+        <item>materia tossica liquida, che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia tossica e infiammabile (punto d\'infiammabilit? compreso tra 23?C e 60?C) e corrosiva</item>
+        <item>materia tossica e comburente (favorisce l\'incendio)?</item>
+        <item>materia molto tossica</item>
+        <item>materia molto tossica infiammabile (punto d\'infiammabilit? inferiore o uguale a 60?C)</item>
+        <item>materia molto tossica e comburente (favorisce l?incendio)</item>
+        <item>materia molto tossica e corrosiva</item>
+        <item>materia altamente tossica, corrosiva, che reagisce pericolosamente con l?acqua</item>
+    </string-array>
+
+    <string-array name="val_accidents_options">
+        <item>Sélectionner&#8230;</item>
+        <item>PRESSE ?tre r?frig?r?s TOXIQUES LIQUIDES</item>
+        <item>D?gagement de fum?es toxiques de liquide</item>
+        <item>JETFIRE gaz extr?mement inflammable</item>
+        <item>FLASH FIRE / VCE DE GAZ vapeurs inflammables LIQUEFIED</item>
+        <item>FLASH FIRE / VCE DE GAZ DE LA VAPEUR liqu?fi? extr?mement inflammable</item>
+        <item>JETFIRE DE GAZ DE LA VAPEUR liqu?fi? extr?mement inflammable</item>
+        <item>FIRE BALL</item>
+        <item>PRESSE DE GAZ DE COMBUSTION</item>
+        <item>PRESSE DE gaz asphyxiants</item>
+        <item>PRESSE SUR LE TERRAIN ET DANS LES EAUX</item>
+        <item>POOLFIRE de liquide inflammable</item>
+        <item>FLASH FIRE / VCE DE VAPEUR LIQUIDE INFLAMMABLE</item>
+        <item>POOLFIRE LIQUIDE EXTR?MEMENT INFLAMMABLE</item>
+        <item>FLASH FIRE / VCE DE VAPEUR LIQUIDE EXTR?MEMENT INFLAMMABLE</item>
+    </string-array>
+
+    <string-array name="val_entities_options">
+        <item>Toutes les entités</item>
+        <item>Légèrement</item>
+        <item>Grave</item>
+    </string-array>
+
+</resources>

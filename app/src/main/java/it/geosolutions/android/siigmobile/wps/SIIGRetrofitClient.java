@@ -3,12 +3,19 @@ package it.geosolutions.android.siigmobile.wps;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.vividsolutions.jts.geom.Geometry;
+
+import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
+import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
 import it.geosolutions.android.siigmobile.BuildConfig;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedString;
 
 /**
@@ -21,21 +28,27 @@ public class SIIGRetrofitClient {
 
     /**
      * Sends the WPS Request to GeoServer using RetroFit
-     * The response, if successfull, is parsed by RetroFit, provinging a CRSCollectionFeature in the feedback
+     * The response, if successful, is parsed by RetroFit, providing a CRSCollectionFeature as feedback
      * This already runs in background / gives feedback in the main thread, but may last an notable amount of time
      *
      * @param wps the WPS request as String
-     * @param pUsername username to authentificate
-     * @param pPassword password to authentificate
+     * @param authToken token to identidy
      * @param feedback the feedback to receive the result or a error message
      */
-    public static void postWPS(final String wps, final String pUsername, final String pPassword, final WPSRequestFeedback feedback)
+    public static void postWPS(final String wps, final String authToken, final WPSRequestFeedback feedback)
     {
 
+        Gson gson = new GsonBuilder()
+                .disableHtmlEscaping()
+                .registerTypeHierarchyAdapter(Geometry.class, new GeometryJsonSerializer())
+                .registerTypeHierarchyAdapter(Geometry.class, new GeometryJsonDeserializer())
+                .create();
+
         RestAdapter restAdapter = new RestAdapter.Builder()
+                .setConverter(new GsonConverter(gson))
                 .setEndpoint(ENDPOINT)
-                .setRequestInterceptor(new LoginRequestInterceptor(pUsername, pPassword))
-                //.setLogLevel(RestAdapter.LogLevel.FULL)
+                .setRequestInterceptor(new LoginRequestInterceptor(authToken))
+                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
         //wrap the xml as "TypedString"
@@ -78,10 +91,24 @@ public class SIIGRetrofitClient {
 
         private String mUser;
         private String mPass;
+        private String mAuth;
 
+        /**
+         * constructor to use with user/pass
+         * @param pUser
+         * @param pPass
+         */
         public LoginRequestInterceptor(final String pUser,final String pPass){
             this.mUser = pUser;
             this.mPass = pPass;
+        }
+
+        /**
+         * constructor to use with auth token
+         * @param authToken
+         */
+        public LoginRequestInterceptor(final String authToken){
+            this.mAuth = authToken;
         }
 
         @Override
@@ -92,6 +119,8 @@ public class SIIGRetrofitClient {
             if (mUser != null && mPass != null) {
                 final String authorizationValue = getB64Auth(mUser, mPass);
                 requestFacade.addHeader("Authorization", authorizationValue);
+            }else if(mAuth != null){
+                requestFacade.addHeader("Authorization", mAuth);
             }else{
                 throw new IllegalArgumentException("no password or user available to intercept");
             }
