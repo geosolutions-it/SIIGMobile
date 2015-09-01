@@ -106,8 +106,8 @@ public class MainActivity extends MapActivityBase
     private final static int RESULT_REQUEST_CODE = 1234;
 
     private boolean user_layer_clearable = false;
-    
-    private static int currentStyle = Config.DEFAULT_STYLE;// Start with "Rischio Totale" theme
+
+    private static int currentStyle = Config.DEFAULT_STYLE;// Start with "Populazione Residenziale" theme
 
     private ProgressDialog pd;
     private SimpleCursorAdapter searchViewAdapter;
@@ -321,7 +321,7 @@ public class MainActivity extends MapActivityBase
 
         ArrayList<Layer> layers = new ArrayList<>();
 
-        if(layerToCenter == null || currentStyle == 0) {
+        if (layerToCenter == null || currentStyle == 0) {
 
             /**
              * Adding WMS layers
@@ -334,7 +334,7 @@ public class MainActivity extends MapActivityBase
             destinationSource.setHeaders(hbuilder.build());
 
             WMSLayer layer = new WMSLayer(destinationSource, Config.WMS_LAYERS[
-                    (currentStyle >= Config.WMS_LAYERS.length ? Config.DEFAULT_STYLE:currentStyle)
+                    (currentStyle >= Config.WMS_LAYERS.length ? Config.DEFAULT_STYLE : currentStyle)
                     ]
             );
             //layer.setTitle("Rischio Totale");
@@ -351,9 +351,9 @@ public class MainActivity extends MapActivityBase
 
             // Need additional parameters
             if (currentStyle > 0) {
-                baseParams.put("ENV", Config.WMS_ENV[(currentStyle >= Config.WMS_ENV.length ? Config.DEFAULT_STYLE:currentStyle)]);
-                baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[(currentStyle >= Config.WMS_RISKPANEL.length ? Config.DEFAULT_STYLE:currentStyle)]);
-                baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[(currentStyle >= Config.WMS_DEFAULTENV.length ? Config.DEFAULT_STYLE:currentStyle)]);
+                baseParams.put("ENV", Config.WMS_ENV[(currentStyle >= Config.WMS_ENV.length ? Config.DEFAULT_STYLE : currentStyle)]);
+                baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[(currentStyle >= Config.WMS_RISKPANEL.length ? Config.DEFAULT_STYLE : currentStyle)]);
+                baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[(currentStyle >= Config.WMS_DEFAULTENV.length ? Config.DEFAULT_STYLE : currentStyle)]);
             }
             layer.setBaseParams(baseParams);
 
@@ -361,7 +361,7 @@ public class MainActivity extends MapActivityBase
 
         }
 
-        if(layerToCenter != null) {
+        if (layerToCenter != null) {
 
             if (BuildConfig.DEBUG) {
                 Log.i(TAG, "selected result arrived " + layerToCenter);
@@ -381,13 +381,13 @@ public class MainActivity extends MapActivityBase
         }
 
         // Set the styles
-        for(Layer l : layers){
+        for (Layer l : layers) {
             if (l instanceof SpatialiteLayer) {
-                if(BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Setting Style for layer: " + l.getTitle());
                 }
-
-                if(l.getTitle().startsWith(Config.RESULT_PREFIX)){
+                //TODO reconfigure for val danno results
+                if (l.getTitle().startsWith(Config.RESULT_PREFIX)) {
 
                     ((SpatialiteLayer) l).setStyleFileName(Config.RESULT_STYLES[resultModeForRiskMode()]);
 
@@ -396,7 +396,7 @@ public class MainActivity extends MapActivityBase
                         break; //stop looping, only this result layer interests
 
                     }
-                }else{
+                } else {
 
                     ((SpatialiteLayer) l).setStyleFileName(l.getTitle().replace(Config.LAYERS_PREFIX, Config.STYLES_PREFIX_ARRAY[currentStyle]));
                 }
@@ -407,14 +407,19 @@ public class MainActivity extends MapActivityBase
 
         // Update the Legend Panel
         StyleManager styleManager = StyleManager.getInstance();
-        AdvancedStyle legendStyle = currentStyle == 0
-                ? styleManager.getStyle(Config.STYLES_PREFIX_ARRAY[currentStyle] + "_1")
-                : styleManager.getStyle(Config.RESULT_STYLES[currentStyle - 1]) ;
 
-        legendAdapter.applyStyle(legendStyle);
-        if(currentStyle == 4){
-            legendTitle.setText(getResources().getString(R.string.pis_title));
-        }else {
+        AdvancedStyle legendStyle = null;
+        if (currentStyle == 0){
+            legendStyle = styleManager.getStyle("grafo_1");
+        }else if( currentStyle < getResources().getStringArray(R.array.drawer_items).length - 2) { //WMS Layers
+            legendStyle = styleManager.getStyle(Config.WMS_LAYERS[currentStyle]);
+        }else{
+            //TODO which style for result layers ?
+        }
+        //TODO remove this limitation when result styles available
+        if(currentStyle < getResources().getStringArray(R.array.drawer_items).length - 2) {
+            legendAdapter.applyStyle(legendStyle);
+
             legendTitle.setText(getResources().getStringArray(R.array.drawer_items)[currentStyle]);
         }
 
@@ -520,50 +525,35 @@ public class MainActivity extends MapActivityBase
             return;
         }
 
-        switch (position) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                currentStyle = position;
-                //reload, if an elaboration arrived center on it
-                if(elaborationResult == null){
-                    loadDBLayers(null);
-                }else if(position == 4){
-                    loadDBLayers(elaborationResult.getStreetTableName());
-                }else {
-                    loadDBLayers(elaborationResult.getRiskTableName());
-                }
-                break;
-            case 5:
+        if(position == getResources().getStringArray(R.array.drawer_items).length - 2){ // valutazione danno
+            //TODO configure for valutazione danno flavour
+            if (mapView == null || mapView.getMapViewPosition() == null) {
+                Snackbar
+                        .make(getWindow().getDecorView().findViewById(R.id.snackbarPosition),
+                                R.string.snackbar_missing_map_text,
+                                Snackbar.LENGTH_LONG)
+                        .show();
+            }
+            final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
+            final boolean isPolygonRequest = mapView.getMapViewPosition().getZoomLevel() <= 13;
 
-                if (mapView == null || mapView.getMapViewPosition() == null) {
-                    Snackbar
-                            .make(getWindow().getDecorView().findViewById(R.id.snackbarPosition),
-                                    R.string.snackbar_missing_map_text,
-                                    Snackbar.LENGTH_LONG)
-                            .show();
-                    break;
-                }
-                final BoundingBox bb = mapView.getMapViewPosition().getBoundingBox();
-                final boolean isPolygonRequest = mapView.getMapViewPosition().getZoomLevel() <= 13;
+            showEditElaborationTitleAndDescriptionDialog(bb, isPolygonRequest);
 
-                showEditElaborationTitleAndDescriptionDialog(bb, isPolygonRequest);
+        }else if(position == getResources().getStringArray(R.array.drawer_items).length - 1){ // carica elaborazione
+            //TODO configure for valutazione danno flavour
+            Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
+            startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
 
-                break;
-            case 6:
-                Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
-                startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
-                break;
-            default:
-                /*
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                        .commit();
-                */
-                break;
+        }else{ //WMS Layer
+            currentStyle = position;
+            //reload, if an elaboration arrived center on it
+            if(elaborationResult == null){
+                loadDBLayers(null);
+            }else if(position == 4){
+                loadDBLayers(elaborationResult.getStreetTableName());
+            }else {
+                loadDBLayers(elaborationResult.getRiskTableName());
+            }
         }
 
     }
@@ -964,7 +954,7 @@ public class MainActivity extends MapActivityBase
     public void applyResult(ElaborationResult result){
 
         elaborationResult = result;
-
+        //TODO adjust to valutazione danno flavour
         if(currentStyle == 4 && result.getStreetTableName() != null ){//PIS
             loadDBLayers(result.getStreetTableName());
             invalidateMenu(result.getStreetTableName(), true);

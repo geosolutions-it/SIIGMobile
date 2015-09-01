@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="drawer_items">
+        <item>Grafo Stradale</item>
+        <item>Popolazione Residenziale</item>
+        <item>Popolazione Turistica</item>
+        <item>Addetti Industria</item>
+        <item>Addetti Strutture Sanitarie</item>
+        <item>Addetti Strutture Scolastiche</item>
+        <item>Addetti Centri Commerciali</item>
+        <item>Aree Boscate</item>
+        <item>Aree Protette</item>
+        <item>Aree Agricole</item>
+        <item>Acque Sotterranee</item>
+        <item>Acque Superficiali</item>
+        <item>Zone Urbanizzate</item>
+        <item>Beni Culturali</item>
+        <item>Valutazione Danno</item>
+        <item>Carica Elaborazione</item>
+    </string-array>
+
+    <string-array name="grafo">
+        <item>Strada</item>
+    </string-array>
+
+</resources>

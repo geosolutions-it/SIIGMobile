@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="drawer_items">
+        <item>Street Graph</item>
+        <item>Residential Population</item>
+        <item>Touristic Population</item>
+        <item>Industrial Employees</item>
+        <item>Sanitary Employees</item>
+        <item>Scholar Employees</item>
+        <item>Commercial Employees</item>
+        <item>Woodland Area</item>
+        <item>Protected Area</item>
+        <item>Agricultural Area</item>
+        <item>Subterranean Water</item>
+        <item>Superficial Water</item>
+        <item>Urbanized Zone</item>
+        <item>Cultural Goods</item>
+        <item>Damage Evaluation</item>
+        <item>Upload Elaboration</item>
+    </string-array>
+
+    <string-array name="grafo">
+        <item>Street</item>
+    </string-array>
+
+        
+</resources>
