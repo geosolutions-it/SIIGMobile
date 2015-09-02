@@ -17,26 +17,9 @@
  */
 package it.geosolutions.android.map.fragment.featureinfo;
 
-import it.geosolutions.android.map.R;
-import it.geosolutions.android.map.activities.GetFeatureInfoLayerListActivity;
-import it.geosolutions.android.map.adapters.FeatureInfoAttributesAdapter;
-import it.geosolutions.android.map.common.Constants;
-import it.geosolutions.android.map.loaders.FeatureInfoLoader;
-import it.geosolutions.android.map.model.Feature;
-import it.geosolutions.android.map.model.Layer;
-import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
-import it.geosolutions.android.map.model.query.CircleQuery;
-import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
-import it.geosolutions.android.map.model.query.BBoxQuery;
-import it.geosolutions.android.map.model.query.FeatureInfoTaskQuery;
-import it.geosolutions.android.map.model.query.PolygonQuery;
-import it.geosolutions.android.map.utils.FeatureInfoUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,6 +34,25 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import it.geosolutions.android.map.R;
+import it.geosolutions.android.map.activities.GetFeatureInfoLayerListActivity;
+import it.geosolutions.android.map.adapters.FeatureInfoAttributesAdapter;
+import it.geosolutions.android.map.common.Constants;
+import it.geosolutions.android.map.loaders.FeatureInfoLoader;
+import it.geosolutions.android.map.model.Feature;
+import it.geosolutions.android.map.model.Layer;
+import it.geosolutions.android.map.model.query.BBoxQuery;
+import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
+import it.geosolutions.android.map.model.query.CircleQuery;
+import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
+import it.geosolutions.android.map.model.query.FeatureInfoTaskQuery;
+import it.geosolutions.android.map.model.query.PolygonQuery;
+import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
+import it.geosolutions.android.map.utils.FeatureInfoUtils;
 
 /**
  * This fragment shows a view o the attributes of a single feature from a
@@ -76,6 +78,8 @@ protected BaseFeatureInfoQuery query;
 
 protected ArrayList<Layer> layers;
 protected ArrayList<Feature> currentFeatures;
+    private ProgressDialog pd;
+    private boolean waitForInflation = false;
 
 
 /**
@@ -143,7 +147,7 @@ public void onViewCreated(View view, Bundle savedInstanceState) {
             startLoadingGUI();
             adapter.clear();
             start--;
-            startDataLoading(query, layers, start, 2);        
+            startDataLoading(query, layers, start, 2);
         }
     });
 
@@ -187,6 +191,14 @@ public void onViewCreated(View view, Bundle savedInstanceState) {
 
         }
     });
+
+    if(waitForInflation){
+
+        prev.setVisibility(start > 0 ? View.VISIBLE : View.INVISIBLE);
+        next.setVisibility(start + 1 < currentFeatures.size() ? View.VISIBLE : View.INVISIBLE);
+
+        waitForInflation = false;
+    }
 }
 
 /**
@@ -200,12 +212,36 @@ public void onViewCreated(View view, Bundle savedInstanceState) {
  */
 private void startDataLoading(BaseFeatureInfoQuery query, ArrayList<Layer> layers,
         Integer start, Integer limit) {
-	
     // create task query
-	if(query instanceof BBoxQuery)
+	if(query instanceof WMSGetFeatureInfoQuery){
+        if(currentFeatures != null){
+            //start is the desired index
+            if (currentFeatures.size() > start) {
+                adapter.clear();
+                adapter.addAll(currentFeatures.get(start));
+
+                //setup the buttons manually
+                if(getView() != null) {
+                    //if start > 0 previous is visible
+                    if (getView().findViewById(R.id.previousButton) != null) {
+                        getView().findViewById(R.id.previousButton).setVisibility(start > 0 ? View.VISIBLE : View.INVISIBLE);
+                    }
+                    //if start + 1 < feature.count next is visible
+                    if (getView().findViewById(R.id.nextButton) != null) {
+                        getView().findViewById(R.id.nextButton).setVisibility(start + 1 < currentFeatures.size() ? View.VISIBLE : View.INVISIBLE);
+                    }
+                }else{
+                    waitForInflation = true;
+                }
+                return; //no need to requery
+            }
+        }
+        queryQueue = FeatureInfoUtils.createWMSPointQueryQueue((WMSGetFeatureInfoQuery) query, start, limit);
+        showProgress(getActivity().getString(R.string.please_wait));
+    }else if(query instanceof BBoxQuery)
 		queryQueue = FeatureInfoUtils.createTaskQueryQueue(layers, (BBoxQuery) query, start,
 	            limit);
-    else 
+    else
     	if(query instanceof CircleQuery)
     		queryQueue = FeatureInfoUtils.createTaskQueryQueue(layers, (CircleQuery) query, start,
                 limit);
@@ -271,6 +307,9 @@ public void onLoadFinished(Loader<List<FeatureInfoQueryResult>> loader,
     } else {
         setButtonBarVisibility(null);
 
+    }
+    if(query instanceof  WMSGetFeatureInfoQuery){
+        hideProgress();
     }
 
     Log.v("FEATURE_INFO", "added " + adapter.getCount() + " items to the view");
@@ -390,4 +429,22 @@ private void returnSelectedItem() {
     }
     activity.finish();
 }
+
+    public void showProgress(final String message){
+
+        if(pd == null){
+            pd = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
+            pd.setCancelable(false);
+            pd.setIcon(R.drawable.ic_launcher);
+        }
+        pd.setMessage(message);
+        pd.show();
+
+    }
+    public void hideProgress(){
+
+        if(pd != null && pd.isShowing()){
+            pd.dismiss();
+        }
+    }
 }
