@@ -17,25 +17,6 @@
  */
 package it.geosolutions.android.map.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import eu.geopaparazzi.spatialite.database.spatial.core.SpatialVectorTable;
-
-import it.geosolutions.android.map.activities.GetFeatureInfoLayerListActivity;
-import it.geosolutions.android.map.common.Constants;
-import it.geosolutions.android.map.common.Constants.Modes;
-import it.geosolutions.android.map.database.SpatialDataSourceManager;
-import it.geosolutions.android.map.model.Layer;
-import it.geosolutions.android.map.model.query.PolygonQuery;
-import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
-import it.geosolutions.android.map.style.AdvancedStyle;
-import it.geosolutions.android.map.style.StyleManager;
-import it.geosolutions.android.map.utils.ConversionUtilities;
-import it.geosolutions.android.map.utils.StyleUtils;
-import it.geosolutions.android.map.utils.Coordinates.Coordinates;
-import it.geosolutions.android.map.utils.Coordinates.Coordinates_Query;
-import it.geosolutions.android.map.view.AdvancedMapView;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
@@ -45,6 +26,19 @@ import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+
+import java.util.ArrayList;
+
+import it.geosolutions.android.map.activities.GetFeatureInfoLayerListActivity;
+import it.geosolutions.android.map.common.Constants;
+import it.geosolutions.android.map.common.Constants.Modes;
+import it.geosolutions.android.map.model.Layer;
+import it.geosolutions.android.map.model.query.PolygonQuery;
+import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
+import it.geosolutions.android.map.utils.ConversionUtilities;
+import it.geosolutions.android.map.utils.Coordinates.Coordinates;
+import it.geosolutions.android.map.utils.Coordinates.Coordinates_Query;
+import it.geosolutions.android.map.view.AdvancedMapView;
 
 /**
  * Listener to implements double tap event on map.
@@ -100,7 +94,7 @@ public class PolygonTapListener implements OnGestureListener, OnDoubleTapListene
 	 * @param polygon_points
 	 * @param zoomLevel
 	 */
-	private void infoDialogPolygon(final ArrayList<Coordinates_Query> polygon_points,byte zoomLevel){
+	protected void infoDialogPolygon(final ArrayList<Coordinates_Query> polygon_points,byte zoomLevel){
 		try {
 			ArrayList<Layer> layers = getLayers();
 	        Intent i = new Intent(view.getContext(),

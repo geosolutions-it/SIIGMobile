@@ -157,7 +157,7 @@ public class MapInfoListener implements OnTouchListener {
 	 * @param radius
 	 * @param zoomLevel
 	 */
-	private void infoDialogCircle(final double x, final double y,
+	protected void infoDialogCircle(final double x, final double y,
 			final double radius, byte zoomLevel) {
 		try {
 			ArrayList<Layer> layers = getLayers();

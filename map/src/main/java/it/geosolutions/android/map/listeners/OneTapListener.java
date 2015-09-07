@@ -119,7 +119,7 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
 	 * @param radius
 	 * @param zooomLevel
 	 */
-	private void infoDialogCircle(final double x, final double y, final double radius, byte zoomLevel){
+	protected void infoDialogCircle(final double x, final double y, final double radius, byte zoomLevel){
 	       try{
     	    ArrayList<Layer> layerNames = getLayers();
 	        Intent i = new Intent(view.getContext(),
