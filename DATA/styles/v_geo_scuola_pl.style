@@ -18,7 +18,7 @@
 	"rules": [{
 		"symbolizer": {
 			"dashed": false,
-			"title": "Addetti Strutture Scholastiche",
+			"title": "Addetti Strutture Scolastiche",
 			"textsize": 5.0,
 			"textstrokecolor": "#000000",
 			"textfillcolor": "#000000",

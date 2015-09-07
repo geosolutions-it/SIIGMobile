@@ -412,7 +412,7 @@ public class MainActivity extends MapActivityBase
         if (currentStyle == 0){
             legendStyle = styleManager.getStyle("grafo_1");
         }else if( currentStyle < getResources().getStringArray(R.array.drawer_items).length - 2) { //WMS Layers
-            legendStyle = styleManager.getStyle(Config.WMS_LAYERS[currentStyle]);
+            legendStyle = styleManager.getStyle(Config.WFS_LAYERS[currentStyle]);
         }else{
             //TODO which style for result layers ?
         }
