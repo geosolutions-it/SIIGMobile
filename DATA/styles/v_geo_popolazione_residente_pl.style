@@ -1,0 +1,34 @@
+{
+	"dashed": false,
+	"maxZoom": 30,
+	"minZoom": 1,
+	"textfield": "",
+	"strokecolor": "#FF7FFF",
+	"shape": "square",
+	"fillcolor": "red",
+	"name": "v_geo_popolazione_residente_pl",
+	"order": 7,
+	"fillalpha": 0.3,
+	"size": 5.0,
+	"strokealpha": 1.0,
+	"enabled": 0,
+	"decimationFactor": 1.0E-5,
+	"textsize": 5.0,
+	"width": 3.0,
+	"rules": [{
+		"symbolizer": {
+			"dashed": false,
+			"title": "Popolazione Residenziale",
+			"textsize": 5.0,
+			"textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FF7FFF",
+			"shape": "square",
+			"fillcolor": "#14F200",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 1.0
+		}
+	}]
+}

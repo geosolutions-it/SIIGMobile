@@ -25,7 +25,6 @@ import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import jsqlite.Database;
-import jsqlite.Stmt;
 
 /**
  * Created by Robert Oehler on 30.06.15.
@@ -34,9 +33,6 @@ import jsqlite.Stmt;
 public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
 
     private final static String TAG = SpatialiteTest.class.getSimpleName();
-
-    private final static String EXTERNAL_TEST_FILE = "grafo_5.sqlite";
-
 
     public SpatialiteTest(){
         super(MainActivity.class);
@@ -68,6 +64,14 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
         assertNotNull(response.features);
 
         assertTrue(response.features.size() > 0);
+
+        final File app_dir = new File(Environment.getExternalStorageDirectory() + "/" + SpatialiteUtils.APP_PATH);
+
+        if(!app_dir.exists()){
+            assertTrue(app_dir.mkdir());
+        }
+
+        assertTrue(app_dir.exists());
 
         final jsqlite.Database spatialiteDatabase = SpatialiteUtils.openSpatialiteDB(context, SpatialiteUtils.APP_PATH + "/" + SpatialiteUtils.DB_NAME);
 
@@ -268,113 +272,6 @@ public class SpatialiteTest extends ActivityUnitTestCase<MainActivity> {
 
 
 
-    }
-
-
-    /**
-     * Compares the spatialite version numbers
-     * of the "internal" database which is created when the application is installed
-     * and an "external" one, which is downloaded at first install
-     *
-     * asserts that the internal version is even or newer than the external version
-     */
-    public void disabledtestInternalAndExternalVersions(){
-
-        assertTrue(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
-
-        final File sdcardDir = Environment.getExternalStorageDirectory();
-
-        assertTrue(sdcardDir.canRead());
-        //open internal db
-        Database internalDatabase  = SpatialiteUtils.openSpatialiteDB(getInstrumentation().getTargetContext(), SpatialiteUtils.APP_PATH + "/" + SpatialiteUtils.DB_NAME);
-
-        assertNotNull(internalDatabase);
-        //check that external file exists
-        assertTrue(new File(sdcardDir,SpatialiteUtils.APP_PATH + "/" + EXTERNAL_TEST_FILE).exists());
-        //open external db
-        Database externalDatabase  = SpatialiteUtils.openSpatialiteDB(getInstrumentation().getTargetContext(), SpatialiteUtils.APP_PATH + "/" + EXTERNAL_TEST_FILE);
-
-        assertNotNull(externalDatabase);
-
-        String internalVersion = null, externalVersion = null;
-
-        try {
-            //extract spatialite versions
-            Stmt intStmt = internalDatabase.prepare("SELECT ver_splite FROM spatialite_history ORDER by timestamp desc;");
-            if (intStmt.step()) {
-                internalVersion = intStmt.column_string(0);
-            }
-
-            Stmt extStmt = externalDatabase.prepare("SELECT ver_splite FROM spatialite_history ORDER by timestamp desc;");
-            if (extStmt.step()) {
-                externalVersion = extStmt.column_string(0);
-            }
-
-            assertNotNull(internalVersion);
-
-            assertNotNull(externalVersion);
-
-            if(internalVersion.contains("-stable")){
-                internalVersion = internalVersion.substring(0,internalVersion.lastIndexOf("-stable"));
-            }
-            if(externalVersion.contains("-stable")){
-                externalVersion = externalVersion.substring(0,externalVersion.lastIndexOf("-stable"));
-            }
-
-            //compare
-            assertTrue(versionCompare(internalVersion,externalVersion) >= 0);
-
-        }catch(jsqlite.Exception e){
-            Log.e(TAG,"exception reading version numbers");
-        } finally {
-            try {
-                internalDatabase.close();
-                externalDatabase.close();
-            } catch (jsqlite.Exception e) {
-                Log.e(TAG, "exception closing databases");
-            }
-        }
-
-
-    }
-    /**
-     * Compares two version strings.
-     *
-     * Use this instead of String.compareTo() for a non-lexicographical
-     * comparison that works for version strings. e.g. "1.10".compareTo("1.6").
-     *
-     * @note It does not work if "1.10" is supposed to be equal to "1.10.0".
-     *
-     * @param str1 a string of ordinal numbers separated by decimal points.
-     * @param str2 a string of ordinal numbers separated by decimal points.
-     * @return The result is a negative integer if str1 is _numerically_ less than str2.
-     *         The result is a positive integer if str1 is _numerically_ greater than str2.
-     *         The result is zero if the strings are _numerically_ equal.
-     *
-     * src : http://stackoverflow.com/questions/6701948/efficient-way-to-compare-version-strings-in-java
-     */
-    private Integer versionCompare(String str1, String str2) {
-
-        String[] vals1 = str1.split("\\.");
-        String[] vals2 = str2.split("\\.");
-        int i = 0;
-        // set index to first non-equal ordinal or length of shortest version string
-        while (i < vals1.length && i < vals2.length && vals1[i].equals(vals2[i]))
-        {
-            i++;
-        }
-        // compare first non-equal ordinal number
-        if (i < vals1.length && i < vals2.length)
-        {
-            int diff = Integer.valueOf(vals1[i]).compareTo(Integer.valueOf(vals2[i]));
-            return Integer.signum(diff);
-        }
-        // the strings are equal or one string is a substring of the other
-        // e.g. "1.2.3" = "1.2.3" or "1.2.3" < "1.2.3.4"
-        else
-        {
-            return Integer.signum(vals1.length - vals2.length);
-        }
     }
 
     private CRSFeatureCollection getDummyResponse(final Context context){

@@ -53,7 +53,7 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 3;
+    private int mCurrentSelectedPosition = Config.DEFAULT_STYLE;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 

@@ -30,9 +30,42 @@ public class Config {
     public static final String RESULT_PREFIX = "resultTable_";
     public static final String[] STYLES_PREFIX_ARRAY = {"grafo", "ambientale", "sociale", "totale" };
     public static final String[] RESULT_STYLES = {"result_ambientale", "result_sociale", "result_totale", "result_pis" };
-    public static final int DEFAULT_STYLE = 3;
+    public static final int DEFAULT_STYLE = 1;
 
-    public static final String[] WMS_LAYERS = {"grafo_stradale", "rischio_totale_ambientale", "rischio_totale_sociale", "rischio_totale", "pis" };
+    public static final String[] WMS_LAYERS = {
+            "grafo_stradale",
+            "destination:popolazione_residente_all",
+            "destination:popolazione_turistica_all",
+            "destination:industria_servizi_all",
+            "destination:strutture_sanitarie_all",
+            "destination:strutture_scolastiche_all",
+            "destination:centri_commerciali_all",
+            "destination:aree_boscate_all",
+            "destination:aree_protette_all",
+            "destination:aree_agricole_all",
+            "destination:acque_sotterranee_all",
+            "destination:acque_superficiali_all",
+            "destination:zone_urbanizzate_all",
+            "destination:beni_culturali_all"
+    };
+
+    public static final String[] WFS_LAYERS = {
+            "grafo_stradale",
+            "v_geo_popolazione_residente_pl",
+            "v_geo_popolazione_turistica_pl",
+            "v_geo_industria_pl",
+            "v_geo_ospedale_pl",
+            "v_geo_scuola_pl",
+            "v_geo_commercio_pl",
+            "v_geo_aree_boscate_pl",
+            "v_geo_aree_protette_pl",
+            "v_geo_aree_agricole_pl",
+            "v_geo_acque_sotterranee_pl",
+            "v_geo_acque_superficiali_pl",
+            "v_geo_zone_urbanizzate_pl",
+            "v_geo_beni_culturali_pl"
+    };
+
     public static final String[] WMS_ENV = {
             "false",
             "low:5.994576e-9;medium:0.015552002997288;max:0.031104",
