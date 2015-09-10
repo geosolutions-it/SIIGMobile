@@ -284,7 +284,7 @@ public abstract class Elaborator {
                             pd.dismiss();
                         }
 
-                        if(result.first){
+                        if(result != null && result.first){
                             if(pFormula == Config.FORMULA_RISK){
                                 //set table name and continue
                                 mResult.setRiskTableName(result.second);
