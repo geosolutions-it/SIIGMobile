@@ -27,9 +27,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.geosolutions.android.siigmobile.MainActivity" />
         </activity>
-        <activity android:name=".LoadResultsActivity"
-                  android:label="@string/title_activity_results"
-            />
+        <activity
+            android:name=".LoadResultsActivity"
+            android:label="@string/title_activity_results" />
+        <activity
+            android:name=".InfoDisplayActivity"
+            android:label="@string/title_activity_info_display"
+            android:theme="@style/AppTheme.Translucent">
+        </activity>
     </application>
 
 </manifest>

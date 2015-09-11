@@ -151,6 +151,16 @@ public class MainActivity extends MapActivityBase
 
         mToolbar = (Toolbar) findViewById(R.id.m_toolbar);
         setSupportActionBar(mToolbar);
+        mToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_LONG).show();
+                Intent nextActivity = new Intent(v.getContext(),InfoDisplayActivity.class);
+                startActivity(nextActivity);
+                //push from bottom to top
+                overridePendingTransition(R.anim.in_from_down, 0);
+            }
+        });
 
         mToolbar.setTitleTextColor(getResources().getColor(R.color.white));
 
@@ -274,7 +284,7 @@ public class MainActivity extends MapActivityBase
             mapView.getMapScaleBar().setShowMapScaleBar(true);
 
             // Coordinate Control
-            mapView.addControl(new CoordinateControl(mapView, true));
+            //mapView.addControl(new CoordinateControl(mapView, true));
 
             // Info Control
             MapInfoControl ic= new MapInfoControl(mapView,this);

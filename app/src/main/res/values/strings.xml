@@ -60,5 +60,50 @@
     <string name="delete_results_message">Do you really want to delete these results ?</string>
     <string name="formula_street">PIS formula</string>
     <string name="formula_risk">Risk formula</string>
+    <string name="title_activity_info_display">InfoDisplayActivity</string>
+
+    <string name="siig_info_page_text"><b>Rischio  Totale </b>
+        Per rischio totale si intende la  Valutazione Rischio complessivo antropico e/o ambientale a scala di dettaglio.
+Il rischio viene rappresentato su un arco di strada. Sulla mappa viene rappresentato su archi di 100m, 500m , griglia o rappresentazione comunale / provinciale a seconda della scala di rappresentazione selezionata.
+<b>La formula</b>
+∑ (Pis x ∑ (Padr x ∑(Psc x ∑ (Fp x (ExS) x (1- Cff)))))
+I pedici rappresentano:
+i= arco         j = sostanza        k=scenario       m = tipo bersaglio           g= gravità
+I parametri sono:
+Rdest  = ∑i  R i =  rischio cumulato “destination” composto da Ramb (rischio ambientale) e Rsoc (rischio sociale)
+LA formula non  rappresenta uan  sommatoria perché il Rischio ambientale e il Rischio sociale non hanno la stessa unità di misura. il rischio cumulato  viene rappresentato con una tematizzazione (colori) che esprime il grado di rischio per ciascun segmento. Possibilmente gli intervalli della tematizzazione devono essere modificabili dall’utente con un cursore.
+L’unità di misura
+[morti/km/anno] o [m2eq con danni/km/anno]
+
+<b>Rischio sociale</b>
+Il rischio sociale rappresenta il potenziale rischio per i bersagli umani presenti all’interno dell’ipotetica area di danno di un possibile incidente provocato da un mezzo TMP ( traffico merci pericolose) contenente una o più sostanze pericolose. Il rischio individuale è un rischio oggettivo che prescinde dal fatto che un evento si determini o meno.
+I bersagli umani analizzati sono:
+–	la popolazione residente
+–	le scuole
+–	gli ospedali
+–	i servizi
+–	le attività commerciali
+–	la popolazione turistica
+La formula
+Pis x∑ (Padr x ∑(Psc x S x (1- Cff))))
+
+Unità di misura :
+[morti/AE esposti/anno]
+
+<b>Rischio ambientale</b>
+Il rischio ambientale rappresenta il potenziale rischio per i bersagli ambientali  presenti all’interno dell’ipotetica area di danno di un possibile incidente provocato da un mezzo TMP ( traffico merci pericolose) contenente una o più sostanze pericolose. Il rischio individuale è un rischio oggettivo che prescinde dal fatto che un evento si determini o meno.
+La formula
+Pis x∑ (Padr x ∑(Psc x S x (1- Cff))))
+L’unità di misura
+[m2 con danni/m2 esposti/anno]
+
+<b>Pericolosità intrinseca della strada </b>
+Rappresenta il rischio di incidenti presente su un arco di strada. Serve per analizzare la  pericolosità ADR dell’arco stradale a scala di dettaglio
+La formula
+Pis x ∑(Padr x( ∑ Psc))
+
+L’unità di misura
+[eventi/km/anno]
+</string>
 
 </resources>

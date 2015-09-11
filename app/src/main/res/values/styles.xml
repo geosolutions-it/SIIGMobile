@@ -32,4 +32,25 @@
         <item name="spinBars">true</item>
         <item name="color">@color/background_material_light</item>
     </style>
+
+    <style name="AppTheme.Translucent" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <!--item name="android:windowBackground">@android:color/transparent</item-->
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+
+    <style name="Widget.SIIGMobile.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="theme">@style/ThemeOverlay.SIIGMobile.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="ThemeOverlay.SIIGMobile.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
+
 </resources>
