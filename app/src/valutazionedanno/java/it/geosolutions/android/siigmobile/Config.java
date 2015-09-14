@@ -109,4 +109,17 @@ public class Config {
      */
     public static final double LONGITUDE_MIN = 6.59220922465439;
 
+    public static final int WMS_INFO_FEATURE_COUNT = 10;
+
+    public static final String[] DESTINATION_SUPPORTED_LANGUAGES = { "en","it","de","fr"};
+
+    public final static String WMS_GETINFO_VERSION = "1.1.1";
+    public final static String WMS_GETINFO_FORMAT = "image/png8";
+    public final static String WMS_GETINFO_STYLES = "";
+    public final static int    WMS_GETINFO_EPSG = 3857;
+
+    public final static String WMS_GETINFO_PARAMETER_LOCALE = "ENV";
+    public final static String WMS_GETINFO_PARAMETER_FEATURE_COUNT = "FEATURE_COUNT";
+    public final static String WMS_GETINFO_PARAMETER_FORMAT = "FORMAT";
+
 }

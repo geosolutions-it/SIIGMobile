@@ -17,17 +17,21 @@
  */
 package it.geosolutions.android.map.utils;
 
+import java.util.ArrayList;
+
+import eu.geopaparazzi.spatialite.database.spatial.core.SpatialVectorTable;
 import it.geosolutions.android.map.database.SpatialDataSourceManager;
 import it.geosolutions.android.map.model.Layer;
-import it.geosolutions.android.map.model.query.CircleQuery;
-import it.geosolutions.android.map.model.query.PolygonQuery;
-import it.geosolutions.android.map.model.query.CircleTaskQuery;
 import it.geosolutions.android.map.model.query.BBoxQuery;
 import it.geosolutions.android.map.model.query.BBoxTaskQuery;
+import it.geosolutions.android.map.model.query.CircleQuery;
+import it.geosolutions.android.map.model.query.CircleTaskQuery;
+import it.geosolutions.android.map.model.query.PolygonQuery;
 import it.geosolutions.android.map.model.query.PolygonTaskQuery;
-
-import java.util.ArrayList;
-import eu.geopaparazzi.spatialite.database.spatial.core.SpatialVectorTable;
+import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
+import it.geosolutions.android.map.model.query.WMSGetFeatureInfoTaskQuery;
+import it.geosolutions.android.map.wms.WMSLayer;
+import it.geosolutions.android.map.wms.WMSSource;
 
 /**
  * @author Lorenzo Natali (www.geo-solutions.it)
@@ -117,4 +121,26 @@ public class FeatureInfoUtils {
 		return queryQueue;
 	}
 	
+	 /**
+     * Creates a task query queue for getFeatureInfo queries based on the query layer array inside the query
+     * @param query
+     * @param start
+     * @param limit
+     * @return
+     */
+    public static WMSGetFeatureInfoTaskQuery[] createWMSPointQueryQueue( WMSGetFeatureInfoQuery query, Integer start, Integer limit) {
+
+        WMSGetFeatureInfoTaskQuery[] queue = new WMSGetFeatureInfoTaskQuery[query.getQueryLayers().length];
+        int index = 0;
+        for(String layerName : query.getQueryLayers()) {
+
+            WMSGetFeatureInfoTaskQuery task = new WMSGetFeatureInfoTaskQuery(query);
+            task.setLayer(new WMSLayer(new WMSSource(query.getEndPoint()),layerName));
+            task.setStart(start);
+            task.setLimit(limit);
+            queue[index++] = task;
+        }
+
+        return queue;
+    }
 }
