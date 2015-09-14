@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">SIIG Mobile</string>
-    <string name="app_title">Destination</string>
+    <string name="app_title" translatable="false">Destination</string>
     <string name="navigation_drawer_open">Open Menu</string>
     <string name="navigation_drawer_close">Close Menu</string>
 
@@ -62,7 +62,7 @@
     <string name="formula_risk">Risk formula</string>
 
     <string name="siig_info_page_title">Info</string>
-    <string name="siig_info_page_text"><b>Rischio  Totale </b>
+    <string name="siig_info_page_text" translatable="false"><b>Rischio  Totale </b>
         Per rischio totale si intende la  Valutazione Rischio complessivo antropico e/o ambientale a scala di dettaglio.
 Il rischio viene rappresentato su un arco di strada. Sulla mappa viene rappresentato su archi di 100m, 500m , griglia o rappresentazione comunale / provinciale a seconda della scala di rappresentazione selezionata.
 <b>La formula</b>
