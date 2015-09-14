@@ -17,16 +17,24 @@
  */
 package it.geosolutions.android.map.wms;
 
+import android.util.Log;
+
 import com.squareup.okhttp.Headers;
 
-import it.geosolutions.android.map.model.Source;
-import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
-import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
-import it.geosolutions.android.map.model.query.FeatureInfoTaskQuery;
-import it.geosolutions.android.map.renderer.OverlayRenderer;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import it.geosolutions.android.map.model.Attribute;
+import it.geosolutions.android.map.model.Source;
+import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
+import it.geosolutions.android.map.model.query.FeatureInfoTaskQuery;
+import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
+import it.geosolutions.android.map.model.query.WMSGetFeatureInfoTaskQuery;
+import it.geosolutions.android.map.wfs.geojson.feature.Feature;
+import it.geosolutions.android.map.wfs.geojson.feature.FeatureCollection;
+
 
 /**
  * Represents a WMS Source
@@ -116,10 +124,111 @@ public class WMSSource implements Source{
 	 * @see it.geosolutions.android.map.model.Source#performQuery(it.geosolutions.android.map.model.query.FeatureInfoQuery, it.geosolutions.android.map.model.query.FeatureInfoQueryResult)
 	 */
 	@Override
-	public int performQuery(FeatureInfoTaskQuery q, List<FeatureInfoQueryResult> r) {
-		//TODO implement it;
+	public int performQuery(FeatureInfoTaskQuery q, List<FeatureInfoQueryResult> data) {
+
+        final String layerName  =  ((WMSLayer)q.getLayer()).getName();
+
+        if (q instanceof WMSGetFeatureInfoTaskQuery) {
+
+            final WMSGetFeatureInfoQuery query = (WMSGetFeatureInfoQuery) q;
+
+            final WMSGetFeatureInfo getFeatureInfo = new WMSGetFeatureInfo(
+                    query.getVersion(),
+                    query.getLayers(),
+                    query.getStyles(),
+                    query.getCrs(),
+                    query.getBbox(),
+                    query.getMapSize(),
+                    query.getQueryLayers(),
+                    (int) Math.rint(query.getPixel_X()),
+                    (int) Math.rint(query.getPixel_Y()),
+                    query.getAdditionalParams(),
+                    query.getEndPoint());
+
+            if (query.getAuthToken() != null) {
+                getFeatureInfo.setAuthToken(query.getAuthToken());
+            }
+
+            FeatureCollection result = getFeatureInfo.requestGetFeatureInfo();
+
+            final GetFeatureInfoConfiguration.Locale localeConfig = query.getLocaleConfig();
+            Map<String, String> props = null;
+            if (localeConfig != null) {
+                props = localeConfig.getPropertiesForLayer(layerName);
+            }
+
+            if (result != null && result.features != null && result.features.size() > 0) {
+
+                Log.i("WMSSource", "features arrived : " + result.features.size());
+
+                FeatureInfoQueryResult queryResult = new FeatureInfoQueryResult();
+
+                ArrayList<it.geosolutions.android.map.model.Feature> mapModelFeatures = new ArrayList<>();
+                for (Feature f : result.features) {
+
+                    //convert this feature to a it.geosolutions.android.map.model.Feature :-|
+                    it.geosolutions.android.map.model.Feature mapModelFeature = new it.geosolutions.android.map.model.Feature();
+
+                    if (f.geometry != null) {
+                        mapModelFeature.setGeometry(f.geometry);
+                    }
+                    for (Map.Entry<String,Object> entry : f.properties.entrySet()) {
+                        String key = entry.getKey();
+                        Object value = entry.getValue();
+
+                        if (key == null) { //without key this entry is senseless
+                            continue;
+                        }
+
+                        if (props != null) {
+                            //if config contains this key, add this
+                            if (props.containsKey(key)) {
+
+                                mapModelFeature.add(createAttribute(props.get(key), value));
+                            }
+                        } else { //no props, show all
+                            mapModelFeature.add(createAttribute(key, value));
+                        }
+                    }
+                    mapModelFeatures.add(mapModelFeature);
+
+                }
+
+                queryResult.setFeatures(mapModelFeatures);
+                data.add(queryResult);
+
+                return result.features.size();
+            }
+
+
+        } else {
+            //TODO implement
+            Log.e("WMSSource", "unexpected FeatureInfoTaskQuery type for wms source arrived : " + q.getClass().getSimpleName() + ", no implementation available");
+        }
+
 		return 0;
 		
 	}
+
+    /**
+     * creates an attribute
+     * @param key key must not be null
+     * @param value can be null
+     * @return the attribute
+     */
+    public Attribute createAttribute(String key, Object value){
+        Attribute attribute = new Attribute();
+        attribute.setName(key);
+
+        if (value == null) {
+
+            Log.w("WMSSource", "value null for key : " + key);
+
+        } else {
+
+            attribute.setValue(value.toString());
+        }
+        return attribute;
+    }
 	
 }

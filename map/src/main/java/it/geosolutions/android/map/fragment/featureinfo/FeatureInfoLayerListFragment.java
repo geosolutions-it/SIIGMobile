@@ -29,6 +29,7 @@ import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
 import it.geosolutions.android.map.model.query.FeatureInfoTaskQuery;
 import it.geosolutions.android.map.model.query.PolygonQuery;
 import it.geosolutions.android.map.model.query.BBoxQuery;
+import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.utils.FeatureInfoUtils;
 
 import java.util.ArrayList;
@@ -91,7 +92,10 @@ public void onCreate(Bundle savedInstanceState) {
     BaseFeatureInfoQuery query = extras.getParcelable("query");
     
     // Create task query
-    if(query instanceof BBoxQuery){
+    if(query instanceof WMSGetFeatureInfoQuery){
+        //final String layerName = extras.getString("Layer_Name");
+        queryQueue = FeatureInfoUtils.createWMSPointQueryQueue((WMSGetFeatureInfoQuery) query, null, 1);
+    }else if(query instanceof BBoxQuery){
     	queryQueue = FeatureInfoUtils.createTaskQueryQueue(layers, (BBoxQuery) query, null, 1);
     }
     else if(query instanceof CircleQuery){
