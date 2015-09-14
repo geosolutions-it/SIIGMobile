@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.newrelic.agent.android.NewRelic;
 import com.squareup.okhttp.Headers;
 
@@ -42,28 +43,34 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 import org.mapsforge.core.model.MapPosition;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import it.geosolutions.android.map.activities.GetFeatureInfoAttributeActivity;
 import it.geosolutions.android.map.activities.MapActivityBase;
-import it.geosolutions.android.map.control.CoordinateControl;
 import it.geosolutions.android.map.control.LocationControl;
 import it.geosolutions.android.map.control.MapControl;
 import it.geosolutions.android.map.control.MapInfoControl;
 import it.geosolutions.android.map.model.Layer;
 import it.geosolutions.android.map.model.MSMMap;
+import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
 import it.geosolutions.android.map.overlay.managers.OverlayManager;
 import it.geosolutions.android.map.spatialite.SpatialiteLayer;
 import it.geosolutions.android.map.style.AdvancedStyle;
 import it.geosolutions.android.map.style.StyleManager;
 import it.geosolutions.android.map.utils.MapFilesProvider;
+import it.geosolutions.android.map.utils.ProjectionUtils;
 import it.geosolutions.android.map.utils.SpatialDbUtils;
 import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
+import it.geosolutions.android.map.wms.GetFeatureInfoConfiguration;
 import it.geosolutions.android.map.wms.WMSLayer;
 import it.geosolutions.android.map.wms.WMSSource;
 import it.geosolutions.android.siigmobile.elaboration.ElaborationResult;
@@ -73,6 +80,7 @@ import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
 import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
 import it.geosolutions.android.siigmobile.legend.LegendAdapter;
+import it.geosolutions.android.siigmobile.mapcontrol.FixedShapeMapInfoControl;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 
@@ -121,6 +129,15 @@ public class MainActivity extends MapActivityBase
 
     private Toolbar mToolbar;
 
+    private MapControl mapInfoControl;
+    private enum MapInfoSelectionMode {
+        GetFeatureInfo,
+        GetSpatialiteInfo
+    }
+    private MapInfoSelectionMode mapInfoSelectionMode = MapInfoSelectionMode.GetFeatureInfo;
+
+    private GetFeatureInfoConfiguration getFeatureInfoConfiguration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +159,8 @@ public class MainActivity extends MapActivityBase
             }
         }
 
+        mTitle = getResources().getString(R.string.app_title);
+
         MapFilesProvider.setBaseDir(Config.BASE_DIR_NAME);
         MAP_FILE = MapFilesProvider.getBackgroundMapFile();
 
@@ -155,7 +174,7 @@ public class MainActivity extends MapActivityBase
             @Override
             public void onClick(View v) {
                 //Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_LONG).show();
-                Intent nextActivity = new Intent(v.getContext(),InfoDisplayActivity.class);
+                Intent nextActivity = new Intent(v.getContext(), InfoDisplayActivity.class);
                 startActivity(nextActivity);
                 //push from bottom to top
                 overridePendingTransition(R.anim.in_from_down, 0);
@@ -186,8 +205,6 @@ public class MainActivity extends MapActivityBase
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-
-        mTitle = getResources().getString(R.string.app_title);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -287,10 +304,11 @@ public class MainActivity extends MapActivityBase
             //mapView.addControl(new CoordinateControl(mapView, true));
 
             // Info Control
-            MapInfoControl ic= new MapInfoControl(mapView,this);
-            ic.setActivationButton((ImageButton) findViewById(R.id.ButtonInfo));
-            ic.setMode(MapControl.MODE_VIEW);
-            mapView.addControl(ic);
+//            MapInfoControl ic= new MapInfoControl(mapView,this);
+//            ic.setActivationButton((ImageButton) findViewById(R.id.ButtonInfo));
+//            ic.setMode(MapControl.MODE_VIEW);
+//            mapView.addControl(ic);
+            setupMapInfoControl();
 
             // Location Control
             LocationControl lc  =new LocationControl(mapView);
@@ -323,6 +341,107 @@ public class MainActivity extends MapActivityBase
         }
     }
 
+    private void setupMapInfoControl(){
+
+        if(mapInfoControl != null){
+            mapView.removeControl(mapInfoControl);
+            mapInfoControl = null;
+        }
+
+        switch (mapInfoSelectionMode){
+            case GetFeatureInfo:
+
+                //WMS Info control
+                mapInfoControl = FixedShapeMapInfoControl.createOnePointControl(
+                        mapView,
+                        this,
+                        R.id.ButtonInfo,
+                        null,
+                        new FixedShapeMapInfoControl.OnePointSelectionCallback() {
+                            @Override
+                            public void pointSelected(double lat, double lon, float pixel_x, float pixel_y, double radius, byte zoomLevel) {
+
+                                //final String wfsLayer = Config.WFS_LAYERS[currentStyle];
+                                final String wmsLayer = Config.WMS_LAYERS[currentStyle];
+
+                                long[] mapSize;
+                                synchronized (mapView.getProjection()) {
+                                    mapSize = ProjectionUtils.calculateMapSize(mapView.getMeasuredWidth(), mapView.getMeasuredHeight(), mapView.getProjection());
+                                }
+
+                                final BoundingBox boundingBox = mapView.getMapViewPosition().getBoundingBox();
+                                final String version = Config.WMS_GETINFO_VERSION;
+                                final String crs = String.format(Locale.US, "EPSG:%d", Config.WMS_GETINFO_EPSG);
+
+                                //check if the user language is supported
+                                final String local_code = Locale.getDefault().getLanguage();
+                                boolean supported = false;
+                                for (String locale : Config.DESTINATION_SUPPORTED_LANGUAGES) {
+                                    if (local_code.toLowerCase().equals(locale)) {
+                                        supported = true;
+                                        break;
+                                    }
+                                }
+                                String locale = String.format(Locale.US, "locale:%s", supported ? local_code : Config.DESTINATION_SUPPORTED_LANGUAGES[0]);
+                                String env = Config.WMS_ENV[(currentStyle >= Config.WMS_ENV.length ? Config.DEFAULT_STYLE:currentStyle)];
+                                env += ";" + locale;
+
+                                final HashMap<String, String> additionalParameters = new HashMap<>();
+
+                                additionalParameters.put(Config.WMS_GETINFO_PARAMETER_FEATURE_COUNT, String.valueOf(Config.WMS_INFO_FEATURE_COUNT));
+                                additionalParameters.put(Config.WMS_GETINFO_PARAMETER_FORMAT, Config.WMS_GETINFO_FORMAT);
+                                additionalParameters.put(Config.WMS_GETINFO_PARAMETER_ENV, env);
+
+                                Intent i = new Intent(MainActivity.this, GetFeatureInfoAttributeActivity.class);
+
+                                WMSGetFeatureInfoQuery query = new WMSGetFeatureInfoQuery();
+                                query.setLat(lat);
+                                query.setLon(lon);
+                                query.setPixel_X(pixel_x);
+                                query.setPixel_Y(pixel_y);
+                                query.setZoomLevel(zoomLevel);
+                                query.setMapSize(mapSize);
+                                query.setBbox(boundingBox);
+                                query.setLayers(new String[]{wmsLayer});
+                                query.setQueryLayers(new String[]{wmsLayer});
+                                query.setVersion(version);
+                                query.setCrs(crs);
+                                query.setLocale(env);
+                                query.setStyles("");
+                                query.setAuthToken(Config.DESTINATION_AUTHORIZATION);
+                                query.setAdditionalParams(additionalParameters);
+                                query.setEndPoint(Config.DESTINATION_WMS_URL);
+
+                                if (getFeatureInfoConfiguration() != null) {
+                                    query.setLocaleConfig(getFeatureInfoConfiguration().getLocaleForLanguageCode(local_code));
+                                }
+                                i.putExtra("query", query);
+                                i.setAction(Intent.ACTION_VIEW);
+                                startActivityForResult(i, GetFeatureInfoAttributeActivity.GET_ITEM);
+
+                                if (mapInfoControl != null) {
+                                    mapInfoControl.disable();
+                                    if (mapInfoControl.getActivationButton() != null) {
+                                        mapInfoControl.getActivationButton().setSelected(false);
+                                    }
+                                }
+
+                            }
+                        });
+
+
+                break;
+            case GetSpatialiteInfo:
+                // Info Control
+                mapInfoControl = new MapInfoControl(mapView,this);
+                mapInfoControl.setActivationButton((ImageButton) findViewById(R.id.ButtonInfo));
+                mapInfoControl.setMode(MapControl.MODE_VIEW);
+                break;
+        }
+
+        mapView.addControl(mapInfoControl);
+    }
+
     /**
      * loads spatialite layers (database files) from the apps folder
      * if @param layerToCenter is not null and among the loaded layers
@@ -333,6 +452,11 @@ public class MainActivity extends MapActivityBase
         ArrayList<Layer> layers = new ArrayList<>();
 
         if(layerToCenter == null || currentStyle == 0) {
+
+            if (mapInfoSelectionMode != MapInfoSelectionMode.GetFeatureInfo) {
+                mapInfoSelectionMode = MapInfoSelectionMode.GetFeatureInfo;
+                setupMapInfoControl();
+            }
 
             /**
              * Adding WMS layers
@@ -373,6 +497,11 @@ public class MainActivity extends MapActivityBase
         }
 
         if(layerToCenter != null) {
+
+            if(mapInfoSelectionMode != MapInfoSelectionMode.GetSpatialiteInfo) {
+                mapInfoSelectionMode = MapInfoSelectionMode.GetSpatialiteInfo;
+                setupMapInfoControl();
+            }
 
             if (BuildConfig.DEBUG) {
                 Log.i(TAG, "selected result arrived " + layerToCenter);
@@ -1058,4 +1187,29 @@ public class MainActivity extends MapActivityBase
 
         elaborationResult = (ElaborationResult) savedInstanceState.getSerializable(KEY_RESULT);
     }
+
+    /**
+     * loads the getfeature info configuration from res/raw
+     * @return the GetFeatureInfoConfiguration or null if an error occurred
+     */
+    public GetFeatureInfoConfiguration getFeatureInfoConfiguration() {
+        if(getFeatureInfoConfiguration == null){
+
+            InputStream inputStream = getResources().openRawResource(R.raw.elab_getfeatureinfo_config);
+            if (inputStream != null) {
+                final Gson gson = new Gson();
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                getFeatureInfoConfiguration = gson.fromJson(reader, GetFeatureInfoConfiguration.class);
+
+                if(getFeatureInfoConfiguration == null) {
+                    Log.w(TAG, "error deserializing json ");
+                }
+            }
+
+        }
+
+        return getFeatureInfoConfiguration;
+    }
+
 }

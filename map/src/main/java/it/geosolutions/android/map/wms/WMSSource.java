@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.geosolutions.android.map.BuildConfig;
 import it.geosolutions.android.map.model.Attribute;
 import it.geosolutions.android.map.model.Source;
 import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
@@ -42,6 +43,9 @@ import it.geosolutions.android.map.wfs.geojson.feature.FeatureCollection;
  *
  */
 public class WMSSource implements Source{
+
+    // Tag for Logging
+    private static String TAG = "WMSSource";
 
 	@Override
 	public int hashCode() {
@@ -149,7 +153,17 @@ public class WMSSource implements Source{
                 getFeatureInfo.setAuthToken(query.getAuthToken());
             }
 
-            FeatureCollection result = getFeatureInfo.requestGetFeatureInfo();
+            FeatureCollection result = null;
+
+            try{
+                result = getFeatureInfo.requestGetFeatureInfo();
+            }catch ( Exception e){
+                // Something went wrong during WMS request
+                if(BuildConfig.DEBUG){
+                    Log.e(TAG, "Error during WMS request", e);
+                }
+                return 0;
+            }
 
             final GetFeatureInfoConfiguration.Locale localeConfig = query.getLocaleConfig();
             Map<String, String> props = null;

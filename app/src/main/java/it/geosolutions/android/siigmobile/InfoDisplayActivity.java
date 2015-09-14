@@ -15,6 +15,8 @@ public class InfoDisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_display);
 
+        setTitle(R.string.siig_info_page_title);
+
         Toolbar mToolbar = (Toolbar) findViewById(R.id.m_toolbar);
         setSupportActionBar(mToolbar);
 

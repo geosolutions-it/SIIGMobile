@@ -99,7 +99,7 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
 	 */
 	public void query_layer(){
 		if(!pointsAcquired) return;
-	   
+	   /*
 		double x,y, radius;
 		x = ConversionUtilities.convertFromPixelsToLongitude(view, startX);
 		y = ConversionUtilities.convertFromPixelsToLatitude(view, startY);
@@ -110,6 +110,8 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
         radius = Math.abs(fin_x - x);
         Log.v("MAPINFOTOOL", "circle: center (" + x + "," + y + ") radius " + radius);
     	infoDialogCircle(x,y,radius,view.getMapViewPosition().getZoomLevel());
+    	*/
+		infoDialogCircle(startX,startY,10,view.getMapViewPosition().getZoomLevel());
 	}
 	
 	/**
@@ -117,7 +119,7 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
 	 * @param x
 	 * @param y
 	 * @param radius
-	 * @param zooomLevel
+	 * @param zoomLevel
 	 */
 	protected void infoDialogCircle(final double x, final double y, final double radius, byte zoomLevel){
 	       try{
@@ -137,8 +139,8 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
 	        } else {
 	            i.setAction(Intent.ACTION_VIEW);
 	        }
-	        activity.startActivityForResult(i,
-	                GetFeatureInfoLayerListActivity.CIRCLE_REQUEST);
+
+	        activity.startActivityForResult(i, GetFeatureInfoLayerListActivity.CIRCLE_REQUEST);
 	        }catch(Exception ex){
 	        	Log.e("Exception launched ", ex.getMessage());
 	        }

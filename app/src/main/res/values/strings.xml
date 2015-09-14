@@ -60,8 +60,8 @@
     <string name="delete_results_message">Do you really want to delete these results ?</string>
     <string name="formula_street">PIS formula</string>
     <string name="formula_risk">Risk formula</string>
-    <string name="title_activity_info_display">InfoDisplayActivity</string>
 
+    <string name="siig_info_page_title">Info</string>
     <string name="siig_info_page_text"><b>Rischio  Totale </b>
         Per rischio totale si intende la  Valutazione Rischio complessivo antropico e/o ambientale a scala di dettaglio.
 Il rischio viene rappresentato su un arco di strada. Sulla mappa viene rappresentato su archi di 100m, 500m , griglia o rappresentazione comunale / provinciale a seconda della scala di rappresentazione selezionata.

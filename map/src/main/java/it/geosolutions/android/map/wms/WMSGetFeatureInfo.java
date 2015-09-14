@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import it.geosolutions.android.map.BuildConfig;
 import it.geosolutions.android.map.utils.ProjectionUtils;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
@@ -146,10 +147,8 @@ public class WMSGetFeatureInfo {
         final double pixel_n = nm - y * pixel_height;
         final double pixel_s = pixel_n - pixel_height;
 
-        final String pixel_bb = String.format(Locale.US, "%f,%f,%f,%f", pixel_w, pixel_s, pixel_e, pixel_n);
-
-        //for tests : get two features
-        //pixel_bb = "852645.061290,5565904.856364,852645.210581,5565905.005545";
+        //final String pixel_bb = String.format(Locale.US, "%f,%f,%f,%f", pixel_w, pixel_s, pixel_e, pixel_n);
+        final String client_bb = String.format(Locale.US, "%f,%f,%f,%f", wm, sm, em, nm);
 
         //convert query layers array to a comma-separated list of query layer names.
         String queryLayersString = "";
@@ -170,7 +169,8 @@ public class WMSGetFeatureInfo {
 
         //the bounding box is now of one pixel size
         //hence request pixel (0,0) of an image with size (1,1)
-        return getWMSInfo(pixel_bb,1,1,layersString, queryLayersString,0, 0,additionalParameters);
+        //return getWMSInfo(pixel_bb,1,1,layersString, queryLayersString,0,0,additionalParameters);
+        return getWMSInfo(client_bb,Math.round(this.mapSize[0]), Math.round( this.mapSize[1]),layersString, queryLayersString,this.x,this.y,additionalParameters);
 
     }
 
@@ -241,7 +241,9 @@ public class WMSGetFeatureInfo {
 
             RestAdapter.Builder builder = new RestAdapter.Builder();
             builder.setEndpoint(endPoint);
-            //builder.setLogLevel(RestAdapter.LogLevel.FULL);
+            if(BuildConfig.DEBUG){
+                builder.setLogLevel(RestAdapter.LogLevel.FULL);
+            }
             builder.setConverter(new GsonConverter(gson));
             if(authToken != null){
                 builder.setRequestInterceptor(new RequestInterceptor() {

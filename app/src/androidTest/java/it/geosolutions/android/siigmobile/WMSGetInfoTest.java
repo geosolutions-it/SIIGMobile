@@ -22,7 +22,7 @@ public class WMSGetInfoTest extends ActivityUnitTestCase<MainActivity> {
     private final static int PIXEL_X = 323;
     private final static int PIXEL_Y = 490;
 
-    private final static String WFS_LAYER_NAME = Config.WFS_LAYERS[1];
+    private final static String WFS_LAYER_NAME = "destination:popolazione_residente_all";
     private final static String WMS_LAYER_NAME = Config.WMS_LAYERS[1];
 
     private final static long[] MAP_SIZE = new long[]{1080,1347};
@@ -55,7 +55,7 @@ public class WMSGetInfoTest extends ActivityUnitTestCase<MainActivity> {
 
         additionalParameters.put(Config.WMS_GETINFO_PARAMETER_FEATURE_COUNT, String.valueOf(Config.WMS_INFO_FEATURE_COUNT));
         additionalParameters.put(Config.WMS_GETINFO_PARAMETER_FORMAT, Config.WMS_GETINFO_FORMAT);
-        additionalParameters.put(Config.WMS_GETINFO_PARAMETER_LOCALE, ENV);
+        additionalParameters.put("ENV", ENV);
 
         final WMSGetFeatureInfo getFeatureInfo = new WMSGetFeatureInfo(
                 Config.WMS_GETINFO_VERSION,

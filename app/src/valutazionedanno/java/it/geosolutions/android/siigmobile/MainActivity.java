@@ -291,7 +291,7 @@ public class MainActivity extends MapActivityBase
             mapView.getMapScaleBar().setShowMapScaleBar(true);
 
             // Coordinate Control
-            mapView.addControl(new CoordinateControl(mapView, true));
+            //mapView.addControl(new CoordinateControl(mapView, true));
 
             // Info Control
             setupMapInfoControl();
