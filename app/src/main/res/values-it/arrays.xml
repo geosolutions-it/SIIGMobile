@@ -9,6 +9,7 @@
         <item>Pericolosità Della Strada</item>
         <item>Salva Elaborazione Corrente</item>
         <item>Carica Elaborazione</item>
+        <item>Informazioni</item>
     </string-array>
 
     <string-array name="grafo">

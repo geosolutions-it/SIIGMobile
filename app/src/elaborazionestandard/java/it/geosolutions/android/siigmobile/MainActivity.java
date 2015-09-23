@@ -651,9 +651,6 @@ public class MainActivity extends MapActivityBase
     @Override
     public void onNavigationDrawerItemSelected(int position) {
 
-        // Update Title
-        onSectionAttached(position);
-
         // update the main content by replacing fragments
         if(layerManager == null && position < 4){
             // nothing to do
@@ -670,10 +667,17 @@ public class MainActivity extends MapActivityBase
                 //reload, if an elaboration arrived center on it
                 if(elaborationResult == null){
                     loadDBLayers(null);
+
                 }else if(position == 4){
                     loadDBLayers(elaborationResult.getStreetTableName());
                 }else {
                     loadDBLayers(elaborationResult.getRiskTableName());
+                }
+                // Update Title
+                if(elaborationResult == null) {
+                    mTitle = getResources().getStringArray(R.array.drawer_items)[position];
+                }else{
+                    mTitle = elaborationResult.getUserEditedName();
                 }
                 break;
             case 5:
@@ -695,6 +699,12 @@ public class MainActivity extends MapActivityBase
             case 6:
                 Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
                 startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
+                break;
+            case 7:
+                Intent nextActivity = new Intent(this, InfoDisplayActivity.class);
+                startActivity(nextActivity);
+                //push from bottom to top
+                overridePendingTransition(R.anim.in_from_down, 0);
                 break;
             default:
                 /*
@@ -1131,6 +1141,9 @@ public class MainActivity extends MapActivityBase
     public void invalidateMenu(final String tableName, final boolean clearable) {
         if(tableName == null){
             elaborationResult = null;
+            mTitle = getResources().getString(R.string.app_title);
+        }else{
+            mTitle = elaborationResult.getUserEditedName();
         }
         user_layer_clearable = clearable;
 
