@@ -49,9 +49,12 @@ public class WMSRequest {
 		public static final String STYLES = "styles";
 		public static final String CQL_FILTER = "cql_filter";
 		public static final String LAYERS = "layers";
+		public static final String MIN_ZOOM= "min_zoom";
 	}
 
     private Headers headers;
+
+    private byte minZoom = 0;
 
 	/**
 	 * create a request for the WMS source and
@@ -149,14 +152,20 @@ public class WMSRequest {
 			if(bp != null){
 				//Special management for style
 				concatenateParameter(PARAMS.STYLES,styleStringWriter, bp, last);
-				//special management for cql_filter
-				if(l.baseParams.containsKey(PARAMS.CQL_FILTER)){
-					//TODO skip it for now
-				}
+
 				//manage other paramters
 				for(String paramName : l.baseParams.keySet() ){
 					if(paramName == null) continue;
-					if(!PARAMS.STYLES.equalsIgnoreCase(paramName) && !PARAMS.CQL_FILTER.equalsIgnoreCase(paramName)){
+
+                    //if a min zoom is available, extract it here
+                    if(PARAMS.MIN_ZOOM.equalsIgnoreCase(paramName)){
+                        minZoom = Byte.parseByte(l.baseParams.get(paramName));
+                        //but do not add it to the currentParams
+                        continue;
+                    }
+
+                    //don't include styles
+					if(!PARAMS.STYLES.equalsIgnoreCase(paramName)){
 							currentParams.put(paramName.toLowerCase(), l.baseParams.get(paramName));
 					}
 				}
@@ -186,4 +195,8 @@ public class WMSRequest {
 			styleStringWriter.append(",");
 		}
 	}
+
+    public byte getMinZoom() {
+        return minZoom;
+    }
 }

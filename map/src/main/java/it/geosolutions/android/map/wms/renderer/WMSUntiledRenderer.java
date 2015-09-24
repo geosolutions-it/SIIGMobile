@@ -17,12 +17,13 @@
  */
 package it.geosolutions.android.map.wms.renderer;
 
-import it.geosolutions.android.map.R;
-import it.geosolutions.android.map.renderer.RenderingException;
-import it.geosolutions.android.map.utils.ProjectionUtils;
-import it.geosolutions.android.map.wms.WMSLayer;
-import it.geosolutions.android.map.wms.WMSLayerChunker;
-import it.geosolutions.android.map.wms.WMSRequest;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.util.Log;
+
+import org.mapsforge.android.maps.Projection;
+import org.mapsforge.core.model.BoundingBox;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,13 +33,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mapsforge.android.maps.Projection;
-import org.mapsforge.core.model.BoundingBox;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.util.Log;
+import it.geosolutions.android.map.R;
+import it.geosolutions.android.map.renderer.RenderingException;
+import it.geosolutions.android.map.utils.ProjectionUtils;
+import it.geosolutions.android.map.wms.WMSLayer;
+import it.geosolutions.android.map.wms.WMSLayerChunker;
+import it.geosolutions.android.map.wms.WMSRequest;
 
 /**
  * A Simple renderer that draws maps  
@@ -73,6 +73,10 @@ public  class WMSUntiledRenderer implements WMSRenderer{
 	 * @throws RenderingException 
 	 */
 	private void draw(Canvas c, WMSRequest r, BoundingBox boundingBox, byte zoomLevel) throws RenderingException {
+
+        if (zoomLevel < r.getMinZoom()) {
+            return;
+        }
 
 		URL url = r.getURL(createParameters(c,boundingBox,zoomLevel));
 		if(url == null) return; //TODO notify

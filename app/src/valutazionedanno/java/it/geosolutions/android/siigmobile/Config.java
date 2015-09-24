@@ -122,5 +122,7 @@ public class Config {
     public final static String WMS_GETINFO_PARAMETER_FEATURE_COUNT = "FEATURE_COUNT";
     public final static String WMS_GETINFO_PARAMETER_FORMAT = "FORMAT";
 
+    public static byte WMS_BERSAGLI_HIGHLIGHT_MIN_ZOOM = 14;
+
 
 }
