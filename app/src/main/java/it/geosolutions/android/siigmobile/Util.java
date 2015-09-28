@@ -14,6 +14,11 @@ import org.mapsforge.core.util.MercatorProjection;
 public class Util {
 
     /**
+     * Earth radius at the equator
+     */
+    public static final double EQUATORIAL_RADIUS = 6378137.0;
+
+    /**
      * checks the current online state of the device
      *
      *  Requires to hold the permission
@@ -75,7 +80,7 @@ public class Util {
      * @return latitude degrees
      */
     public static double latitudeDistance(int meters) {
-        return (meters * 360) / (2 * Math.PI * Config.EQUATORIAL_RADIUS);
+        return (meters * 360) / (2 * Math.PI * EQUATORIAL_RADIUS);
     }
 
     /**
@@ -88,7 +93,7 @@ public class Util {
      * @return longitude degrees
      */
     public static double longitudeDistance(int meters, double latitude) {
-        return (meters * 360) / (2 * Math.PI * Config.EQUATORIAL_RADIUS * Math.cos(Math.toRadians(latitude)));
+        return (meters * 360) / (2 * Math.PI * EQUATORIAL_RADIUS * Math.cos(Math.toRadians(latitude)));
     }
 
     /**
