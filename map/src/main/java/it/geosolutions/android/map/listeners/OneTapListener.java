@@ -17,28 +17,26 @@
  */
 package it.geosolutions.android.map.listeners;
 
-import java.util.ArrayList;
-import it.geosolutions.android.map.utils.ConversionUtilities;
-
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+
+import java.util.ArrayList;
+
 import it.geosolutions.android.map.activities.GetFeatureInfoLayerListActivity;
 import it.geosolutions.android.map.common.Constants;
 import it.geosolutions.android.map.model.Layer;
 import it.geosolutions.android.map.model.query.CircleQuery;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
-
+import it.geosolutions.android.map.utils.ConversionUtilities;
 import it.geosolutions.android.map.view.AdvancedMapView;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
-
-import android.preference.PreferenceManager;
-import android.util.Log;
-
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 
 /**
  * Listener with a gesture detector for one point selection on map.
@@ -99,37 +97,35 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
 	 */
 	public void query_layer(){
 		if(!pointsAcquired) return;
-	   /*
-		double x,y, radius;
-		x = ConversionUtilities.convertFromPixelsToLongitude(view, startX);
-		y = ConversionUtilities.convertFromPixelsToLatitude(view, startY);
+
+		double lon,lat, radius;
+		lon = ConversionUtilities.convertFromPixelsToLongitude(view, startX);
+		lat = ConversionUtilities.convertFromPixelsToLatitude(view, startY);
 		
 		//Calculate radius of one point selection
         float radius_pixel = (float)pref.getInt("OnePointSelectionRadius", 10);
         double fin_x = ConversionUtilities.convertFromPixelsToLongitude(view, startX+radius_pixel); 
-        radius = Math.abs(fin_x - x);
-        Log.v("MAPINFOTOOL", "circle: center (" + x + "," + y + ") radius " + radius);
-    	infoDialogCircle(x,y,radius,view.getMapViewPosition().getZoomLevel());
-    	*/
-		infoDialogCircle(startX,startY,10,view.getMapViewPosition().getZoomLevel());
+        radius = Math.abs(fin_x - lon);
+        Log.v("MAPINFOTOOL", "circle: center (" + lon + "," + lat + ") radius " + radius);
+    	infoDialogCircle(lon,lat,radius,view.getMapViewPosition().getZoomLevel());
 	}
 	
 	/**
 	 * Create a Feature Query for one point selection and pass it to an activity via intent.
-	 * @param x
-	 * @param y
+	 * @param lon
+	 * @param lat
 	 * @param radius
 	 * @param zoomLevel
 	 */
-	protected void infoDialogCircle(final double x, final double y, final double radius, byte zoomLevel){
+	protected void infoDialogCircle(final double lon, final double lat, final double radius, byte zoomLevel){
 	       try{
     	    ArrayList<Layer> layerNames = getLayers();
 	        Intent i = new Intent(view.getContext(),
 	                GetFeatureInfoLayerListActivity.class);
 	        i.putExtra(Constants.ParamKeys.LAYERS, layerNames);
 	        CircleQuery query = new CircleQuery();
-	        query.setX(x);
-	        query.setY(y);
+	        query.setX(lon);
+	        query.setY(lat);
 	        query.setRadius(radius);
 	        query.setSrid("4326");
 	        query.setZoomLevel(zoomLevel);
