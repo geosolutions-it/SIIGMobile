@@ -106,4 +106,22 @@ L’unità di misura
 [eventi/km/anno]
 </string>
 
+
+    <string name="val_coordinate">Coordinate</string>
+    <string name="val_name">Name</string>
+    <string name="val_method">Method</string>
+    <string name="val_buffer_width">Buffer Width</string>
+    <string name="val_buffer_width_hint">Enter the buffer width</string>
+    <string name="val_single_substance">Single Substance</string>
+    <string name="val_scenario">Danger scenario</string>
+    <string name="val_accident">Accident</string>
+    <string name="val_entity">Entity</string>
+    <string name="val_enter_description_hint">Enter a description</string>
+    <string name="enter_buffer_width">Please enter a buffer width</string>
+    <string name="accident_select">Select an accident please</string>
+    <string name="touch_point">Touch the center of the damage evaluation</string>
+    <string name="position_acquirement_cancelled">Position acquirement cancelled</string>
+    <string name="title_exists">This title already exists, please insert another one</string>
+    <string name="cancel_elaboration">Do you really want to cancel this elaboration ?</string>
+
 </resources>

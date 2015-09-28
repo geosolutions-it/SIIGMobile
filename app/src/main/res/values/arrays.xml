@@ -16,5 +16,167 @@
         <item>Street</item>
     </string-array>
 
+    <string-array name="val_method_options">
+        <item>Buffer</item>
+        <item>By Substance</item>
+    </string-array>
+
+    <string-array name="val_scenarios_options"> <!-- the server side "en" is not completely translated -->
+        <item>All Scenarios</item>
+        <item>NITROGEN, COMPRESSED</item>
+        <item>NITROGEN, REFRIGERATED LIQUID</item>
+        <item>HYDROGEN, COMPRESSED</item>
+        <item>OXYGEN, COMPRESSED</item>
+        <item>LIQUEFIED PETROLEUM GAS</item>
+        <item>ETHYLENE OXIDE (NITROGEN +)</item>
+        <item>AMMONIA ANHYDROUS</item>
+        <item>OXYGEN, REFRIGERATED LIQUID</item>
+        <item>DIESEL</item>
+        <item>PETROL</item>
+        <item>METHANOL</item>
+        <item>EPICHLOROHYDRIN</item>
+        <item>gas tossico</item>
+        <item>gas liquefatto refrigerato, infiammabile</item>
+        <item>gas infiammabile, corrosivo</item>
+        <item>gas infiammabile, che puó produrre spontaneamente una reazione violenta</item>
+        <item>gas tossico e comburente (favorisce l\'incendio)</item>
+        <item>materia liquida infiammabile che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile che reagisce pericolosamente con l\'acqua con sviluppo di gas infiammabili</item>
+        <item>materia liquida piroforica</item>
+        <item>materia liquida piroforica che reagisce pericolosamente con l\'acqua</item>
+        <item>materia liquida molto infiammabile e corrosiva</item>
+        <item>materia liquida molto infiammabile e corrosiva, che reagisce pericolosamente con l\'acqua</item>
+        <item>materia liquida molto infiammabile, che puó produrre spontaneamente una reazione violenta</item>
+        <item>materia liquida infiammabile (punto d\'infiammabilitá compreso tra 23°C e 60°C), debolmente tossica, o materia liquida autoriscaldante e tossica</item>
+        <item>materia liquida infiammabile e tossica, che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile e tossica, che reagisce pericolosamente con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile tossica e corrosiva</item>
+        <item>materia liquida infiammabile (punto d\'infiammabilitá compreso tra 23°C e 60°C), debolmente corrosiva, o materia liquida autoriscaldante e corrosiva</item>
+        <item>materia liquida infiammabile e corrosiva, che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia liquida infiammabile, che puó produrre spontaneamente una reazione violenta</item>
+        <item>materia comburente (favorisce l\'incendio)</item>
+        <item>perossido organico infiammabile</item>
+        <item>materia molto comburente (favorisce l\'incendio)</item>
+        <item>materia molto comburente (favorisce l\'incendio) e tossica</item>
+        <item>materia molto comburente (favorisce l\'incendio) e corrosiva</item>
+        <item>materia molto comburente (favorisce l\'incendio) che puó produrre spontaneamente una reazione violenta</item>
+        <item>materia comburente (favorisce l\'incendio) e tossica</item>
+        <item>materia comburente (favorisce l\'incendio) e tossica e corrosiva</item>
+        <item>materia comburente (favorisce l\'incendio) e corrosiva</item>
+        <item>materia comburente (favorisce l\'incendio) che puó produrre spontaneamente una reazione violenta</item>
+        <item>materia tossica o debolmente tossica</item>
+        <item>materia tossica liquida, che reagisce con l\'acqua, con sviluppo di gas infiammabili</item>
+        <item>materia tossica e infiammabile (punto d\'infiammabilitá compreso tra 23°C e 60°C) e corrosiva</item>
+        <item>materia tossica e comburente (favorisce l\'incendio)</item>
+        <item>materia molto tossica</item>
+        <item>materia molto tossica infiammabile (punto d\'infiammabilitá inferiore o uguale a 60°C)</item>
+        <item>materia molto tossica e comburente (favorisce l\'incendio)</item>
+        <item>materia molto tossica e corrosiva</item>
+        <item>materia altamente tossica, corrosiva, che reagisce pericolosamente con l\'acqua</item>
+    </string-array>
+
+    <string-array name="val_accidents_options">
+        <item>Select one&#8230;</item>
+        <item>VAPOURS RELEASE from REFRIGERATED TOXIC LIQUID </item>
+        <item>RELEASE OF TOXIC FUMES OF LIQUID</item>
+        <item>JETFIRE EXTREMELY FLAMMABLE GAS</item>
+        <item>FLASH FIRE / VCE OF FLAMMABLE VAPOR GAS LIQUEFIED</item>
+        <item>FLASH FIRE / VCE OF EXTREMELY FLAMMABLE VAPOR GAS LIQUEFIED</item>
+        <item>JET FIRE OF EXTREMELY FLAMMABLE VAPOR GAS LIQUEFIED</item>
+        <item>FIRE BALL</item>
+        <item>RELEASE OF GAS COMBUSTION</item>
+        <item>RELEASE OF asphyxiating gas</item>
+        <item>RELEASE ON THE GROUND AND IN THE WATERS</item>
+        <item>POOLFIRE OF FLAMMABLE LIQUID</item>
+        <item>FLASH FIRE / VCE OF VAPOR LIQUID FLAMMABLE</item>
+        <item>EXTREMELY FLAMMABLE LIQUID POOL FIRE</item>
+        <item>FLASH FIRE / VCE OF EXTREMELY FLAMMABLE LIQUID VAPOR</item>
+    </string-array>
+
+    <string-array name="val_entities_options">
+        <item>All Entities</item>
+        <item>Light</item>
+        <item>Heavy</item>
+    </string-array>
+
+    <string-array name="accident_ids">
+        <item>0</item><!-- used for "all" -->
+        <item>10</item>
+        <item>11</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>
+
+    <string-array name="scenario_ids">
+        <item>0</item><!-- used for "all" -->
+        <item>3</item>
+        <item>8</item>
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>6</item>
+        <item>4</item>
+        <item>7</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>103</item>
+        <item>100</item>
+        <item>101</item>
+        <item>102</item>
+        <item>104</item>
+        <item>105</item>
+        <item>106</item>
+        <item>107</item>
+        <item>108</item>
+        <item>109</item>
+        <item>110</item>
+        <item>111</item>
+        <item>112</item>
+        <item>113</item>
+        <item>114</item>
+        <item>115</item>
+        <item>116</item>
+        <item>117</item>
+        <item>119</item>
+        <item>120</item>
+        <item>121</item>
+        <item>122</item>
+        <item>123</item>
+        <item>124</item>
+        <item>125</item>
+        <item>126</item>
+        <item>127</item>
+        <item>128</item>
+        <item>129</item>
+        <item>130</item>
+        <item>131</item>
+        <item>132</item>
+        <item>134</item>
+        <item>135</item>
+        <item>136</item>
+        <item>137</item>
+        <item>138</item>
+        <item>139</item>
+    </string-array>
+
+
+    <!-- src : https://github.com/geosolutions-it/MapStore/blob/c008d/mapcomposer/app/static/externals/gxp/src/script/plugins/StandardProcessing.js#L574-->
+    <string-array name="entity_ids">
+        <item>42</item><!-- used for "all" -->
+        <item>0</item>
+        <item>1</item>
+    </string-array>
         
 </resources>

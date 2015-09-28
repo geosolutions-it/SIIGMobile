@@ -1,169 +1,273 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
     tools:context="it.geosolutions.android.siigmobile.ComputeFormActivity$PlaceholderFragment">
 
-    <TextView android:id="@+id/section_label" android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/compute_button"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/siig_risk_form_title"
-        android:textSize="@dimen/abc_text_size_headline_material"/>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:textSize="18dp"
+        android:text="@string/compute_text"/>
 
-    <RadioGroup
-        android:id = "@+id/radiogroup_risk_type"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/section_label"
-        android:layout_alignRight="@+id/section_label"
-        android:layout_alignEnd="@+id/section_label">
+        android:layout_alignParentTop="true"
+        android:scrollbars="none"
+        android:layout_above="@id/compute_button">
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/risk"
-            android:id="@+id/radio_risk"
-            android:checked="true"
-            android:onClick="onRiskRadioButtonClicked"
-            android:textSize="@dimen/abc_text_size_medium_material" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/road_risk_factor"
-            android:id="@+id/radio_street"
-            android:checked="false"
-            android:onClick="onRiskRadioButtonClicked"
-            android:textSize="@dimen/abc_text_size_menu_material" />
-
-    </RadioGroup>
-
-    <LinearLayout
-        android:id="@+id/bb_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/radiogroup_risk_type"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/bb_upperleft" />
         <LinearLayout
+            android:id="@+id/props_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/bb_longitude" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/bb_latitude" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tv_upper_left_lon"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/black"/>
-            <TextView
-                android:id="@+id/tv_upper_left_lat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/black"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tv_lower_right_lon"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/black"/>
-            <TextView
-                android:id="@+id/tv_lower_right_lat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
+            android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/title_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="@string/bb_lowerright" />
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_title_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/val_name"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/risk_description_title"
-        android:id="@+id/option_description_title"
-        android:layout_below="@+id/bb_layout"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="@dimen/abc_dialog_padding_top_material" />
+                <EditText
+                    android:id="@+id/edittext_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:textSize="16sp"
+                    android:hint="@string/elab_enter_title"
+                    android:inputType="text"/>
+            </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/compute_text"
-        android:id="@+id/compute_button"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+            <LinearLayout
+                android:id="@+id/coord_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/risk_description"
-        android:id="@+id/form_compute_option_description"
-        android:layout_below="@+id/option_description_title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/radiogroup_risk_type"
-        android:layout_alignEnd="@+id/radiogroup_risk_type" />
+                <TextView
+                    android:id="@+id/tv_coord_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/val_coordinate"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <TextView
+                    android:id="@+id/tv_coord_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/method_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_method_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/val_method"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <Spinner
+                    android:id="@+id/spinner_method"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:entries="@array/val_method_options"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/buffer_width_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_buffer_width_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/val_buffer_width"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <LinearLayout
+                    android:id="@+id/buffer_edit_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/edittext_buffer_width"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:gravity="right"
+                        android:hint="@string/val_buffer_width_hint"
+                        android:inputType="number"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/tv_buffer_unit_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.2"
+                        android:text="m"
+                        android:gravity="right"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/scenario_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_scenario_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/val_scenario"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <Spinner
+                    android:id="@+id/spinner_scenario"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:entries="@array/val_scenarios_options"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/accident_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_accident_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/val_accident"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <Spinner
+                    android:id="@+id/spinner_accident"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:entries="@array/val_accidents_options"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/entity_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_entity_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/val_entity"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <Spinner
+                    android:id="@+id/spinner_entity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:entries="@array/val_entities_options"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/description_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_description_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:text="@string/elab_description"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <EditText
+                    android:id="@+id/edittext_description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:textSize="16sp"
+                    android:hint="@string/val_enter_description_hint"
+                    android:inputType="text"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/snackbarPosition"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/snackbarPosition">
+        android:layout_centerHorizontal="true">
     </android.support.design.widget.CoordinatorLayout>
 
 </RelativeLayout>

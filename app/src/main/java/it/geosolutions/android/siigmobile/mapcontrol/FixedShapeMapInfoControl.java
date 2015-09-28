@@ -77,6 +77,8 @@ public class FixedShapeMapInfoControl extends MapControl {
     private static float STROKE_SHAPE_DIMENSION = 15f;
     private static Paint.Join STROKE_ANGLES = Paint.Join.ROUND;
 
+    public static final int DONT_CONNECT = -1;
+
     public Activity activity;
     public AdvancedMapView mapView;
 
@@ -122,7 +124,9 @@ public class FixedShapeMapInfoControl extends MapControl {
         if(enabledMessage != null){
             mif.setEnabledMessage(enabledMessage);
         }
-        mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        if(buttonToConnectToID != DONT_CONNECT) {
+            mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        }
         mif.setMode(MapControl.MODE_VIEW);
 
         if(mapView != null) {
@@ -157,7 +161,9 @@ public class FixedShapeMapInfoControl extends MapControl {
         if(enabledMessage != null){
             mif.setEnabledMessage(enabledMessage);
         }
-        mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        if(buttonToConnectToID != DONT_CONNECT) {
+            mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        }
         mif.setMode(MapControl.MODE_VIEW);
 
         if(mapView != null) {
@@ -194,7 +200,9 @@ public class FixedShapeMapInfoControl extends MapControl {
         if(enabledMessage != null){
             mif.setEnabledMessage(enabledMessage);
         }
-        mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        if(buttonToConnectToID != DONT_CONNECT) {
+            mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        }
         mif.setMode(MapControl.MODE_VIEW);
 
         if(mapView != null) {
@@ -231,7 +239,9 @@ public class FixedShapeMapInfoControl extends MapControl {
         if(enabledMessage != null){
             mif.setEnabledMessage(enabledMessage);
         }
-        mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        if(buttonToConnectToID != DONT_CONNECT) {
+            mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        }
         mif.setMode(MapControl.MODE_VIEW);
 
         if(mapView != null) {

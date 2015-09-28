@@ -19,10 +19,13 @@
             </intent-filter>
         </activity>
         <activity android:name="it.geosolutions.android.map.MapsActivity" />
+        <!-- ComputeFormActivity is currently only used in valutazione danno flavour
+             //TODO move it completely ?-->
         <activity
             android:name=".ComputeFormActivity"
             android:label="@string/title_activity_compute_form"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.geosolutions.android.siigmobile.MainActivity" />
