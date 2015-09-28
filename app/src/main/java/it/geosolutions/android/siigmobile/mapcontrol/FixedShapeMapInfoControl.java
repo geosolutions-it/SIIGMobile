@@ -109,13 +109,13 @@ public class FixedShapeMapInfoControl extends MapControl {
         mif.setSelectionCallback(callback);
         mif.setOneTapListener(new OneTapListener(mapView, activity) {
             @Override
-            protected void infoDialogCircle(double x, double y, double radius, byte zoomLevel) {
+            protected void infoDialogCircle(double lon, double lat, double radius, byte zoomLevel) {
 
                 float pixel_x = this.getStartX();
                 float pixel_y = this.getStartY();
 
                 if (mif.getSelectionCallback() != null && mif.getSelectionCallback() instanceof OnePointSelectionCallback) {
-                    ((OnePointSelectionCallback) mif.getSelectionCallback()).pointSelected(x, y, pixel_x, pixel_y, radius, zoomLevel);
+                    ((OnePointSelectionCallback) mif.getSelectionCallback()).pointSelected(lat, lon, pixel_x, pixel_y, radius, zoomLevel);
                 }
             }
         });
