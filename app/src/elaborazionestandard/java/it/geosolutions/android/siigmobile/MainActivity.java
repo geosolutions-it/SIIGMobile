@@ -993,17 +993,31 @@ public class MainActivity extends MapActivityBase
                         final Elaborator elaborator = new Elaborator(MainActivity.this) {
                             private String tableToCenter;
                             @Override
-                            public void showError(int resource) {
-                                MainActivity.this.showSnackBar(resource);
+                            public void showError(final int resource) {
+                                //may come from background
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        MainActivity.this.showSnackBar(resource);
+                                    }
+                                });
                             }
 
                             @Override
-                            public void showMessage(String message) {
-                                Snackbar
-                                        .make(MainActivity.this.findViewById(R.id.snackbarPosition),
-                                                message,
-                                                Snackbar.LENGTH_LONG)
-                                        .show();
+                            public void showMessage(final String message) {
+                                //may come from background
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        Snackbar
+                                                .make(MainActivity.this.findViewById(R.id.snackbarPosition),
+                                                        message,
+                                                        Snackbar.LENGTH_LONG)
+                                                .show();
+                                    }
+                                });
                             }
 
                             @Override

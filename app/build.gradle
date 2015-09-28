@@ -61,6 +61,7 @@ android {
         exclude 'COPYING.LESSER'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE.txt'
+        exclude 'LICENSE.txt'
     }
 }
 

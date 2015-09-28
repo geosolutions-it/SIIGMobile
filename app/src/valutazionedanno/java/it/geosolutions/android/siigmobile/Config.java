@@ -122,4 +122,7 @@ public class Config {
     public final static String WMS_GETINFO_PARAMETER_FEATURE_COUNT = "FEATURE_COUNT";
     public final static String WMS_GETINFO_PARAMETER_FORMAT = "FORMAT";
 
+    public static final double EQUATORIAL_RADIUS = 6378137.0;
+
+
 }

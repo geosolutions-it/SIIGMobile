@@ -56,5 +56,21 @@
     <string name="formula_risk">Rischio</string>
     <string name="title_activity_results">Carica Elaborazione</string>
     <string name="siig_info_page_title">Informazioni</string>
+    <string name="val_coordinate">Coordinata</string>
+    <string name="val_name">Nome</string>
+    <string name="val_method">Metodo</string>
+    <string name="val_buffer_width">Ampiezza Buffer </string>
+    <string name="val_buffer_width_hint">Inserisci l\'ampiezza buffer</string>
+    <string name="val_single_substance">Sostanza Singola</string>
+    <string name="val_scenario">Classi di pericolo</string>
+    <string name="val_accident">Incidente</string>
+    <string name="val_entity">Entità</string>
+    <string name="val_enter_description_hint">Inserisci una descrizione</string>
+    <string name="enter_buffer_width">Please enter a buffer width</string>
+    <string name="accident_select">Selezione un incidente per favore</string>
+    <string name="touch_point">Tocca il centro per la valutazione danno</string>
+    <string name="position_acquirement_cancelled">Acquisto posizione annullato</string>
+    <string name="title_exists">Questo titolo esiste, si prega di inserire uno diverso</string>
+    <string name="cancel_elaboration">Vuoi veramente cancellare questa elaborazione ?</string>
 
 </resources>
