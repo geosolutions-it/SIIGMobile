@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -84,6 +84,7 @@ import it.geosolutions.android.siigmobile.legend.LegendAdapter;
 import it.geosolutions.android.siigmobile.mapcontrol.FixedShapeMapInfoControl;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
+import it.geosolutions.android.siigmobile.wfs.WFSBersagliDataActivity;
 
 public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -193,6 +194,8 @@ public class MainActivity extends MapActivityBase
                     removeOverlayItem(overlayCircle);
                     mTitle = getResources().getStringArray(R.array.drawer_items)[currentStyle];
 
+                    disableResultListButton();
+
                     return true;
                 }
                 return false;
@@ -269,6 +272,21 @@ public class MainActivity extends MapActivityBase
         //select here the geocoder implementation
         mGeoCoder = new NominatimGeoCoder();
 
+
+        //TODO this exists here only for debugging -> accessing a dummy result, remove when merging
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        enableResultListButton();
+                    }
+                });
+
+            }
+        },500);
     }
 
     private void setupMap() {
@@ -639,6 +657,42 @@ public class MainActivity extends MapActivityBase
         }
         mapPrefEditor.commit();
         //MapFilesProvider.setBackgroundFileName(MAP_FILE.getName());
+    }
+
+    /**
+     * enables the result list button which consists
+     * in setting the visibility to visible and
+     * setting a click listener which uses the currently available
+     * elaborationresult and sends it to thw WFS Bersagli activity
+     */
+    public void enableResultListButton(){
+
+        final ImageButton listButton = (ImageButton) findViewById(R.id.ListMarker);
+        listButton.setVisibility(View.VISIBLE);
+        listButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+                Intent i = new Intent(MainActivity.this,WFSBersagliDataActivity.class);
+                i.putExtra(WFSBersagliDataActivity.PARAM_ELABORATION, elaborationResult);
+
+                startActivity(i);
+
+            }
+        });
+
+    }
+
+    /**
+     * disables the button -> invisible, no listener
+     */
+    public void disableResultListButton(){
+
+        final ImageButton listButton = (ImageButton) findViewById(R.id.ListMarker);
+        listButton.setVisibility(View.GONE);
+        listButton.setOnClickListener(null);
     }
 
     @Override
@@ -1106,6 +1160,10 @@ public class MainActivity extends MapActivityBase
         if (bb != null) {
             mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
         }
+
+        //an elab has been loaded, either from db or over a request
+        //add the "show wfs features" button
+        enableResultListButton();
     }
 
     /**

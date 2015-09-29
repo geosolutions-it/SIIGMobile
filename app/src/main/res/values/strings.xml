@@ -61,6 +61,7 @@
     <string name="formula_street">PIS formula</string>
     <string name="formula_risk">Risk formula</string>
 
+    <string name="title_activity_info_display">InfoDisplayActivity</string>
     <string name="siig_info_page_title">Info</string>
     <string name="siig_info_page_text" translatable="false"><b>Rischio  Totale </b>
         Per rischio totale si intende la  Valutazione Rischio complessivo antropico e/o ambientale a scala di dettaglio.
@@ -123,5 +124,9 @@ L’unità di misura
     <string name="position_acquirement_cancelled">Position acquirement cancelled</string>
     <string name="title_exists">This title already exists, please insert another one</string>
     <string name="cancel_elaboration">Do you really want to cancel this elaboration ?</string>
+    <string name="target_type">Target Type</string>
+    <string name="target_list">Target List</string>
+    <string name="select_layer">Select Layer</string>
+    <string name="wfs_no_data">No data available for the selected layer.</string>
 
 </resources>

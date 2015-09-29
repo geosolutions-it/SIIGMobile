@@ -1,0 +1,90 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                tools:context="it.geosolutions.android.map.MapsActivity" >
+
+    <RelativeLayout android:id="@+id/map_buttonbar"
+                  android:layout_width="wrap_content"
+                  android:layout_height="fill_parent"
+                  android:layout_alignParentRight="true"
+                  android:layout_alignParentTop="true"
+                  android:background="@drawable/map_control_bg"
+                  android:orientation="vertical">
+        <ImageButton
+            android:contentDescription="@string/button_info_content"
+            android:padding="15dip"
+            android:clickable="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/ButtonLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/map_toggle_control"
+            android:src="@drawable/ic_device_access_location_searching"/>
+        <ImageButton
+            android:contentDescription="@string/button_info_content"
+            android:padding="15dip"
+            android:clickable="true"
+            android:layout_below="@+id/ButtonLocation"
+            android:id="@+id/ButtonInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/map_toggle_control"
+            android:src="@drawable/ic_action_info"/>
+
+        <ImageButton
+            android:contentDescription="@string/button_info_content"
+            android:layout_alignParentBottom="true"
+            android:padding="15dip"
+            android:clickable="true"
+            android:id="@+id/ListMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/map_toggle_control"
+            android:src="@drawable/ic_collection_as_list"
+            android:visibility="gone"/>
+
+
+    </RelativeLayout>
+
+    <it.geosolutions.android.map.view.AdvancedMapView
+        android:id="@+id/advancedMapView"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/map_buttonbar" />
+
+    <ImageButton
+        android:contentDescription="@string/button_confirm_marker_position"
+        android:padding="15dip"
+        android:clickable="true"
+        android:id="@+id/button_confirm_marker_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/map_toggle_control"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/advancedMapView"
+        android:src="@drawable/ic_navigation_accept"
+        android:visibility="invisible"
+
+        />
+
+
+    <!--  <include layout="@layout/button_close_merge" /> -->
+
+    <LinearLayout
+        android:id="@+id/secondary_map_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/map_buttonbar"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="10dip"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+        <include layout="@layout/marker_info_button" />
+
+    </LinearLayout>
+</RelativeLayout>

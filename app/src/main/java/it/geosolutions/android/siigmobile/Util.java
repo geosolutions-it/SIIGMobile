@@ -7,6 +7,14 @@ import android.util.Log;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.util.MercatorProjection;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import it.geosolutions.android.map.wms.GetFeatureInfoConfiguration;
+
 /**
  * Created by Robert Oehler on 09.07.15.
  *
@@ -38,7 +46,6 @@ public class Util {
         }
         return false;
     }
-
 
     /**
      * Creates a BoundingBox that is a fixed meter amount larger on all sides (but does not cross date line/poles)
@@ -80,6 +87,7 @@ public class Util {
      * @return latitude degrees
      */
     public static double latitudeDistance(int meters) {
+
         return (meters * 360) / (2 * Math.PI * EQUATORIAL_RADIUS);
     }
 
@@ -144,5 +152,32 @@ public class Util {
         }
         return result;
 
+    }
+
+    /**
+     * loads the getfeature info configuration from res/raw
+     *
+     * @return the GetFeatureInfoConfiguration or null if an error occurred
+     */
+    public static GetFeatureInfoConfiguration.Locale getLocaleConfig(Context context) {
+
+        InputStream inputStream = context.getResources().openRawResource(R.raw.getfeatureinfo_config);
+        if (inputStream != null) {
+            final Gson gson = new Gson();
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            GetFeatureInfoConfiguration raw_config = gson.fromJson(reader, GetFeatureInfoConfiguration.class);
+
+            if (raw_config == null) {
+                Log.w("Util", "error deserializing json ");
+            } else {
+
+                final String local_code = java.util.Locale.getDefault().getLanguage();
+
+                return raw_config.getLocaleForLanguageCode(local_code);
+            }
+        }
+
+        return null;
     }
 }
