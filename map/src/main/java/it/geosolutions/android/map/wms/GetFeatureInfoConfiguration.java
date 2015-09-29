@@ -78,7 +78,6 @@ public class GetFeatureInfoConfiguration implements Serializable {
     }
 
 
-
     public static class Locale implements Serializable {
 
         private String locale;

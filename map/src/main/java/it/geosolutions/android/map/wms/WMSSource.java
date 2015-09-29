@@ -24,7 +24,6 @@ import com.squareup.okhttp.Headers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import it.geosolutions.android.map.BuildConfig;
 import it.geosolutions.android.map.model.Attribute;
@@ -33,7 +32,7 @@ import it.geosolutions.android.map.model.query.FeatureInfoQueryResult;
 import it.geosolutions.android.map.model.query.FeatureInfoTaskQuery;
 import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.model.query.WMSGetFeatureInfoTaskQuery;
-import it.geosolutions.android.map.wfs.geojson.feature.Feature;
+import it.geosolutions.android.map.utils.ConversionUtilities;
 import it.geosolutions.android.map.wfs.geojson.feature.FeatureCollection;
 
 
@@ -165,50 +164,19 @@ public class WMSSource implements Source{
                 return 0;
             }
 
-            final GetFeatureInfoConfiguration.Locale localeConfig = query.getLocaleConfig();
-            Map<String, String> props = null;
-            if (localeConfig != null) {
-                props = localeConfig.getPropertiesForLayer(layerName);
-            }
+            final GetFeatureInfoConfiguration.Locale locale = query.getLocaleConfig();
 
             if (result != null && result.features != null && result.features.size() > 0) {
 
-                Log.i("WMSSource", "features arrived : " + result.features.size());
-
+                if(BuildConfig.DEBUG) {
+                    Log.i("WMSSource", "features arrived : " + result.features.size());
+                }
                 FeatureInfoQueryResult queryResult = new FeatureInfoQueryResult();
 
-                ArrayList<it.geosolutions.android.map.model.Feature> mapModelFeatures = new ArrayList<>();
-                for (Feature f : result.features) {
-
-                    //convert this feature to a it.geosolutions.android.map.model.Feature :-|
-                    it.geosolutions.android.map.model.Feature mapModelFeature = new it.geosolutions.android.map.model.Feature();
-
-                    if (f.geometry != null) {
-                        mapModelFeature.setGeometry(f.geometry);
-                    }
-                    for (Map.Entry<String,Object> entry : f.properties.entrySet()) {
-                        String key = entry.getKey();
-                        Object value = entry.getValue();
-
-                        if (key == null) { //without key this entry is senseless
-                            continue;
-                        }
-
-                        if (props != null) {
-                            //if config contains this key, add this
-                            if (props.containsKey(key)) {
-
-                                mapModelFeature.add(createAttribute(props.get(key), value));
-                            }
-                        } else { //no props, show all
-                            mapModelFeature.add(createAttribute(key, value));
-                        }
-                    }
-                    mapModelFeatures.add(mapModelFeature);
-
-                }
+                ArrayList<it.geosolutions.android.map.model.Feature> mapModelFeatures = ConversionUtilities.convertWFSFeatures(locale, layerName, result.features);
 
                 queryResult.setFeatures(mapModelFeatures);
+
                 data.add(queryResult);
 
                 return result.features.size();

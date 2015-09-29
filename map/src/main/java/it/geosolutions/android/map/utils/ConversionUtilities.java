@@ -17,11 +17,19 @@
  */
 package it.geosolutions.android.map.utils;
 
-import it.geosolutions.android.map.view.AdvancedMapView;
+import android.util.Log;
 
 import org.mapsforge.core.model.GeoPoint;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.MercatorProjection;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+import it.geosolutions.android.map.model.Attribute;
+import it.geosolutions.android.map.model.Feature;
+import it.geosolutions.android.map.view.AdvancedMapView;
+import it.geosolutions.android.map.wms.GetFeatureInfoConfiguration;
 
 /**
  * An utility class to perform conversion operations of point between pixels and long/lat.
@@ -110,4 +118,81 @@ public class ConversionUtilities {
         
         return (MercatorProjection.longitudeToPixelX(longitude, zoomLevel) - pixelX);
 	}
+
+    /**
+     * converts a list of
+     * it.geosolutions.android.map.wfs.geojson.feature.Feature
+     * to
+     * it.geosolutions.android.map.model.Feature
+     *
+     * applying the Locale configuration
+     * it loads the config for the current language -or the default language if the current is not supported-
+     * and adds feature properties which are contained in the config
+     *
+     * @param locale the configuration to apply (may be null)
+     * @param layerName the layername to filter the config
+     * @param features the features to convert
+     * @return the map.model.Features containing Attributes
+     */
+    public static ArrayList<Feature> convertWFSFeatures(final GetFeatureInfoConfiguration.Locale locale,final String layerName,final ArrayList<it.geosolutions.android.map.wfs.geojson.feature.Feature> features) {
+
+        Map<String, String> props = null;
+        if(locale != null){
+            props = locale.getPropertiesForLayer(layerName);
+        }
+
+        ArrayList<it.geosolutions.android.map.model.Feature> mapModelFeatures = new ArrayList<>();
+        for (it.geosolutions.android.map.wfs.geojson.feature.Feature f : features) {
+
+            it.geosolutions.android.map.model.Feature mapModelFeature = new it.geosolutions.android.map.model.Feature();
+
+            if (f.geometry != null) {
+                mapModelFeature.setGeometry(f.geometry);
+            }
+            for (Map.Entry<String, Object> entry : f.properties.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+
+                if (key == null) { //without key this entry is senseless
+                    continue;
+                }
+
+                if (props != null) {
+                    //if config contains this key, add this
+                    if (props.containsKey(key)) {
+
+                        mapModelFeature.add(createAttribute(props.get(key), value));
+                    }
+                } else { //no props, show all
+                    mapModelFeature.add(createAttribute(key, value));
+                }
+            }
+            mapModelFeatures.add(mapModelFeature);
+
+        }
+        return mapModelFeatures;
+    }
+
+    /**
+     * creates an attribute
+     *
+     * @param key   key must not be null
+     * @param value can be null
+     * @return the attribute
+     */
+    public static Attribute createAttribute(String key, Object value) {
+        Attribute attribute = new Attribute();
+        attribute.setName(key);
+
+        if (value == null) {
+
+            Log.w("WMSSource", "value null for key : " + key);
+
+        } else {
+
+            attribute.setValue(value.toString());
+        }
+        return attribute;
+    }
+
 }

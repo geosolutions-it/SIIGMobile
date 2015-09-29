@@ -30,14 +30,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.geosolutions.android.siigmobile.MainActivity" />
         </activity>
-        <activity
-            android:name=".LoadResultsActivity"
-            android:label="@string/title_activity_results" />
+
         <activity
             android:name=".InfoDisplayActivity"
             android:label="@string/siig_info_page_title"
             android:theme="@style/AppTheme.Translucent">
         </activity>
+        <activity android:name=".LoadResultsActivity"
+                  android:label="@string/title_activity_results"/>
+        <activity android:name=".wfs.WFSBersagliDataActivity"
+                  android:label="@string/target_list"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+
     </application>
 
 </manifest>

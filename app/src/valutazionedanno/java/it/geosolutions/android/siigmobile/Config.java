@@ -125,4 +125,8 @@ public class Config {
     public final static int CIRCLE_OVERLAY_COLOR  = 0xaaff0000;
     public final static int CIRCLE_OVERLAY_STROKE = 10;
 
+    public final static int WFS_MAX_RESULTS = 50;
+
+    public static int RESULT_MIN_ZOOMLEVEL = 15;
+
 }
