@@ -191,6 +191,7 @@ public class MainActivity extends MapActivityBase
 
                     loadDBLayers(null);
                     removeOverlayItem(overlayCircle);
+                    mTitle = getResources().getStringArray(R.array.drawer_items)[currentStyle];
 
                     return true;
                 }
