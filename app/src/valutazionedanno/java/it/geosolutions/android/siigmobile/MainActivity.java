@@ -920,14 +920,6 @@ public class MainActivity extends MapActivityBase
 
             overlayCircle = new Circle(p, radius, fill, stroke);
 
-            if (overlayItemList == null) {
-                overlayItemList = new ListOverlay();
-                mapView.getOverlays().add(overlayItemList);
-            }
-
-            List<OverlayItem> overlayItems = overlayItemList.getOverlayItems();
-
-            overlayItems.add(overlayCircle);
         } else {
 
             overlayCircle.setGeoPoint(p);
@@ -936,6 +928,15 @@ public class MainActivity extends MapActivityBase
             overlayCircle.setPaintFill(fill);
             overlayCircle.setPaintStroke(stroke);
         }
+
+        if (overlayItemList == null) {
+            overlayItemList = new ListOverlay();
+            mapView.getOverlays().add(overlayItemList);
+        }
+
+        List<OverlayItem> overlayItems = overlayItemList.getOverlayItems();
+
+        overlayItems.add(overlayCircle);
 
         mapView.redraw();
     }
@@ -969,33 +970,6 @@ public class MainActivity extends MapActivityBase
     public ListOverlay getOverlayItemList() {
         return overlayItemList;
     }
-
-
-    /*
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            // Handle action bar item clicks here. The action bar will
-            // automatically handle clicks on the Home/Up button, so long
-            // as you specify a parent activity in AndroidManifest.xml.
-            int id = item.getItemId();
-
-            //noinspection SimplifiableIfStatement
-    //        if (id == R.id.action_settings) {
-    //            return true;
-    //        } else
-            if (id == R.id.action_clear) {
-
-                clearMenu();
-                currentStyle = Config.DEFAULT_STYLE;
-
-                loadDBLayers(null);
-            }
-
-            return super.onOptionsItemSelected(item);
-        }
-    */
-
-
 
     public void showSnackBar(int stringResource){
         Snackbar
