@@ -113,6 +113,7 @@ public class WFSBersagliDataActivity extends AppCompatActivity {
 
                     if(mResult == null){
                         Log.w(TAG, "No result is loaded");
+                        hideProgress();
                         return;
                     }
 
@@ -121,6 +122,7 @@ public class WFSBersagliDataActivity extends AppCompatActivity {
 
                     if(p == null || radius <= 0){
                         Log.w(TAG, "Invalid result data");
+                        hideProgress();
                         return;
                     }
 
