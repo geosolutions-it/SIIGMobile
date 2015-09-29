@@ -39,7 +39,7 @@ public class ComputeFormActivityTest extends ActivityUnitTestCase<ComputeFormAct
 
     }
 
-    public void testForm(){
+    public void ignoretestForm(){
 
 
         assertNotNull(getActivity());

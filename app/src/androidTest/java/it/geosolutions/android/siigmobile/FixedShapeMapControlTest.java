@@ -33,7 +33,7 @@ public class FixedShapeMapControlTest extends ActivityUnitTestCase<MainActivity>
         setActivity(launchActivity(getInstrumentation().getTargetContext().getPackageName(), MainActivity.class, null));
     }
 
-    public void testControls(){
+    public void ignoretestControls(){
 
         final CountDownLatch latch = new CountDownLatch(4);
 

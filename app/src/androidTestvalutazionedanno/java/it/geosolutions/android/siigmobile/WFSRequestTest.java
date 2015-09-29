@@ -4,6 +4,10 @@ import android.content.Context;
 import android.test.ActivityUnitTestCase;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 
@@ -14,6 +18,8 @@ import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
+import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
 import it.geosolutions.android.siigmobile.wfs.WFSBersagliDataActivity;
 import it.geosolutions.android.siigmobile.wfs.WFSRequest;
 import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
@@ -23,6 +29,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Client;
 import retrofit.client.Request;
 import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedByteArray;
 
 /**
@@ -52,10 +59,15 @@ public class WFSRequestTest  extends ActivityUnitTestCase<WFSBersagliDataActivit
         final int radius = 200;
         final String layerName = Config.WFS_LAYERS[1];
 
+        Gson gson = new GsonBuilder()
+                .disableHtmlEscaping()
+                .registerTypeHierarchyAdapter(Geometry.class, new GeometryJsonSerializer())
+                .registerTypeHierarchyAdapter(Geometry.class, new GeometryJsonDeserializer()).create();
 
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(WFSRequest.ENDPOINT)
                 .setClient(new MockClient())
+                .setConverter(new GsonConverter(gson))
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 

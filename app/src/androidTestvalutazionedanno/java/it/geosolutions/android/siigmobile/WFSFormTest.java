@@ -1,14 +1,18 @@
 package it.geosolutions.android.siigmobile;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.test.ActivityUnitTestCase;
 import android.util.Log;
 import android.widget.Spinner;
 
+import org.mapsforge.core.model.GeoPoint;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import it.geosolutions.android.map.adapters.FeatureInfoAttributesAdapter;
+import it.geosolutions.android.siigmobile.elaboration.ElaborationResult;
 import it.geosolutions.android.siigmobile.wfs.WFSBersagliDataActivity;
 
 /**
@@ -25,14 +29,18 @@ public class WFSFormTest extends ActivityUnitTestCase<WFSBersagliDataActivity> {
     public void setUp() throws Exception {
         super.setUp();
 
-        setActivity(launchActivity(getInstrumentation().getTargetContext().getPackageName(), WFSBersagliDataActivity.class, null));
+        ElaborationResult elabRes = new ElaborationResult("ignoredName", "ignoredDescription", "ignoredTableName",  new GeoPoint(45.07037, 7.67416) , 200);
+
+        Bundle testBundle = new Bundle();
+        testBundle.putSerializable(WFSBersagliDataActivity.PARAM_ELABORATION, elabRes);
+        setActivity(launchActivity(getInstrumentation().getTargetContext().getPackageName(), WFSBersagliDataActivity.class, testBundle));
 
     }
 
     /**
      * test that the adapter of the form fragment is filled with the result of a wfs request
      */
-    public void testWFSForrm(){
+    public void testWFSForm(){
 
         assertNotNull(getActivity());
 
@@ -76,7 +84,7 @@ public class WFSFormTest extends ActivityUnitTestCase<WFSBersagliDataActivity> {
 
                         latch.countDown();
                     }
-                }, 10000);
+                }, 20000);
 
             }
         });
