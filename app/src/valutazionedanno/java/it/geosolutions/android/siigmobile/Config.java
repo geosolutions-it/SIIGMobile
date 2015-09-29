@@ -122,5 +122,7 @@ public class Config {
     public final static String WMS_GETINFO_PARAMETER_FEATURE_COUNT = "FEATURE_COUNT";
     public final static String WMS_GETINFO_PARAMETER_FORMAT = "FORMAT";
 
+    public final static int CIRCLE_OVERLAY_COLOR  = 0xaaff0000;
+    public final static int CIRCLE_OVERLAY_STROKE = 10;
 
 }

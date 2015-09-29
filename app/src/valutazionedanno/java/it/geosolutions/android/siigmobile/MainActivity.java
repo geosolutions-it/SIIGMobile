@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -18,6 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,6 +37,7 @@ import com.newrelic.agent.android.NewRelic;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
+import org.mapsforge.android.maps.overlay.Circle;
 import org.mapsforge.android.maps.overlay.ListOverlay;
 import org.mapsforge.android.maps.overlay.Marker;
 import org.mapsforge.android.maps.overlay.OverlayItem;
@@ -127,6 +130,9 @@ public class MainActivity extends MapActivityBase
     private FixedShapeMapInfoControl invisibleLocationAcquireControl;
 
     private Toolbar mToolbar;
+    private ListOverlay overlayItemList;
+    private Circle overlayCircle;
+    private Paint circlePaint;
 
     private MapControl mapInfoControl;
     private enum MapInfoSelectionMode {
@@ -184,6 +190,9 @@ public class MainActivity extends MapActivityBase
                     currentStyle = Config.DEFAULT_STYLE;
 
                     loadDBLayers(null);
+                    removeOverlayItem(overlayCircle);
+                    mTitle = getResources().getStringArray(R.array.drawer_items)[currentStyle];
+
                     return true;
                 }
                 return false;
@@ -879,41 +888,113 @@ public class MainActivity extends MapActivityBase
             geoCodingMarker = new Marker(p, Marker.boundCenterBottom(ContextCompat.getDrawable(getBaseContext(), R.drawable.pin_red)));
 
             //This is the default Mapsforge 0.3.x way to create and add an overlay
-            final ListOverlay overlay = new ListOverlay();
-            List<OverlayItem> overlayItems = overlay.getOverlayItems();
+            if(overlayItemList == null){
+                overlayItemList = new ListOverlay();
+                mapView.getOverlays().add(overlayItemList);
+            }
+            List<OverlayItem> overlayItems = overlayItemList.getOverlayItems();
 
             overlayItems.add(geoCodingMarker);
 
-            mapView.getOverlays().add(overlay);
+
         }   else {
 
             geoCodingMarker.setGeoPoint(p);
         }
-
     }
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        } else
-        if (id == R.id.action_clear) {
+    /**
+     * adds a circle overlay to the map at @param p with radius @param radius
+     *
+     * paint objects may be null, be sure to pass at least one to see the item on the map
+     *
+     * @param p the center point of the circle
+     * @param radius the radius in meters for the circle
+     * @param stroke the stroke paintof the circle (can be null)
+     * @param fill the fill paint of the circle (can be null)
+     */
+    public void createOrUpdateCircleOverlay(final GeoPoint p, final int radius, final Paint stroke, final Paint fill) {
 
-            clearMenu();
-            currentStyle = Config.DEFAULT_STYLE;
 
-            loadDBLayers(null);
+        if (overlayCircle == null) {
+
+            overlayCircle = new Circle(p, radius, fill, stroke);
+
+            if (overlayItemList == null) {
+                overlayItemList = new ListOverlay();
+                mapView.getOverlays().add(overlayItemList);
+            }
+
+            List<OverlayItem> overlayItems = overlayItemList.getOverlayItems();
+
+            overlayItems.add(overlayCircle);
+        } else {
+
+            overlayCircle.setGeoPoint(p);
+            overlayCircle.setRadius(radius);
+
+            overlayCircle.setPaintFill(fill);
+            overlayCircle.setPaintStroke(stroke);
         }
 
-        return super.onOptionsItemSelected(item);
+        mapView.redraw();
     }
-*/
+
+    public Paint getCirclePaint() {
+
+        if(circlePaint == null){
+            circlePaint= new Paint(Paint.ANTI_ALIAS_FLAG);
+            circlePaint.setStyle(Paint.Style.STROKE);
+            circlePaint.setColor(Config.CIRCLE_OVERLAY_COLOR);
+            circlePaint.setStrokeWidth(Config.CIRCLE_OVERLAY_STROKE);
+        }
+        return circlePaint;
+    }
+
+    /**
+     * removes an item from the list of overlay items
+     * @param item
+     */
+    public void removeOverlayItem(final OverlayItem item){
+
+        if(overlayItemList != null){
+            List<OverlayItem> overlayItems = overlayItemList.getOverlayItems();
+            overlayItems.remove(item);
+        }
+
+        mapView.redraw();
+
+    }
+
+    public ListOverlay getOverlayItemList() {
+        return overlayItemList;
+    }
+
+
+    /*
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            // Handle action bar item clicks here. The action bar will
+            // automatically handle clicks on the Home/Up button, so long
+            // as you specify a parent activity in AndroidManifest.xml.
+            int id = item.getItemId();
+
+            //noinspection SimplifiableIfStatement
+    //        if (id == R.id.action_settings) {
+    //            return true;
+    //        } else
+            if (id == R.id.action_clear) {
+
+                clearMenu();
+                currentStyle = Config.DEFAULT_STYLE;
+
+                loadDBLayers(null);
+            }
+
+            return super.onOptionsItemSelected(item);
+        }
+    */
+
 
 
     public void showSnackBar(int stringResource){
@@ -1042,7 +1123,9 @@ public class MainActivity extends MapActivityBase
         elaborationResult = result;
 
         loadDBLayers(result.getResultTableName());
-        invalidateMenu(result.getResultTableName(),  true);
+        invalidateMenu(result.getResultTableName(), true);
+
+        createOrUpdateCircleOverlay(elaborationResult.getLocation(), elaborationResult.getRadius(), getCirclePaint(), null);
 
         final BoundingBox bb = SpatialiteUtils.getBoundingBoxForSpatialiteTable(getBaseContext(), result.getResultTableName());
 
