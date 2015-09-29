@@ -300,6 +300,9 @@ public class MainActivity extends MapActivityBase
             // Show ScaleBar
             mapView.getMapScaleBar().setShowMapScaleBar(true);
 
+            // Set text size
+            mapView.setTextScale(Config.MAP_SCALE);
+
             // Coordinate Control
             //mapView.addControl(new CoordinateControl(mapView, true));
 
