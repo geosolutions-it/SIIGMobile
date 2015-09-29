@@ -272,21 +272,6 @@ public class MainActivity extends MapActivityBase
         //select here the geocoder implementation
         mGeoCoder = new NominatimGeoCoder();
 
-
-        //TODO this exists here only for debugging -> accessing a dummy result, remove when merging
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        enableResultListButton();
-                    }
-                });
-
-            }
-        },500);
     }
 
     private void setupMap() {
@@ -617,7 +602,7 @@ public class MainActivity extends MapActivityBase
                 getString(R.string.download_base_data_title),
                 getString(R.string.download_base_data)) {
 
-            // TODO: This method is badly named, it should be a post-execute callback
+            // This method is badly named, it is a post-execute callback
             @Override
             public void launchMainActivity(boolean success) {
                 if(success){
@@ -1159,6 +1144,9 @@ public class MainActivity extends MapActivityBase
 
         if (bb != null) {
             mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
+            if(mapView.getMapViewPosition().getZoomLevel() < Config.RESULT_MIN_ZOOMLEVEL){
+                mapView.getMapViewPosition().setZoomLevel((byte) Config.RESULT_MIN_ZOOMLEVEL);
+            }
         }
 
         //an elab has been loaded, either from db or over a request

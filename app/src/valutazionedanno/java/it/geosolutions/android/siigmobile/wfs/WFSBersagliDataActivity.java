@@ -76,7 +76,6 @@ public class WFSBersagliDataActivity extends AppCompatActivity {
         if(getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().containsKey(PARAM_ELABORATION)){
             mResult = (ElaborationResult) getIntent().getExtras().get(PARAM_ELABORATION);
         }
-        //TODO after merging valutazione danno, add a null check for mResult here as this must not be null
 
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -112,10 +111,18 @@ public class WFSBersagliDataActivity extends AppCompatActivity {
 
                     final String layerName = Config.WFS_LAYERS[position];
 
-                    //TODO use data from mResult instead of static data
-                    //needs merge of "valutazione danno" where elaborationresult contains information about center coord and radius
-                    final GeoPoint p = new GeoPoint(45.07037, 7.67416);
-                    final int radius = 200;
+                    if(mResult == null){
+                        Log.w(TAG, "No result is loaded");
+                        return;
+                    }
+
+                    final GeoPoint p =  mResult.getLocation();
+                    final int radius =  mResult.getRadius();
+
+                    if(p == null || radius <= 0){
+                        Log.w(TAG, "Invalid result data");
+                        return;
+                    }
 
                     WFSRequest.getWFS(layerName, p, radius, Config.DESTINATION_AUTHORIZATION, new WFSRequest.WFSRequestFeedback() {
                         @Override

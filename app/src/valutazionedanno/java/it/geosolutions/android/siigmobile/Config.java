@@ -127,4 +127,6 @@ public class Config {
 
     public final static int WFS_MAX_RESULTS = 50;
 
+    public static int RESULT_MIN_ZOOMLEVEL = 15;
+
 }
