@@ -249,22 +249,6 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
-        if (item.getItemId() == R.id.action_search) {
-//            Toast.makeText(getActivity(), "Azione di Ricerca...", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-/*
-        if (item.getItemId() == R.id.action_map) {
-            Toast.makeText(getActivity(), "Starting Map...", Toast.LENGTH_SHORT).show();
-
-            // Start the map
-            Intent mapIntent = new Intent(getActivity(), MapsActivity.class);
-            getActivity().startActivity(mapIntent);
-
-            return true;
-        }
-*/
         return super.onOptionsItemSelected(item);
     }
 

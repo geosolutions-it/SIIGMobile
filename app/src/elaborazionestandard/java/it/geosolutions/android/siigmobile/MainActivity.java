@@ -183,8 +183,6 @@ public class MainActivity extends MapActivityBase
 
         mToolbar.setTitleTextColor(getResources().getColor(R.color.white));
 
-        // Inflate a menu to be displayed in the toolbar
-        mToolbar.inflateMenu(R.menu.main);
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -744,11 +742,13 @@ public class MainActivity extends MapActivityBase
                 getMenuInflater().inflate(R.menu.clearable, menu);
             }
 
-            getMenuInflater().inflate(R.menu.main, menu);
+            if(mToolbar.getMenu().findItem(R.id.action_search) == null) {
+                mToolbar.inflateMenu(R.menu.main);
+            }
             restoreActionBar();
 
-            final MenuItem search = menu.findItem(R.id.action_search);
-            final GeoCodingSearchView geoCodingSearchView = (GeoCodingSearchView) MenuItemCompat.getActionView(search);
+            final MenuItem search = mToolbar.getMenu().findItem(R.id.action_search);
+            final GeoCodingSearchView geoCodingSearchView = (GeoCodingSearchView) search.getActionView();
 
             EditText ed = (EditText) geoCodingSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
             ed.setHintTextColor(getResources().getColor(R.color.toolbargrey));
@@ -763,8 +763,6 @@ public class MainActivity extends MapActivityBase
                     Log.i(TAG, "expand");
                     mToolbar.setBackgroundColor(getResources().getColor(R.color.white));
 
-                    //ToolbarColorizeHelper.colorizeToolbar(mToolbar, getResources().getColor(R.color.black),MainActivity.this);
-
                     return true;
                 }
 
@@ -774,8 +772,6 @@ public class MainActivity extends MapActivityBase
                     Log.i(TAG, "collapse");
 
                     mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
-
-                    //ToolbarColorizeHelper.colorizeToolbar(mToolbar, getResources().getColor(R.color.white),MainActivity.this);
 
                     return true;
                 }
@@ -922,29 +918,7 @@ public class MainActivity extends MapActivityBase
         }
 
     }
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        } else
-        if (id == R.id.action_clear) {
-
-            clearMenu();
-            currentStyle = Config.DEFAULT_STYLE;
-
-            loadDBLayers(null);
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-*/
     public void showEditElaborationTitleAndDescriptionDialog(final BoundingBox bb, final boolean isPolygon){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1242,4 +1216,8 @@ public class MainActivity extends MapActivityBase
         return getFeatureInfoConfiguration;
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return false;
+    }
 }
