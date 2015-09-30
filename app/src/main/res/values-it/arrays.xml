@@ -9,7 +9,7 @@
         <item>Pericolosità Della Strada</item>
         <item>Salva Elaborazione Corrente</item>
         <item>Carica Elaborazione</item>
-        <item>Informazioni</item>
+        <item>Ulteriori Informazioni</item>
     </string-array>
 
     <string-array name="grafo">
@@ -76,7 +76,7 @@
     </string-array>
 
     <string-array name="val_accidents_options">
-        <item>Seleziona uno&#8230;</item>
+        <item>Seleziona un incidente&#8230;</item>
         <item>DISPERSIONE DI VAPORI DI GAS LIQUEFATTO TOSSICO</item>
         <item>DISPERSIONE DI VAPORI DI LIQUIDO TOSSICO</item>
         <item>JET FIRE DI GAS ESTREMAMENTE INFIAMMABILE</item>

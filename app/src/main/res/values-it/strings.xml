@@ -55,7 +55,7 @@
     <string name="formula_street">PIS</string>
     <string name="formula_risk">Rischio</string>
     <string name="title_activity_results">Carica Elaborazione</string>
-    <string name="siig_info_page_title">Informazioni</string>
+    <string name="siig_info_page_title">Ulteriori Informazioni</string>
     <string name="val_coordinate">Coordinata</string>
     <string name="val_name">Nome</string>
     <string name="val_method">Metodo</string>
