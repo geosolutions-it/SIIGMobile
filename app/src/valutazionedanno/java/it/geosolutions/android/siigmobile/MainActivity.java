@@ -177,8 +177,6 @@ public class MainActivity extends MapActivityBase
 
         mToolbar.setTitleTextColor(getResources().getColor(R.color.white));
 
-        // Inflate a menu to be displayed in the toolbar
-        mToolbar.inflateMenu(R.menu.main);
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -764,11 +762,13 @@ public class MainActivity extends MapActivityBase
                 getMenuInflater().inflate(R.menu.clearable, menu);
             }
 
-            getMenuInflater().inflate(R.menu.main, menu);
+            if(mToolbar.getMenu().findItem(R.id.action_search) == null) {
+                mToolbar.inflateMenu(R.menu.main);
+            }
             restoreActionBar();
 
-            final MenuItem search = menu.findItem(R.id.action_search);
-            final GeoCodingSearchView geoCodingSearchView = (GeoCodingSearchView) MenuItemCompat.getActionView(search);
+            final MenuItem search = mToolbar.getMenu().findItem(R.id.action_search);
+            final GeoCodingSearchView geoCodingSearchView = (GeoCodingSearchView) search.getActionView();
 
             EditText ed = (EditText) geoCodingSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
             ed.setHintTextColor(getResources().getColor(R.color.toolbargrey));
@@ -1218,5 +1218,10 @@ public class MainActivity extends MapActivityBase
         super.onRestoreInstanceState(savedInstanceState);
 
         elaborationResult = (ElaborationResult) savedInstanceState.getSerializable(KEY_RESULT);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return false;
     }
 }
