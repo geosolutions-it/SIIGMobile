@@ -69,7 +69,7 @@
     <string name="enter_buffer_width">Please enter a buffer width</string>
     <string name="accident_select">Selezione un incidente per favore</string>
     <string name="touch_point">Tocca il centro per la valutazione danno</string>
-    <string name="position_acquirement_cancelled">Acquisto posizione annullato</string>
+    <string name="position_acquirement_cancelled">Valutazione Danno Annullata</string>
     <string name="title_exists">Questo titolo esiste, si prega di inserire uno diverso</string>
     <string name="cancel_elaboration">Vuoi veramente cancellare questa elaborazione ?</string>
     <string name="target_type">Tipo Bersaglio</string>
