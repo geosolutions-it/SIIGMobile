@@ -101,7 +101,7 @@ public class OneTapListener implements OnTouchListener, OnGestureListener {
 		double lon,lat, radius;
 		lon = ConversionUtilities.convertFromPixelsToLongitude(view, startX);
 		lat = ConversionUtilities.convertFromPixelsToLatitude(view, startY);
-		
+
 		//Calculate radius of one point selection
         float radius_pixel = (float)pref.getInt("OnePointSelectionRadius", 10);
         double fin_x = ConversionUtilities.convertFromPixelsToLongitude(view, startX+radius_pixel); 

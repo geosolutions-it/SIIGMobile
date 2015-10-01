@@ -74,6 +74,7 @@ import it.geosolutions.android.map.utils.ZipFileManager;
 import it.geosolutions.android.map.view.AdvancedMapView;
 import it.geosolutions.android.map.wms.GetFeatureInfoConfiguration;
 import it.geosolutions.android.map.wms.WMSLayer;
+import it.geosolutions.android.map.wms.WMSRequest;
 import it.geosolutions.android.map.wms.WMSSource;
 import it.geosolutions.android.siigmobile.elaboration.ElaborationResult;
 import it.geosolutions.android.siigmobile.geocoding.GeoCodingSearchView;
@@ -85,6 +86,7 @@ import it.geosolutions.android.siigmobile.mapcontrol.FixedShapeMapInfoControl;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import it.geosolutions.android.siigmobile.wfs.WFSBersagliDataActivity;
+import it.geosolutions.android.siigmobile.wps.ValutazioneDannoWPSRequest;
 
 public class MainActivity extends MapActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -144,6 +146,8 @@ public class MainActivity extends MapActivityBase
 
     private GetFeatureInfoConfiguration getFeatureInfoConfiguration;
 
+    private boolean showWMSHighlight = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +191,8 @@ public class MainActivity extends MapActivityBase
 
                     clearMenu();
                     currentStyle = Config.DEFAULT_STYLE;
+
+                    showWMSHighlight = false;
 
                     loadDBLayers(null);
                     removeOverlayItem(overlayCircle);
@@ -443,7 +449,7 @@ public class MainActivity extends MapActivityBase
 
         ArrayList<Layer> layers = new ArrayList<>();
 
-        if (layerToCenter == null || currentStyle == 0) { //wms mode
+        if (layerToCenter == null || currentStyle == 0 || (showWMSHighlight && elaborationResult != null)) { //wms mode
 
             if (mapInfoSelectionMode != MapInfoSelectionMode.GetFeatureInfo) {
                 mapInfoSelectionMode = MapInfoSelectionMode.GetFeatureInfo;
@@ -482,6 +488,38 @@ public class MainActivity extends MapActivityBase
                 baseParams.put("RISKPANEL", Config.WMS_RISKPANEL[(currentStyle >= Config.WMS_RISKPANEL.length ? Config.DEFAULT_STYLE : currentStyle)]);
                 baseParams.put("DEFAULTENV", Config.WMS_DEFAULTENV[(currentStyle >= Config.WMS_DEFAULTENV.length ? Config.DEFAULT_STYLE : currentStyle)]);
             }
+
+            if(showWMSHighlight){
+
+                //create a cql filter and put it into the params
+
+                final int radius = elaborationResult.getRadius();
+                final GeoPoint p = elaborationResult.getLocation();
+
+                BoundingBox bb = new BoundingBox(p.latitude, p.longitude, p.latitude, p.longitude);
+                final BoundingBox extended = Util.extend(bb, radius);
+
+                final String minX = String.format(Locale.US, "%f", extended.minLongitude);
+                final String minY = String.format(Locale.US, "%f", extended.minLatitude);
+                final String maxX = String.format(Locale.US, "%f", extended.maxLongitude);
+                final String maxY = String.format(Locale.US, "%f", extended.maxLatitude);
+
+                final String wktPolygon = String.format(Locale.US, "POLYGON ((%s %s, %s %s, %s %s, %s %s, %s %s))",
+                        minX, minY,
+                        maxX, minY,
+                        maxX, maxY,
+                        minX, maxY,
+                        minX, minY);
+
+                final String convertedPolygon = SpatialiteUtils.convertWGS84PolygonTo(getBaseContext(), wktPolygon, ValutazioneDannoWPSRequest.DAMAGE_AREA_EPSG);
+
+                final String filter = String.format(Locale.US, "INTERSECTS(geometria,%s)", convertedPolygon);
+
+                baseParams.put(WMSRequest.PARAMS.CQL_FILTER,filter);
+                baseParams.put(WMSRequest.PARAMS.MIN_ZOOM, String.valueOf(Config.WMS_BERSAGLI_HIGHLIGHT_MIN_ZOOM));
+            }
+
+
             layer.setBaseParams(baseParams);
 
             layers.add(layer);
@@ -1137,6 +1175,8 @@ public class MainActivity extends MapActivityBase
     public void applyResult(ElaborationResult result){
 
         elaborationResult = result;
+
+        showWMSHighlight = true;
 
         loadDBLayers(result.getResultTableName());
         invalidateMenu(result.getResultTableName(), true);

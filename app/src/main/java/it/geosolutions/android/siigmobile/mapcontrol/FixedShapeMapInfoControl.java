@@ -230,8 +230,8 @@ public class FixedShapeMapInfoControl extends MapControl {
             @Override
             protected void infoDialogCircle(double x, double y, double radius, byte zoomLevel) {
 
-                if (mif.getSelectionCallback() != null && mif.getSelectionCallback() instanceof  CircleCreatedCallback) {
-                    ((CircleCreatedCallback)mif.getSelectionCallback()).circleCreated(y, x, radius, zoomLevel);
+                if (mif.getSelectionCallback() != null && mif.getSelectionCallback() instanceof CircleCreatedCallback) {
+                    ((CircleCreatedCallback) mif.getSelectionCallback()).circleCreated(y, x, radius, zoomLevel);
                 }
             }
         });
@@ -418,7 +418,9 @@ public class FixedShapeMapInfoControl extends MapControl {
             Log.v("MapInfoControl", "resultCode:"+resultCode);
         }
         disable();
-        getActivationButton().setSelected(false);
+        if(getActivationButton() != null) {
+            getActivationButton().setSelected(false);
+        }
         loadStyleSelectorPreferences();
         instantiateListener();
         setMode(mode);

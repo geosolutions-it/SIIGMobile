@@ -131,4 +131,6 @@ public class Config {
 
     public static final float MAP_SCALE = 1.6f;
 
+    public static byte WMS_BERSAGLI_HIGHLIGHT_MIN_ZOOM = 14;
+
 }
