@@ -1,6 +1,7 @@
 package it.geosolutions.android.siigmobile.geocoding;
 
 import android.location.Address;
+import android.util.Log;
 
 import org.mapsforge.core.model.BoundingBox;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import it.geosolutions.android.siigmobile.BuildConfig;
 import retrofit.RestAdapter;
 import retrofit.http.GET;
 import retrofit.http.Query;
@@ -44,35 +46,41 @@ public class NominatimGeoCoder implements IGeoCoder {
     @Override
     public List<Address> getFromLocationName(final String query,final BoundingBox bb, final int results, final Locale locale) {
 
-        final String viewbox = String.format(Locale.US,"%f,%f,%f,%f",bb.minLongitude,bb.maxLatitude,bb.maxLongitude,bb.minLatitude);
+        try {
+            final String viewbox = String.format(Locale.US, "%f,%f,%f,%f", bb.minLongitude, bb.maxLatitude, bb.maxLongitude, bb.minLatitude);
 
-        final List<NominatimPlace> places = nominationService.search(
-                query,
-                "json",
-                results,
-                viewbox,
-                1,
-                locale.getLanguage());
+            final List<NominatimPlace> places = nominationService.search(
+                    query,
+                    "json",
+                    results,
+                    viewbox,
+                    1,
+                    locale.getLanguage());
 
-        if(places != null && places.size() > 0) {
-            ArrayList<Address> addresses = new ArrayList<>();
+            if (places != null && places.size() > 0) {
+                ArrayList<Address> addresses = new ArrayList<>();
 
-            for(NominatimPlace place : places){
-                //a place without name is useless, skip
-                if(place.getDisplayName() == null || place.getDisplayName().equals("")){
-                    continue;
+                for (NominatimPlace place : places) {
+                    //a place without name is useless, skip
+                    if (place.getDisplayName() == null || place.getDisplayName().equals("")) {
+                        continue;
+                    }
+                    Address a = new Address(Locale.getDefault());
+
+                    a.setLatitude(Double.parseDouble(place.getLat()));
+                    a.setLongitude(Double.parseDouble(place.getLon()));
+                    a.setFeatureName(place.getDisplayName());
+
+                    addresses.add(a);
                 }
-                Address a = new Address(Locale.getDefault());
-
-                a.setLatitude(Double.parseDouble(place.getLat()));
-                a.setLongitude(Double.parseDouble(place.getLon()));
-                a.setFeatureName(place.getDisplayName());
-
-                addresses.add(a);
+                return addresses;
             }
-            return  addresses;
+        }catch (Exception e ){
+            if(BuildConfig.DEBUG){
+                Log.e(NominatimGeoCoder.class.getSimpleName(), "Error during geocoding", e);
+            }
+            return null;
         }
-
         return null;
     }
 
