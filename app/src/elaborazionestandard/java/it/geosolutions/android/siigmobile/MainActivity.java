@@ -301,6 +301,9 @@ public class MainActivity extends MapActivityBase
             // Set text size
             mapView.setTextScale(Config.MAP_SCALE);
 
+            // Disable Zoom Buttons
+            mapView.setBuiltInZoomControls(false);
+
             // Coordinate Control
             //mapView.addControl(new CoordinateControl(mapView, true));
 
