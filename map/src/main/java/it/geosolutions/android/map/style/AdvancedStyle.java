@@ -32,4 +32,5 @@ public class AdvancedStyle extends Style implements Serializable{
     public Rule[] rules = null;
     public String textstrokecolor = "";
     public String textfillcolor = "";
+    public int label_minZoom = 14;
 }

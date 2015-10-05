@@ -22,11 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Join;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import eu.geopaparazzi.spatialite.database.spatial.core.Style;
@@ -45,6 +47,7 @@ public class StyleManager{
 	private  Map<String,AdvancedStyle> styleCache;
 	private static HashMap<String, Paint> fillPaints = new HashMap<String, Paint>();
     private static HashMap<String, Paint> strokePaints = new HashMap<String, Paint>();
+    private static HashMap<String, Paint> textStrokePaints = new HashMap<String, Paint>();
 	private StyleManager() {
 		styleCache = new HashMap<String,AdvancedStyle>();
     }
@@ -168,6 +171,50 @@ public class StyleManager{
     }
 
     public static Paint getTextStrokePaint4Style(AdvancedStyle advancedStyle) {
-        return getStrokePaint4Style(advancedStyle);
+
+        Paint paint = textStrokePaints.get(advancedStyle.name);
+        if(paint == null) {
+            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.reset();
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            paint.setStrokeCap(Cap.ROUND);
+            paint.setStrokeJoin(Join.ROUND);
+
+            //try to set the textstrokecolor
+            if (advancedStyle.textstrokecolor != null && !advancedStyle.textstrokecolor.equals("")) {
+                try {
+                    //noinspection ResourceType
+                    paint.setColor(Color.parseColor(advancedStyle.textstrokecolor));
+                } catch (IllegalArgumentException iae) {
+                    // Default color is black
+                    paint.setColor(Color.BLACK);
+                }
+            }else{
+                paint.setColor(Color.BLACK);
+            }
+
+            //try to access the displays metric without context
+            /**
+             * getSystem() returns a global shared Resources object that provides access
+             * to only system resources (no application resources), and is not configured
+             * for the current screen (can not use dimension units,
+             * does not change based on orientation, etc).
+             *
+             * src : http://developer.android.com/reference/android/content/res/Resources.html#getSystem
+             *
+             * However it contains the dpi factor which is the one we are interested here
+             */
+            if(Resources.getSystem() != null && Resources.getSystem().getDisplayMetrics() != null){
+                DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+
+                paint.setTextSize(advancedStyle.textsize * metrics.density);
+            }else{
+
+                paint.setTextSize(advancedStyle.textsize);
+            }
+
+            textStrokePaints.put(advancedStyle.name,paint);
+        }
+        return paint;
     }
 }
