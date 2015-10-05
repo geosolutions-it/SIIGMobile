@@ -1,0 +1,85 @@
+{
+	"dashed": false,
+	"maxZoom": 30,
+	"minZoom": 9,
+	"textfield": "",
+	"strokecolor": "#000000",
+	"shape": "square",
+	"fillcolor": "red",
+	"name": "result_sociale",
+	"order": 7,
+	"fillalpha": 0.3,
+	"size": 5.0,
+	"strokealpha": 1.0,
+	"enabled": 0,
+	"decimationFactor": 1.0E-5,
+	"textsize": 5.0,
+	"width": 18.0,
+	"rules": [{
+		"filter": {
+            "PropertyName": "thema_sociale",
+            "LowerBoundary": 0,
+            "UpperBoundary": 2
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "rischio1",
+			"title": "basso",
+			"textsize": 12.0,
+			"textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#14F200",
+			"shape": "square",
+			"fillcolor": "green",
+			"fillalpha": 0.3,
+			"size": 15.0,
+			"strokealpha": 1.0,
+			"width": 18.0,
+			"label_minZoom" : 15
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_sociale",
+            "LowerBoundary": 2,
+            "UpperBoundary": 3
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "rischio1",
+			"title": "medio",
+			"textsize": 12.0,
+			"textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FFFB00",
+			"shape": "square",
+			"fillcolor": "yellow",
+			"fillalpha": 0.3,
+			"size": 15.0,
+			"strokealpha": 1.0,
+			"width": 18.0,
+			"label_minZoom" : 15
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_sociale",
+            "LowerBoundary": 3,
+            "UpperBoundary": 10
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "rischio1",
+			"title": "alto",
+			"textsize": 12.0,
+			"textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FF0000",
+			"shape": "square",
+			"fillcolor": "red",
+			"fillalpha": 0.3,
+			"size": 15.0,
+			"strokealpha": 1.0,
+			"width": 18.0,
+			"label_minZoom" : 15
+		}
+	}]
+}

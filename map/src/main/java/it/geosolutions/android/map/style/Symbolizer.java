@@ -18,4 +18,5 @@ public class Symbolizer {
     public String title = "";
     public boolean dashed = false;
     public float decimationFactor = 0.00001f;
+    public int label_minZoom = 14;
 }

@@ -20,6 +20,7 @@ package it.geosolutions.android.map.database.spatialite;
 import it.geosolutions.android.map.database.SpatialDataSourceHandler;
 import it.geosolutions.android.map.model.Attribute;
 import it.geosolutions.android.map.model.Feature;
+import it.geosolutions.android.map.spatialite.renderer.LabelGeometryIterator;
 import it.geosolutions.android.map.style.Filter;
 import it.geosolutions.android.map.utils.Coordinates.Coordinates_Query;
 
@@ -87,6 +88,7 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
     private String fileName;
 
     private Filter filter;
+    private String additionalQueryColumn;
 
     public SpatialiteDataSourceHandler( String dbPath ) {
         try {
@@ -478,7 +480,7 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
     public GeometryIterator getGeometryIteratorInBounds( String destSrid, SpatialVectorTable table, double n, double s, double e,
             double w ) {
         String query = buildGeometriesInBoundsQuery(destSrid, table, n, s, e, w);
-        return new GeometryIterator(db, query);
+        return new LabelGeometryIterator(db, query);
     }
 
     private String buildGeometriesInBoundsQuery( String destSrid, SpatialVectorTable table, double n, double s, double e, double w ) {
@@ -518,6 +520,10 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
             qSb.append(")");
         }
         qSb.append("))");
+
+        if(additionalQueryColumn != null ){
+            qSb.append(", " + additionalQueryColumn);
+        }
         
         qSb.append(" FROM \"");
         qSb.append(table.getName());
@@ -1479,6 +1485,14 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
         this.filter = filter;
     }
 
+    public String getAdditionalQueryColumn() {
+        return additionalQueryColumn;
+    }
+
+    public void setAdditionalQueryColumn(String additionalQueryColumn) {
+        this.additionalQueryColumn = additionalQueryColumn;
+    }
+
     // FeatureIterator
     /*
     public GeometryIterator getGeometryIteratorInBounds( String destSrid, SpatialVectorTable table, double n, double s, double e,
@@ -1559,6 +1573,41 @@ public class SpatialiteDataSourceHandler implements SpatialDataSourceHandler{
         String q = qSb.toString();
 
         return q;
+    }
+
+    /**
+     * checks if a column in a table exists
+     * @param table the table to check
+     * @param columnName the column to check
+     * @return true is exists, false otherwise
+     */
+    public boolean checkIfColumnExists(SpatialVectorTable table, String columnName){
+
+        if(table == null || table.getName() == null || columnName == null){
+            return false;
+        }
+
+        boolean exists = false;
+
+        final String query = String.format("SELECT * FROM %S LIMIT 0",table.getName());
+
+        try {
+            Stmt stmt = db.prepare(query);
+
+            final int count = stmt.column_count();
+            for(int i = 0; i < count; i++){
+                String column = stmt.column_name(i);
+                if(column != null && columnName.equals(column)){
+                    exists = true;
+                    break;
+                }
+            }
+            stmt.close();
+
+        } catch (Exception e) {
+            Log.e(getClass().getSimpleName(),"error checking if column exists");
+        }
+        return exists;
     }
 
 }

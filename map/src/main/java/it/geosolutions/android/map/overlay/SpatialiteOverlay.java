@@ -147,7 +147,7 @@ public  class SpatialiteOverlay implements Overlay,FreezableOverlay {
                             return;
                         }
                     } else if (spatialTable.isLine()) {
-                        shapes.drawLines(style4Table);
+                        shapes.drawLines(style4Table, drawZoomLevel);
                         if (isInterrupted() || sizeHasChanged()) {
                             // stop working
                             return;

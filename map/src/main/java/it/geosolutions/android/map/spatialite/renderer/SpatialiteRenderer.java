@@ -27,10 +27,13 @@ import it.geosolutions.android.map.spatialite.SpatialiteLayer;
 import it.geosolutions.android.map.style.AdvancedStyle;
 import it.geosolutions.android.map.style.Rule;
 import it.geosolutions.android.map.style.StyleManager;
+import it.geosolutions.android.map.style.Symbolizer;
 import it.geosolutions.android.map.utils.ProjectionUtils;
 import it.geosolutions.android.map.utils.StyleUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import jsqlite.Exception;
 
 import org.mapsforge.android.maps.Projection;
@@ -38,6 +41,7 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.vividsolutions.jts.android.PointTransformation;
@@ -82,8 +86,7 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 		return layers;
 	}
 
-	private void drawFromSpatialite(Canvas canvas, BoundingBox boundingBox,
-			byte drawZoomLevel) {
+	private void drawFromSpatialite(Canvas canvas, BoundingBox boundingBox, byte drawZoomLevel) {
 
 		if( layers == null){
 			// nothing to draw
@@ -136,7 +139,17 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 
                                 if (spatialDatabaseHandler instanceof SpatialiteDataSourceHandler) {
                                     ((SpatialiteDataSourceHandler) spatialDatabaseHandler).setFilter(r.getFilter());
+
+                                    if(r.getSymbolizer().textfield != null){
+                                        //check if this column exists
+                                        if(((SpatialiteDataSourceHandler) spatialDatabaseHandler).checkIfColumnExists(spatialTable, r.getSymbolizer().textfield)) {
+                                            ((SpatialiteDataSourceHandler) spatialDatabaseHandler).setAdditionalQueryColumn(r.getSymbolizer().textfield);
+                                        }else{
+                                            ((SpatialiteDataSourceHandler) spatialDatabaseHandler).setAdditionalQueryColumn(null);
+                                        }
+                                    }
                                 }
+
 
                                 geometryIterator = spatialDatabaseHandler
                                         .getGeometryIteratorInBounds("4326", spatialTable,
@@ -151,7 +164,7 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 									shapes.drawPolygons(r.getSymbolizer());
 
                                 } else if (spatialTable.isLine()) {
-                                    shapes.drawLines(r.getSymbolizer());
+                                    shapes.drawLines(r.getSymbolizer(), drawZoomLevel);
 
                                 } else if (spatialTable.isPoint()) {
                                     //shapes.drawPoints(fill, stroke);
@@ -192,7 +205,7 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
                                 shapes.drawPolygons(style4Table);
 
                             } else if (spatialTable.isLine()) {
-                                shapes.drawLines(style4Table);
+                                shapes.drawLines(style4Table, drawZoomLevel);
 
                             } else if (spatialTable.isPoint()) {
                                 shapes.drawPoints(fill, stroke);
@@ -208,7 +221,7 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
 				}
 			}
 		} catch (Exception e1) {
-			Log.e("SpatialiteRenderer","Exception while rendering spatialite data");
+			Log.e("SpatialiteRenderer", "Exception while rendering spatialite data");
 			Log.e("SpatialiteRenderer", e1.getLocalizedMessage(), e1);
 		}
 	}
