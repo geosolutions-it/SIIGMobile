@@ -20,6 +20,11 @@ public class InfoDisplayActivity extends AppCompatActivity {
         Toolbar mToolbar = (Toolbar) findViewById(R.id.m_toolbar);
         setSupportActionBar(mToolbar);
 
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         TextView tv = (TextView) findViewById(R.id.siig_info_page_text);
         tv.setText(Html.fromHtml(getString(R.string.siig_info_page_text)));
     }
@@ -28,5 +33,14 @@ public class InfoDisplayActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.out_to_down);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
