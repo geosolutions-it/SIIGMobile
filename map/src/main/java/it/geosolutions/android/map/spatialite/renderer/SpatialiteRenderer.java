@@ -144,6 +144,8 @@ public class SpatialiteRenderer implements OverlayRenderer<SpatialiteLayer> {
                                         //check if this column exists
                                         if(((SpatialiteDataSourceHandler) spatialDatabaseHandler).checkIfColumnExists(spatialTable, r.getSymbolizer().textfield)) {
                                             ((SpatialiteDataSourceHandler) spatialDatabaseHandler).setAdditionalQueryColumn(r.getSymbolizer().textfield);
+                                        }else{
+                                            ((SpatialiteDataSourceHandler) spatialDatabaseHandler).setAdditionalQueryColumn(null);
                                         }
                                     }
                                 }
