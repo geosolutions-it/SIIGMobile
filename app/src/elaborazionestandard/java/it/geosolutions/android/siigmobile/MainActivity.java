@@ -710,6 +710,12 @@ public class MainActivity extends MapActivityBase
                 //push from bottom to top
                 overridePendingTransition(R.anim.in_from_down, 0);
                 break;
+            case 8:
+                Intent creditsActivity = new Intent(this, CreditsActivity.class);
+                startActivity(creditsActivity);
+                //push from bottom to top
+                overridePendingTransition(R.anim.in_from_down, 0);
+                break;
             default:
                 /*
                 FragmentManager fragmentManager = getSupportFragmentManager();

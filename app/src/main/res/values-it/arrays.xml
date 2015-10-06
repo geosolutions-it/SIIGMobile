@@ -10,6 +10,7 @@
         <item>Salva Elaborazione Corrente</item>
         <item>Carica Elaborazione</item>
         <item>Ulteriori Informazioni</item>
+        <item>Credits</item>
     </string-array>
 
     <string-array name="grafo">
