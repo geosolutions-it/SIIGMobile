@@ -92,4 +92,6 @@ public class Config {
 
     public static final float MAP_SCALE = 1.6f;
 
+    public static int RESULT_MIN_ZOOMLEVEL = 15;
+
 }

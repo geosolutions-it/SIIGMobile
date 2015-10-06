@@ -1132,6 +1132,9 @@ public class MainActivity extends MapActivityBase
 
         if (bb != null) {
             mapView.getMapViewPosition().setCenter(bb.getCenterPoint());
+            if(mapView.getMapViewPosition().getZoomLevel() < Config.RESULT_MIN_ZOOMLEVEL){
+                mapView.getMapViewPosition().setZoomLevel((byte) Config.RESULT_MIN_ZOOMLEVEL);
+            }
         }
     }
 
