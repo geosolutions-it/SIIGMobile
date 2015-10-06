@@ -36,6 +36,11 @@
             android:label="@string/siig_info_page_title"
             android:theme="@style/AppTheme.Translucent">
         </activity>
+        <activity
+            android:name=".CreditsActivity"
+            android:label="@string/siig_credits_page_title"
+            android:theme="@style/AppTheme.Translucent">
+        </activity>
         <activity android:name=".LoadResultsActivity"
                   android:label="@string/title_activity_results"/>
         <activity android:name=".wfs.WFSBersagliDataActivity"

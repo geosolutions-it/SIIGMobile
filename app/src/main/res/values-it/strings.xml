@@ -77,5 +77,7 @@
     <string name="select_layer">Seleziona Layer</string>
     <string name="wfs_no_data">>Nessun dato disponibile per il layer selezionato.</string>
 
+    <string name="siig_credits_page_title">Credits</string>
+    <string name="siig_credits_page_text">Credits</string>
 
 </resources>
