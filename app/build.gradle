@@ -24,14 +24,14 @@ android {
     productFlavors {
         elaborazionestandard {
             applicationId "it.geosolutions.android.siigmobile"
-            versionCode 6
-            versionName "1.5"
+            versionCode 7
+            versionName "1.6"
         }
 
         valutazionedanno {
             applicationId "it.geosolutions.android.siigmobile.valutazionedanno"
-            versionCode 1
-            versionName "0.01"
+            versionCode 2
+            versionName "0.02"
         }
     }
 
