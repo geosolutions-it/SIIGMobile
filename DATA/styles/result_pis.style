@@ -6,7 +6,7 @@
 	"strokecolor": "#000000",
 	"shape": "square",
 	"fillcolor": "red",
-	"name": "result_sociale",
+	"name": "result_pis",
 	"order": 7,
 	"fillalpha": 0.3,
 	"size": 5.0,
@@ -25,8 +25,8 @@
 			"dashed": false,
 			"textfield": "label_sociale",
 			"title": "basso",
-			"textsize": 12.0,
-			"textstrokecolor": "#000000",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
 			"textfillcolor": "#000000",
 			"strokecolor": "#14F200",
 			"shape": "square",
@@ -34,8 +34,7 @@
 			"fillalpha": 0.3,
 			"size": 15.0,
 			"strokealpha": 1.0,
-			"width": 18.0,
-			"label_minZoom" : 15
+			"width": 18.0
 		}
 	},{
 		"filter": {
@@ -47,8 +46,8 @@
 			"dashed": false,
 			"textfield": "label_sociale",
 			"title": "medio",
-			"textsize": 12.0,
-			"textstrokecolor": "#000000",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
 			"textfillcolor": "#000000",
 			"strokecolor": "#FFFB00",
 			"shape": "square",
@@ -56,8 +55,7 @@
 			"fillalpha": 0.3,
 			"size": 15.0,
 			"strokealpha": 1.0,
-			"width": 18.0,
-			"label_minZoom" : 15
+			"width": 18.0
 		}
 	},{
 		"filter": {
@@ -69,7 +67,7 @@
 			"dashed": false,
 			"textfield": "label_sociale",
 			"title": "alto",
-			"textsize": 12.0,
+			"textsize": 5.0,
 			"textstrokecolor": "#000000",
 			"textfillcolor": "#000000",
 			"strokecolor": "#FF0000",
@@ -78,8 +76,7 @@
 			"fillalpha": 0.3,
 			"size": 15.0,
 			"strokealpha": 1.0,
-			"width": 18.0,
-			"label_minZoom" : 15
+			"width": 18.0
 		}
 	}]
 }

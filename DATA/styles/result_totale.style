@@ -23,7 +23,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "basso - basso",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -45,7 +45,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "basso - medio",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -67,7 +67,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "basso - alto",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -89,7 +89,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "medio - basso",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -111,7 +111,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "medio - medio",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -133,7 +133,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "medio - alto",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -155,7 +155,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "alto - basso",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -177,7 +177,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "alto - medio",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
@@ -199,7 +199,7 @@
 		},
 		"symbolizer": {
 			"dashed": false,
-			"textfield": "rischio1",
+			"textfield": "label_totale",
 			"title": "alto - alto",
 			"textsize": 12.0,
 			"textstrokecolor": "#000000",
