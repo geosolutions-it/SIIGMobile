@@ -174,8 +174,9 @@ public class MainActivity extends MapActivityBase
             @Override
             public void onClick(View v) {
                 //Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_LONG).show();
-                Intent nextActivity = new Intent(v.getContext(), InfoDisplayActivity.class);
-                startActivity(nextActivity);
+                Intent detailsActivity = new Intent(v.getContext(), InfoDisplayActivity.class);
+                detailsActivity.putExtra(InfoDisplayActivity.EXTRA_TEXT_INDEX, currentStyle);
+                startActivity(detailsActivity);
                 //push from bottom to top
                 overridePendingTransition(R.anim.in_from_down, 0);
             }
@@ -705,8 +706,9 @@ public class MainActivity extends MapActivityBase
                 startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
                 break;
             case 7:
-                Intent nextActivity = new Intent(this, InfoDisplayActivity.class);
-                startActivity(nextActivity);
+                Intent detailsActivity = new Intent(this, InfoDisplayActivity.class);
+                detailsActivity.putExtra(InfoDisplayActivity.EXTRA_TEXT_INDEX, currentStyle);
+                startActivity(detailsActivity);
                 //push from bottom to top
                 overridePendingTransition(R.anim.in_from_down, 0);
                 break;
