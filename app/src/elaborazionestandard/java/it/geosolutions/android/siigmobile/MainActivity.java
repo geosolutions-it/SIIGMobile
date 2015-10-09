@@ -320,7 +320,8 @@ public class MainActivity extends MapActivityBase
 
             // Location Control
             LocationControl lc  =new LocationControl(mapView);
-            lc.setActivationButton((ImageButton) findViewById(R.id.ButtonLocation));
+            //FloatingActionButton extends ImageButton, hence we can connect MapInfoControls to it
+            lc.setActivationButton((ImageButton) findViewById(R.id.fab_location));
             mapView.addControl(lc);
 
             if (elaborationResult == null) {

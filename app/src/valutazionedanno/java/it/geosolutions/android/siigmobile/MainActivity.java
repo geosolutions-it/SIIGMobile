@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.newrelic.agent.android.NewRelic;
+import com.shamanland.fab.FloatingActionButton;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
@@ -324,7 +325,7 @@ public class MainActivity extends MapActivityBase
 
             // Location Control
             LocationControl lc  =new LocationControl(mapView);
-            lc.setActivationButton((ImageButton) findViewById(R.id.ButtonLocation));
+            lc.setActivationButton((ImageButton) findViewById(R.id.fab_location));
             mapView.addControl(lc);
 
             if (elaborationResult == null) {
@@ -563,6 +564,10 @@ public class MainActivity extends MapActivityBase
                 }
             }
 
+            if(elaborationResult != null){
+                createOrUpdateCircleOverlay(elaborationResult.getLocation(),elaborationResult.getRadius(),getCirclePaint(),null);
+            }
+
         }
 
         // Set the styles
@@ -714,22 +719,18 @@ public class MainActivity extends MapActivityBase
      */
     public void enableResultListButton(){
 
-        final ImageButton listButton = (ImageButton) findViewById(R.id.ListMarker);
+        final FloatingActionButton listButton = (FloatingActionButton) findViewById(R.id.fab_wfs_result);
         listButton.setVisibility(View.VISIBLE);
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
-
                 Intent i = new Intent(MainActivity.this,WFSBersagliDataActivity.class);
                 i.putExtra(WFSBersagliDataActivity.PARAM_ELABORATION, elaborationResult);
 
                 startActivity(i);
-
             }
         });
-
     }
 
     /**
@@ -737,7 +738,7 @@ public class MainActivity extends MapActivityBase
      */
     public void disableResultListButton(){
 
-        final ImageButton listButton = (ImageButton) findViewById(R.id.ListMarker);
+        final FloatingActionButton listButton = (FloatingActionButton) findViewById(R.id.fab_wfs_result);
         listButton.setVisibility(View.GONE);
         listButton.setOnClickListener(null);
     }

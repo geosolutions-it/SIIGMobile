@@ -99,6 +99,8 @@ dependencies {
 
     compile 'com.newrelic.agent.android:android-agent:5.+'
 
+    compile 'com.shamanland:fab:0.0.8'
+
     androidTestCompile 'xmlunit:xmlunit:1.6'
 }
 
