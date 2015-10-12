@@ -33,6 +33,41 @@ public class FixedShapeMapControlTest extends ActivityUnitTestCase<MainActivity>
         setActivity(launchActivity(getInstrumentation().getTargetContext().getPackageName(), MainActivity.class, null));
     }
 
+    public void testLongPressControl(){
+
+        final CountDownLatch latch = new CountDownLatch(4);
+
+        assertNotNull(getActivity());
+
+        final float touch_x1 = 347.0f;
+        final float touch_y1 =  42.0f;
+
+        AdvancedMapView mapView = getActivity().mapView;
+
+        FixedShapeMapInfoControl longPressControl = FixedShapeMapInfoControl.createLongPressControl(mapView, getActivity(), FixedShapeMapInfoControl.DONT_CONNECT, null, new FixedShapeMapInfoControl.OnePointSelectionCallback() {
+            @Override
+            public void pointSelected(double lat, double lon, float pixel_x, float pixel_y, double radius, byte zoomLevel) {
+
+
+                assertEquals(pixel_x,touch_x1);
+                assertEquals(pixel_y,touch_y1);
+
+                Log.i(FixedShapeMapControlTest.class.getSimpleName(), "passed");
+
+                latch.countDown();
+            }
+        });
+
+
+        MotionEvent down = MotionEvent.obtain(SystemClock.uptimeMillis() - 1000,SystemClock.uptimeMillis() - 1000,MotionEvent.ACTION_DOWN,touch_x1,touch_y1,0);
+        MotionEvent longPress = MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis(),MotionEvent.ACTION_UP,touch_x1,touch_y1,0);
+
+        //simulate touch events
+        longPressControl.getOneTapListener().onDown(down);
+        longPressControl.getOneTapListener().onLongPress(longPress);
+
+    }
+
     public void ignoretestControls(){
 
         final CountDownLatch latch = new CountDownLatch(4);
