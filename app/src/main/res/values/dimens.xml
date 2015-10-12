@@ -6,4 +6,8 @@
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <dimen name="sliding_panel_height">96dp</dimen>
+    <dimen name="sliding_panel_title_height">68dp</dimen>
+    <dimen name="sliding_panel_fab_offset_height">28dp</dimen>
 </resources>

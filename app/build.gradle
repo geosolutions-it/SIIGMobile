@@ -101,6 +101,8 @@ dependencies {
 
     compile 'com.shamanland:fab:0.0.8'
 
+    compile 'com.sothree.slidinguppanel:library:3.1.1'
+
     androidTestCompile 'xmlunit:xmlunit:1.6'
 }
 

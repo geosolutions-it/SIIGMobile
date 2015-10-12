@@ -27,6 +27,7 @@ import android.graphics.Paint;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -85,6 +86,7 @@ public class FixedShapeMapInfoControl extends MapControl {
     public AdvancedMapView mapView;
 
     private String mEnabledMessage;
+    private boolean mDontDraw;
 
     public enum ShapeType
     {
@@ -143,6 +145,10 @@ public class FixedShapeMapInfoControl extends MapControl {
         if(mapView != null) {
             mapView.addControl(mif);
         }
+
+        //we dont want to see the point drawn
+        mif.setDontDraw();
+
         return mif;
     }
 
@@ -392,8 +398,13 @@ public class FixedShapeMapInfoControl extends MapControl {
         paint_stroke.setStrokeJoin(STROKE_ANGLES);
 
         //Checks if user required dashed stroke
-        if(STROKE_DASHED)
-            paint_stroke.setPathEffect(new DashPathEffect(new float[]{STROKE_SHAPE_DIMENSION,STROKE_SPACES}, 0));
+        if(STROKE_DASHED) {
+            paint_stroke.setPathEffect(new DashPathEffect(new float[]{STROKE_SHAPE_DIMENSION, STROKE_SPACES}, 0));
+        }
+
+        if(mDontDraw){
+            return;
+        }
 
         switch (mShapeType){
 
@@ -577,6 +588,10 @@ public class FixedShapeMapInfoControl extends MapControl {
 
     public void setSelectionCallback(SelectionCallback selectionCallback) {
         this.selectionCallback = selectionCallback;
+    }
+
+    public void setDontDraw() {
+        this.mDontDraw = true;
     }
 
     public SelectionCallback getSelectionCallback() {

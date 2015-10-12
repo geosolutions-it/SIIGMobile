@@ -10,10 +10,11 @@ import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -35,6 +36,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.newrelic.agent.android.NewRelic;
 import com.shamanland.fab.FloatingActionButton;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 import com.squareup.okhttp.Headers;
 
 import org.mapsforge.android.maps.MapView;
@@ -55,19 +58,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import it.geosolutions.android.map.activities.GetFeatureInfoAttributeActivity;
-import it.geosolutions.android.map.activities.GetFeatureInfoLayerListActivity;
 import it.geosolutions.android.map.activities.MapActivityBase;
 import it.geosolutions.android.map.common.Constants;
 import it.geosolutions.android.map.control.LocationControl;
 import it.geosolutions.android.map.control.MapControl;
-import it.geosolutions.android.map.control.MapInfoControl;
+import it.geosolutions.android.map.fragment.featureinfo.FeatureInfoAttributeListFragment;
 import it.geosolutions.android.map.model.Layer;
 import it.geosolutions.android.map.model.MSMMap;
-import it.geosolutions.android.map.model.query.BBoxQuery;
 import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
 import it.geosolutions.android.map.model.query.CircleQuery;
-import it.geosolutions.android.map.model.query.PolygonQuery;
 import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
 import it.geosolutions.android.map.overlay.managers.OverlayManager;
@@ -96,7 +95,8 @@ import it.geosolutions.android.siigmobile.wfs.WFSBersagliDataActivity;
 import it.geosolutions.android.siigmobile.wps.ValutazioneDannoWPSRequest;
 
 public class MainActivity extends MapActivityBase
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        FeatureInfoAttributeListFragment.FeatureInfoLoadedListener{
 
     // default path for files
     private static File MAP_FILE;
@@ -106,6 +106,10 @@ public class MainActivity extends MapActivityBase
      */
     private static final String TAG = "MainActivity";
     private static final String KEY_RESULT = "ELABORATION_RESULT";
+    private static final String KEY_SLIDING_PANEL_STATE = "SLIDING_PANEL_STATE";
+    private static final String KEY_WFS_BUTTON_VISIBILIY_STATE = "WFS_BUTTON_VISIBILIY_STATE";
+    private static final String KEY_WFS_BUTTON_HIDDEN_STATE = "WFS_BUTTON_HIDDEN_STATE";
+    private static final String KEY_RECREATE_FRAGMENT = "RECREATE_FRAGMENT";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -123,6 +127,8 @@ public class MainActivity extends MapActivityBase
     public OverlayManager overlayManager;
 
     private final static int RESULT_REQUEST_CODE = 1234;
+
+    public final static String WMS_INFO_FRAGMENT_TAG = "WMS_INFO_FRAGMENT_TAG";
 
     private boolean user_layer_clearable = false;
 
@@ -154,6 +160,13 @@ public class MainActivity extends MapActivityBase
     private GetFeatureInfoConfiguration getFeatureInfoConfiguration;
 
     private boolean showWMSHighlight = false;
+
+    private SlidingUpPanelLayout mSlidingPanel;
+    private Bundle lastQueryBundle;
+    private FeatureInfoAttributeListFragment mFragment;
+    private SlidingUpPanelLayout.PanelState formerPanelState = SlidingUpPanelLayout.PanelState.HIDDEN;
+    private boolean wfsInfoButtonHidden = false;
+    private boolean needsToAddFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,6 +219,9 @@ public class MainActivity extends MapActivityBase
                     mTitle = getResources().getStringArray(R.array.drawer_items)[currentStyle];
 
                     disableResultListButton();
+
+                    //if panel was open, close and remove references
+                    closePanel();
 
                     return true;
                 }
@@ -282,6 +298,54 @@ public class MainActivity extends MapActivityBase
 
         //select here the geocoder implementation
         mGeoCoder = new NominatimGeoCoder();
+
+        setupSlidingUpPanel();
+
+    }
+
+    private void setupSlidingUpPanel() {
+
+        mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mSlidingPanel.setPanelState(PanelState.HIDDEN);
+        mSlidingPanel.setPanelHeight(0);
+        mSlidingPanel.setOverlayed(true);
+        mSlidingPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {}
+            @Override
+            public void onPanelExpanded(View panel) {}
+            @Override
+            public void onPanelCollapsed(View panel) {
+
+                findViewById(R.id.fab_location).setVisibility(View.INVISIBLE);
+                if (findViewById(R.id.fab_wfs_result).getVisibility() == View.VISIBLE) {
+                    wfsInfoButtonHidden = true;
+                    findViewById(R.id.fab_wfs_result).setVisibility(View.INVISIBLE);
+                }
+            }
+            @Override
+            public void onPanelAnchored(View panel) {}
+            @Override
+            public void onPanelHidden(View panel) {
+
+                findViewById(R.id.fab_location).setVisibility(View.VISIBLE);
+                if (wfsInfoButtonHidden) {
+                    findViewById(R.id.fab_wfs_result).setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        final TextView slidingPanelTitleTv = (TextView) findViewById(R.id.name);
+        slidingPanelTitleTv.setText(getString(R.string.getfeatureinfo_title));
+
+        ImageButton f = (ImageButton) findViewById(R.id.close_button);
+        f.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               closePanel();
+            }
+        });
+
 
     }
 
@@ -363,6 +427,12 @@ public class MainActivity extends MapActivityBase
                     @Override
                     public void pointSelected(double lat, double lon, float pixel_x, float pixel_y, double radius, byte zoomLevel) {
 
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("start", 0);
+                        bundle.putInt("limit", 1);
+                        bundle.putBoolean(FeatureInfoAttributeListFragment.PARAM_DONT_LOAD_TWICE, true);
+                        bundle.putInt(FeatureInfoAttributeListFragment.PARAM_CUSTOM_LAYOUT, R.layout.feature_fragment_cust);
+
                         switch (mapInfoSelectionMode) {
                             case GetFeatureInfo:
                                 final String wfsLayer = Config.WFS_LAYERS[currentStyle];
@@ -394,8 +464,6 @@ public class MainActivity extends MapActivityBase
                                 additionalParameters.put(Config.WMS_GETINFO_PARAMETER_FORMAT, Config.WMS_GETINFO_FORMAT);
                                 additionalParameters.put(Config.WMS_GETINFO_PARAMETER_LOCALE, env);
 
-                                Intent i = new Intent(MainActivity.this, GetFeatureInfoAttributeActivity.class);
-
                                 WMSGetFeatureInfoQuery query = new WMSGetFeatureInfoQuery();
                                 query.setLat(lat);
                                 query.setLon(lon);
@@ -417,9 +485,10 @@ public class MainActivity extends MapActivityBase
                                 if (getFeatureInfoConfiguration() != null) {
                                     query.setLocaleConfig(getFeatureInfoConfiguration().getLocaleForLanguageCode(local_code));
                                 }
-                                i.putExtra("query", query);
-                                i.setAction(Intent.ACTION_VIEW);
-                                startActivityForResult(i, GetFeatureInfoAttributeActivity.GET_ITEM);
+
+                                bundle.putParcelable("query", query);
+                                lastQueryBundle = bundle;
+                                showFragment(bundle);
 
                                 break;
                             case GetSpatialiteInfo:
@@ -434,8 +503,7 @@ public class MainActivity extends MapActivityBase
                                 }
                                 if(!result.isEmpty()) {
 
-                                    Intent intent = new Intent(MainActivity.this, GetFeatureInfoLayerListActivity.class);
-                                    intent.putExtra(Constants.ParamKeys.LAYERS, result);
+                                    bundle.putSerializable(Constants.ParamKeys.LAYERS, result);
 
                                     //create a circle query
                                     CircleQuery q = new CircleQuery();
@@ -444,18 +512,55 @@ public class MainActivity extends MapActivityBase
                                     q.setRadius(radius);
                                     q.setSrid("4326");
                                     q.setZoomLevel(zoomLevel);
-                                    intent.putExtra("query", q);
-                                    intent.setAction(Intent.ACTION_VIEW);
+                                    bundle.putParcelable("query", q);
+                                    lastQueryBundle = bundle;
+                                    showFragment(bundle);
 
-                                    startActivityForResult(intent, GetFeatureInfoLayerListActivity.CIRCLE_REQUEST);
                                 }else{
-                                    Log.w(getClass().getSimpleName(),"no spatialite layer found");
+                                    Log.w(getClass().getSimpleName(), "no spatialite layer found");
                                 }
                                 break;
                         }
                     }
                 });
         mapInfoControl.setEnabled(true);
+    }
+
+    /**
+     * adds if necessary a FeatureInfoAttributeListFragment to the content view of the sliding panel
+     * if the fragment is created for the first time the data is transferred via the bundle
+     * otherwise the fragment uses the query in @param bundle to update its view
+     * @param bundle the data containing the current query
+     *
+     * The event that the data was loaded is reported via the FeatureInfoLoadedListener interface of this activity
+     */
+    public void showFragment(Bundle bundle){
+
+        if(mFragment == null) {
+            //create the fragment
+            mFragment= FeatureInfoAttributeListFragment.getInstance();
+            mFragment.setFeatureInfoLoadedListener(this);
+            mFragment.setArguments(bundle);
+
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = manager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment_container, mFragment, WMS_INFO_FRAGMENT_TAG);
+            fragmentTransaction.commit();
+
+        }else{
+            //fragment exists, requery using this query and layers if available
+            mFragment.requery( (BaseFeatureInfoQuery) bundle.getParcelable("query"), (ArrayList<Layer>) bundle.getSerializable(Constants.ParamKeys.LAYERS));
+        }
+
+    }
+
+    /**
+     * closes the panel and removes the reference to the last query
+     */
+    public void closePanel(){
+
+        mSlidingPanel.setPanelState(PanelState.HIDDEN);
+        lastQueryBundle = null;
     }
 
     /**
@@ -642,6 +747,33 @@ public class MainActivity extends MapActivityBase
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if(mSlidingPanel.getPanelState() != PanelState.HIDDEN){
+            //there is a fragment, remove it
+
+            FeatureInfoAttributeListFragment wmsInfo = (FeatureInfoAttributeListFragment) getSupportFragmentManager().findFragmentByTag(WMS_INFO_FRAGMENT_TAG);
+
+            if(wmsInfo != null) {
+                getSupportFragmentManager().beginTransaction().remove(wmsInfo).commit();
+
+                needsToAddFragment = true;
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (needsToAddFragment && mFragment != null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mFragment, WMS_INFO_FRAGMENT_TAG).commit();
+            needsToAddFragment = false;
+        }
+    }
+
     private void askForDownload() {
         File external_storage = Environment.getExternalStorageDirectory();
 
@@ -725,7 +857,7 @@ public class MainActivity extends MapActivityBase
             @Override
             public void onClick(View v) {
 
-                Intent i = new Intent(MainActivity.this,WFSBersagliDataActivity.class);
+                Intent i = new Intent(MainActivity.this, WFSBersagliDataActivity.class);
                 i.putExtra(WFSBersagliDataActivity.PARAM_ELABORATION, elaborationResult);
 
                 startActivity(i);
@@ -1074,6 +1206,9 @@ public class MainActivity extends MapActivityBase
     public ListOverlay getOverlayItemList() {
         return overlayItemList;
     }
+    public SlidingUpPanelLayout getSlidingPanel(){
+        return mSlidingPanel;
+    }
 
     public void showSnackBar(int stringResource){
         Snackbar
@@ -1165,6 +1300,11 @@ public class MainActivity extends MapActivityBase
                 }
                 quit = false;
             }
+        }
+        //check if the sliding panel is open
+        if(quit && mSlidingPanel != null && mSlidingPanel.getPanelState() != PanelState.HIDDEN){
+            closePanel();
+            quit = false;
         }
         if (quit) {
             super.onBackPressed();
@@ -1272,6 +1412,28 @@ public class MainActivity extends MapActivityBase
         if(elaborationResult != null){
             outState.putSerializable(KEY_RESULT, elaborationResult);
         }
+        if(mSlidingPanel != null) {
+            outState.putInt(KEY_SLIDING_PANEL_STATE, mSlidingPanel.getPanelState().ordinal());
+        }
+
+        outState.putInt(KEY_WFS_BUTTON_VISIBILIY_STATE, findViewById(R.id.fab_wfs_result).getVisibility());
+        outState.putBoolean(KEY_WFS_BUTTON_HIDDEN_STATE, wfsInfoButtonHidden);
+
+        if(lastQueryBundle != null){
+            //there is currently a panel open
+            outState.putBoolean("containsQuery", true);
+            outState.putInt("start", lastQueryBundle.getInt("start"));
+            outState.putInt("limit", lastQueryBundle.getInt("limit"));
+            outState.putInt(FeatureInfoAttributeListFragment.PARAM_CUSTOM_LAYOUT, lastQueryBundle.getInt(FeatureInfoAttributeListFragment.PARAM_CUSTOM_LAYOUT));
+            outState.putParcelable("query", lastQueryBundle.getParcelable("query"));
+            if(lastQueryBundle.containsKey(Constants.ParamKeys.LAYERS)) {
+                outState.putSerializable(Constants.ParamKeys.LAYERS, lastQueryBundle.getSerializable(Constants.ParamKeys.LAYERS));
+            }
+        }else{
+            outState.putBoolean("containsQuery", false);
+        }
+
+        outState.putBoolean(KEY_RECREATE_FRAGMENT, needsToAddFragment);
 
         super.onSaveInstanceState(outState);
 
@@ -1282,6 +1444,65 @@ public class MainActivity extends MapActivityBase
         super.onRestoreInstanceState(savedInstanceState);
 
         elaborationResult = (ElaborationResult) savedInstanceState.getSerializable(KEY_RESULT);
+
+        formerPanelState = SlidingUpPanelLayout.PanelState.values()[savedInstanceState.getInt(KEY_SLIDING_PANEL_STATE)];
+
+        if(mSlidingPanel != null) {
+
+            if (formerPanelState != SlidingUpPanelLayout.PanelState.HIDDEN) {
+                mSlidingPanel.setPanelHeight(getResources().getDimensionPixelSize(R.dimen.sliding_panel_height));
+            }
+            mSlidingPanel.setPanelState(formerPanelState);
+        }
+
+        needsToAddFragment = savedInstanceState.getBoolean(KEY_RECREATE_FRAGMENT);
+
+        if(savedInstanceState.getBoolean("containsQuery") && needsToAddFragment){
+            Bundle bundle = new Bundle();
+            bundle.putInt("start",savedInstanceState.getInt("start"));
+            bundle.putInt("limit", savedInstanceState.getInt("limit"));
+            bundle.putBoolean(FeatureInfoAttributeListFragment.PARAM_DONT_LOAD_TWICE, true);
+            bundle.putInt(FeatureInfoAttributeListFragment.PARAM_CUSTOM_LAYOUT, savedInstanceState.getInt(FeatureInfoAttributeListFragment.PARAM_CUSTOM_LAYOUT));
+            bundle.putParcelable("query", savedInstanceState.getParcelable("query"));
+            if(savedInstanceState.containsKey(Constants.ParamKeys.LAYERS)) {
+                bundle.putSerializable(Constants.ParamKeys.LAYERS, savedInstanceState.getSerializable(Constants.ParamKeys.LAYERS));
+            }
+            lastQueryBundle = bundle;
+            needsToAddFragment = false;
+            showFragment(bundle);
+        }
+
+        wfsInfoButtonHidden = savedInstanceState.getBoolean(KEY_WFS_BUTTON_HIDDEN_STATE);
+
+        if(!wfsInfoButtonHidden){
+            int state = savedInstanceState.getInt(KEY_WFS_BUTTON_VISIBILIY_STATE);
+            findViewById(R.id.fab_wfs_result).setVisibility(state);
+        }
+
+    }
+
+
+    /**
+     * the LoaderManager of the Fragment did finish loading the last query
+     * Open the panel
+     */
+    @Override
+    public void didFinishLoading() {
+
+        if (mSlidingPanel != null) {
+
+            if(mSlidingPanel.getPanelHeight() == 0) {
+                mSlidingPanel.setPanelHeight(getResources().getDimensionPixelSize(R.dimen.sliding_panel_height));
+            }
+
+            if(formerPanelState != SlidingUpPanelLayout.PanelState.HIDDEN){
+                mSlidingPanel.setPanelState(formerPanelState);
+                formerPanelState = SlidingUpPanelLayout.PanelState.HIDDEN;
+            }else{
+
+                mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            }
+        }
     }
 
     @Override
