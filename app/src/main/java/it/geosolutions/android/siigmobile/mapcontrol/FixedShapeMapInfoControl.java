@@ -26,6 +26,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ import it.geosolutions.android.map.control.todraw.Rectangle;
 import it.geosolutions.android.map.listeners.MapInfoListener;
 import it.geosolutions.android.map.listeners.OneTapListener;
 import it.geosolutions.android.map.listeners.PolygonTapListener;
+import it.geosolutions.android.map.utils.ConversionUtilities;
 import it.geosolutions.android.map.utils.Coordinates.Coordinates_Query;
 import it.geosolutions.android.map.view.AdvancedMapView;
 
@@ -96,11 +98,60 @@ public class FixedShapeMapInfoControl extends MapControl {
     private SelectionCallback selectionCallback;
 
     /**
-     * created a MapControl for a one point selection
+     * creates a MapControl for a longpress point selection
      * the result of the selection is reported via @param feedback
      * @param mapView to use
      * @param activity to use
-     * @param buttonToConnectToID id of the button defined in the layout to connect this control to
+     * @param buttonToConnectToID id of the button defined in the layout to connect this control to (USE DONT_CONNECT if you dont want to connect this control to a view)
+     * @param enabledMessage a message to show via toast when the control is enabled (may be null)
+     * @param callback the callback to be informed about the selection result
+     * @return the control
+     */
+    public static FixedShapeMapInfoControl createLongPressControl(final AdvancedMapView mapView, Activity activity,final int buttonToConnectToID,final String enabledMessage, final OnePointSelectionCallback callback){
+
+        final FixedShapeMapInfoControl mif = new FixedShapeMapInfoControl(mapView,activity,ShapeType.OnePoint);
+        mif.setSelectionCallback(callback);
+        mif.setOneTapListener(new OneTapListener(mapView,activity){
+            @Override
+            public void onLongPress(MotionEvent e) {
+
+                final double lon = ConversionUtilities.convertFromPixelsToLongitude(mapView, getStartX());
+                final double lat = ConversionUtilities.convertFromPixelsToLatitude(mapView, getStartY());
+
+                float radius_pixel = 10;
+                double fin_x = ConversionUtilities.convertFromPixelsToLongitude(mapView, getStartX() + radius_pixel);
+                double radius = Math.abs(fin_x - lon);
+
+                if (mif.getSelectionCallback() != null && mif.getSelectionCallback() instanceof OnePointSelectionCallback) {
+                    ((OnePointSelectionCallback) mif.getSelectionCallback()).pointSelected(lat, lon, getStartX(), getStartY(), radius, mapView.getMapViewPosition().getZoomLevel());
+                }
+            }
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return false;
+            }
+        });
+
+        if(enabledMessage != null){
+            mif.setEnabledMessage(enabledMessage);
+        }
+        if(buttonToConnectToID != DONT_CONNECT) {
+            mif.setActivationButton((ImageButton) activity.findViewById(buttonToConnectToID));
+        }
+        mif.setMode(MapControl.MODE_VIEW);
+
+        if(mapView != null) {
+            mapView.addControl(mif);
+        }
+        return mif;
+    }
+
+    /**
+     * creates a MapControl for a one point selection
+     * the result of the selection is reported via @param feedback
+     * @param mapView to use
+     * @param activity to use
+     * @param buttonToConnectToID id of the button defined in the layout to connect this control to (USE DONT_CONNECT if you dont want to connect this control to a view)
      * @param enabledMessage a message to show via toast when the control is enabled (may be null)
      * @param callback the callback to be informed about the selection result
      * @return the control
@@ -135,11 +186,11 @@ public class FixedShapeMapInfoControl extends MapControl {
         return mif;
     }
     /**
-     * created a MapControl for a polygon selection
+     * creates a MapControl for a polygon selection
      * the result of the selection is reported via @param feedback
      * @param mapView to use
      * @param activity to use
-     * @param buttonToConnectToID id of the button defined in the layout to connect this control to
+     * @param buttonToConnectToID id of the button defined in the layout to connect this control to (USE DONT_CONNECT if you dont want to connect this control to a view)
      * @param enabledMessage a message to show via toast when the control is enabled (may be null)
      * @param callback the callback to be informed about the selection result
      * @return the control
@@ -174,11 +225,11 @@ public class FixedShapeMapInfoControl extends MapControl {
     }
 
     /**
-     * created a MapControl for a rectangular selection
+     * creates a MapControl for a rectangular selection
      * the result of the selection is reported via @param feedback
      * @param mapView to use
      * @param activity to use
-     * @param buttonToConnectToID id of the button defined in the layout to connect this control to
+     * @param buttonToConnectToID id of the button defined in the layout to connect this control to (USE DONT_CONNECT if you dont want to connect this control to a view)
      * @param enabledMessage a message to show via toast when the control is enabled (may be null)
      * @param callback the callback to be informed about the selection result
      * @return the control
@@ -213,7 +264,7 @@ public class FixedShapeMapInfoControl extends MapControl {
 
     }
     /**
-     * created a MapControl for a circular selection
+     * creates a MapControl for a circular selection
      * the result of the selection is reported via @param feedback
      * @param mapView to use
      * @param activity to use

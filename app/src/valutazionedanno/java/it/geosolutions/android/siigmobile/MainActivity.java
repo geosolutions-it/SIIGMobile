@@ -55,12 +55,18 @@ import java.util.List;
 import java.util.Locale;
 
 import it.geosolutions.android.map.activities.GetFeatureInfoAttributeActivity;
+import it.geosolutions.android.map.activities.GetFeatureInfoLayerListActivity;
 import it.geosolutions.android.map.activities.MapActivityBase;
+import it.geosolutions.android.map.common.Constants;
 import it.geosolutions.android.map.control.LocationControl;
 import it.geosolutions.android.map.control.MapControl;
 import it.geosolutions.android.map.control.MapInfoControl;
 import it.geosolutions.android.map.model.Layer;
 import it.geosolutions.android.map.model.MSMMap;
+import it.geosolutions.android.map.model.query.BBoxQuery;
+import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
+import it.geosolutions.android.map.model.query.CircleQuery;
+import it.geosolutions.android.map.model.query.PolygonQuery;
 import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
 import it.geosolutions.android.map.overlay.managers.OverlayManager;
@@ -346,24 +352,18 @@ public class MainActivity extends MapActivityBase
 
     private void setupMapInfoControl(){
 
-        if(mapInfoControl != null){
-            mapView.removeControl(mapInfoControl);
-            mapInfoControl = null;
-        }
+        //WMS Info control
+        mapInfoControl = FixedShapeMapInfoControl.createLongPressControl(
+                mapView,
+                this,
+                FixedShapeMapInfoControl.DONT_CONNECT,
+                null,
+                new FixedShapeMapInfoControl.OnePointSelectionCallback() {
+                    @Override
+                    public void pointSelected(double lat, double lon, float pixel_x, float pixel_y, double radius, byte zoomLevel) {
 
-        switch (mapInfoSelectionMode){
-            case GetFeatureInfo:
-
-                //WMS Info control
-                mapInfoControl = FixedShapeMapInfoControl.createOnePointControl(
-                        mapView,
-                        this,
-                        R.id.ButtonInfo,
-                        null,
-                        new FixedShapeMapInfoControl.OnePointSelectionCallback() {
-                            @Override
-                            public void pointSelected(double lat, double lon, float pixel_x, float pixel_y, double radius, byte zoomLevel) {
-
+                        switch (mapInfoSelectionMode) {
+                            case GetFeatureInfo:
                                 final String wfsLayer = Config.WFS_LAYERS[currentStyle];
                                 final String wmsLayer = Config.WMS_LAYERS[currentStyle];
 
@@ -420,27 +420,41 @@ public class MainActivity extends MapActivityBase
                                 i.setAction(Intent.ACTION_VIEW);
                                 startActivityForResult(i, GetFeatureInfoAttributeActivity.GET_ITEM);
 
-                                if (mapInfoControl != null) {
-                                    mapInfoControl.disable();
-                                    if (mapInfoControl.getActivationButton() != null) {
-                                        mapInfoControl.getActivationButton().setSelected(false);
+                                break;
+                            case GetSpatialiteInfo:
+                                // Spatialite Info
+
+                                ArrayList<Layer> layers = mapView.getLayerManager().getLayers();
+                                ArrayList<Layer> result = new ArrayList<>();
+                                for (Layer layer : layers) {
+                                    if (layer instanceof SpatialiteLayer && layer.isVisibility ()){
+                                        result.add(layer);
                                     }
                                 }
+                                if(!result.isEmpty()) {
 
-                            }
-                        });
+                                    Intent intent = new Intent(MainActivity.this, GetFeatureInfoLayerListActivity.class);
+                                    intent.putExtra(Constants.ParamKeys.LAYERS, result);
 
+                                    //create a circle query
+                                    CircleQuery q = new CircleQuery();
+                                    q.setX(lon);
+                                    q.setY(lat);
+                                    q.setRadius(radius);
+                                    q.setSrid("4326");
+                                    q.setZoomLevel(zoomLevel);
+                                    intent.putExtra("query", q);
+                                    intent.setAction(Intent.ACTION_VIEW);
 
-                break;
-            case GetSpatialiteInfo:
-                // Info Control
-                mapInfoControl = new MapInfoControl(mapView,this);
-                mapInfoControl.setActivationButton((ImageButton) findViewById(R.id.ButtonInfo));
-                mapInfoControl.setMode(MapControl.MODE_VIEW);
-                break;
-        }
-
-        mapView.addControl(mapInfoControl);
+                                    startActivityForResult(intent, GetFeatureInfoLayerListActivity.CIRCLE_REQUEST);
+                                }else{
+                                    Log.w(getClass().getSimpleName(),"no spatialite layer found");
+                                }
+                                break;
+                        }
+                    }
+                });
+        mapInfoControl.setEnabled(true);
     }
 
     /**
@@ -456,7 +470,6 @@ public class MainActivity extends MapActivityBase
 
             if (mapInfoSelectionMode != MapInfoSelectionMode.GetFeatureInfo) {
                 mapInfoSelectionMode = MapInfoSelectionMode.GetFeatureInfo;
-                setupMapInfoControl();
             }
 
             /**
@@ -533,7 +546,6 @@ public class MainActivity extends MapActivityBase
 
             if(mapInfoSelectionMode != MapInfoSelectionMode.GetSpatialiteInfo) {
                 mapInfoSelectionMode = MapInfoSelectionMode.GetSpatialiteInfo;
-                setupMapInfoControl();
             }
 
             if (BuildConfig.DEBUG) {
@@ -614,6 +626,14 @@ public class MainActivity extends MapActivityBase
                 return 3;
             default:
                 return 2;
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mapInfoControl != null && !mapInfoControl.isEnabled()){
+            mapInfoControl.setEnabled(true);
         }
     }
 
@@ -1134,12 +1154,12 @@ public class MainActivity extends MapActivityBase
         boolean quit = true;
         for (MapControl control : mapView.getControls()) {
 
-            if (control.isEnabled()) {
+            if (control.isEnabled() && !control.equals(mapInfoControl)) {
                 control.disable();
                 if (control.getActivationButton() != null) {
                     control.getActivationButton().setSelected(false);
                 }
-                if(control.equals(invisibleLocationAcquireControl)){
+                if (control.equals(invisibleLocationAcquireControl)) {
                     Toast.makeText(getBaseContext(), R.string.position_acquirement_cancelled, Toast.LENGTH_SHORT).show();
                 }
                 quit = false;
