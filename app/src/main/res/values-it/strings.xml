@@ -79,5 +79,6 @@
 
     <string name="siig_credits_page_title">Credits</string>
     <string name="siig_credits_page_text">Credits</string>
+    <string name="getfeatureinfo_title">Informazioni sulla selezione</string>
 
 </resources>

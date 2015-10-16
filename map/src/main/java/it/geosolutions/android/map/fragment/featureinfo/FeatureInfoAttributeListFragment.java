@@ -62,8 +62,14 @@ import it.geosolutions.android.map.utils.FeatureInfoUtils;
  *
  * @author Lorenzo Natali (www.geo-solutions.it)
  */
-public class FeatureInfoAttributeListFragment extends ListFragment
-        implements LoaderManager.LoaderCallbacks<List<FeatureInfoQueryResult>> {
+public class FeatureInfoAttributeListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<FeatureInfoQueryResult>> {
+
+    // Tag for Logging
+    private static String TAG = "FeatureInfoAttributeListFragment";
+
+    public final static String PARAM_CUSTOM_LAYOUT = "custom_layout";
+    public final static String PARAM_DONT_LOAD_TWICE= "dont_load_twice";
+
     private FeatureInfoAttributesAdapter adapter;
 
     private FeatureInfoTaskQuery[] queryQueue;
@@ -82,8 +88,16 @@ public class FeatureInfoAttributeListFragment extends ListFragment
     private ProgressDialog pd;
     private boolean waitForInflation = false;
 
-    // Tag for Logging
-    private static String TAG = "FeatureInfoAttributeListFragment";
+    private FeatureInfoLoadedListener mListener;
+    private int mCustomLayout;
+    private static FeatureInfoAttributeListFragment mInstance;
+
+    public static FeatureInfoAttributeListFragment getInstance(){
+        if(mInstance == null){
+            mInstance = new FeatureInfoAttributeListFragment();
+        }
+        return mInstance;
+    }
 
     /**
      * Called only once
@@ -98,32 +112,60 @@ public class FeatureInfoAttributeListFragment extends ListFragment
         getActivity().setProgressBarIndeterminateVisibility(true);
         getActivity().setProgressBarVisibility(true);
 
-        // get data from the intent
-        // TODO get them from arguments
-        Bundle extras = getActivity().getIntent().getExtras();
+        // legacy : get data from the intent
+        if(getActivity() != null &&
+                getActivity().getIntent() != null &&
+                getActivity().getIntent().getExtras() != null &&
+                getActivity().getIntent().getExtras().containsKey("query")) {
 
-        layers = (ArrayList<Layer>) extras.getSerializable(Constants.ParamKeys.LAYERS);
-        start = extras.getInt("start");
-        limit = extras.getInt("limit");
+            Bundle extras = getActivity().getIntent().getExtras();
+
+            layers = (ArrayList<Layer>) extras.getSerializable(Constants.ParamKeys.LAYERS);
+            start = extras.getInt("start");
+            limit = extras.getInt("limit");
+            query = extras.getParcelable("query");
+
+        }else if(getArguments() != null){
+            // preferred : get data from arguments
+            if (getArguments().containsKey(Constants.ParamKeys.LAYERS)) {
+                layers = (ArrayList<Layer>) getArguments().getSerializable(Constants.ParamKeys.LAYERS);
+            }
+            if (getArguments().containsKey("start")){
+                start = getArguments().getInt("start");
+            }
+            if(getArguments().containsKey("limit")) {
+                limit = getArguments().getInt("limit");
+            }
+            if(getArguments().containsKey("query")) {
+                query = getArguments().getParcelable("query");
+            }
+            if(getArguments().containsKey(PARAM_CUSTOM_LAYOUT)){
+                mCustomLayout = getArguments().getInt(PARAM_CUSTOM_LAYOUT);
+            }
+        }
+
 
         // setup the listView
-        adapter = new FeatureInfoAttributesAdapter(getActivity(),
-                R.layout.feature_info_attribute_row);
+        adapter = new FeatureInfoAttributesAdapter(getActivity(), R.layout.feature_info_attribute_row);
         setListAdapter(adapter);
-        query = extras.getParcelable("query");
 
         // TODO get already loaded data;
+
         startDataLoading(query, layers, start, 2);// use 2 to check availability of the next page
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        startDataLoading(query, layers, start, 2);
+        //why is the loading started in both onCreate and onCreateView ?
+        //start this second loading only if not prevented by argument
+        if(!(getArguments() != null && getArguments().containsKey(PARAM_DONT_LOAD_TWICE))) {
+            startDataLoading(query, layers, start, 2);
+        }
+        //if we have a custom layout use it, otherwise use the default one
+        int resourceID = mCustomLayout == 0 ? R.layout.feature_info_attribute_list : mCustomLayout;
 
-        return inflater.inflate(R.layout.feature_info_attribute_list, container,
-                false);
+        return inflater.inflate(resourceID, container, false);
     }
 
     /*
@@ -168,31 +210,33 @@ public class FeatureInfoAttributeListFragment extends ListFragment
         });
         // show a dialog and return if ok
         final Context context = this.getActivity();
-        marker.setOnClickListener(new OnClickListener() {
+        if(marker != null) {
+            marker.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder confirm = new AlertDialog.Builder(context);
-                confirm.setTitle(R.string.use_this_feature);
-                confirm.setMessage(R.string.use_this_feature_description);
-                confirm.setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                returnSelectedItem();
-                            }
-                        });
-                confirm.setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // TODO close
-                                dialog.cancel();
-                            }
-                        });
-                AlertDialog alert = confirm.create();
-                alert.show();
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder confirm = new AlertDialog.Builder(context);
+                    confirm.setTitle(R.string.use_this_feature);
+                    confirm.setMessage(R.string.use_this_feature_description);
+                    confirm.setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    returnSelectedItem();
+                                }
+                            });
+                    confirm.setNegativeButton(android.R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // TODO close
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = confirm.create();
+                    alert.show();
 
-            }
-        });
+                }
+            });
+        }
 
         if(waitForInflation){
 
@@ -212,8 +256,30 @@ public class FeatureInfoAttributeListFragment extends ListFragment
      * @param start
      * @param limit
      */
-    private void startDataLoading(BaseFeatureInfoQuery query, ArrayList<Layer> layers,
-                                  Integer start, Integer limit) {
+    private void startDataLoading(BaseFeatureInfoQuery query, ArrayList<Layer> layers, Integer start, Integer limit) {
+
+        if(createQueryQueue(query, layers, start, limit)) {
+            // initialize Load Manager
+            mCallbacks = this;
+            LoaderManager lm = getActivity().getSupportLoaderManager();
+            // NOTE: use the start variable as index in the loadermanager
+            // if you use more than one
+            adapter.clear();
+            lm.initLoader(start, null, this); // uses start to get the
+        }
+    }
+
+    /**
+     * creates a query queue if necessary
+     * if not false is returned
+     * @param query the query
+     * @param layers the layers (may be null for WMSGetFeatureInfo)
+     * @param start the index of the requested feature
+     * @param limit
+     * @return true if a new queryqueue was created, false if the query can be answered with the current data
+     */
+    private boolean createQueryQueue(BaseFeatureInfoQuery query,ArrayList<Layer> layers, Integer start, Integer limit){
+
         // create task query
         if(query instanceof WMSGetFeatureInfoQuery){
             if(currentFeatures != null){
@@ -235,29 +301,24 @@ public class FeatureInfoAttributeListFragment extends ListFragment
                     }else{
                         waitForInflation = true;
                     }
-                    return; //no need to requery
+                    return false; //no need to requery
                 }
             }
             queryQueue = FeatureInfoUtils.createWMSPointQueryQueue((WMSGetFeatureInfoQuery) query, start, limit);
+
             showProgress(getActivity().getString(R.string.please_wait));
-        }else if(query instanceof BBoxQuery)
+
+        }else if(query instanceof BBoxQuery) {
             queryQueue = FeatureInfoUtils.createTaskQueryQueue(layers, (BBoxQuery) query, start,
                     limit);
-        else
-        if(query instanceof CircleQuery)
+        }else if(query instanceof CircleQuery) {
             queryQueue = FeatureInfoUtils.createTaskQueryQueue(layers, (CircleQuery) query, start,
                     limit);
-        else
+        }else {
             queryQueue = FeatureInfoUtils.createTaskQueryQueue(layers, (PolygonQuery) query, start,
                     limit);
-
-        // initialize Load Manager
-        mCallbacks = this;
-        LoaderManager lm = getActivity().getSupportLoaderManager();
-        // NOTE: use the start variable as index in the loadermanager
-        // if you use more than one
-        adapter.clear();
-        lm.initLoader(start, null, this); // uses start to get the
+        }
+        return true;
     }
 
     @Override
@@ -287,7 +348,7 @@ public class FeatureInfoAttributeListFragment extends ListFragment
     @Override
     public Loader<List<FeatureInfoQueryResult>> onCreateLoader(int id, Bundle args) {
 
-        return new FeatureInfoLoader(getActivity(), queryQueue);
+        return new FeatureInfoLoader(getActivity(),queryQueue);
     }
 
     // populate the list and set buttonbar visibility options
@@ -316,6 +377,10 @@ public class FeatureInfoAttributeListFragment extends ListFragment
 
         Log.v("FEATURE_INFO", "added " + adapter.getCount() + " items to the view");
         stopLoadingGUI();
+
+        if(mListener != null){
+            mListener.didFinishLoading();
+        }
 
     }
 
@@ -360,6 +425,11 @@ public class FeatureInfoAttributeListFragment extends ListFragment
      * @param features
      */
     private void setButtonBarVisibility(ArrayList<Feature> features) {
+
+        if(getView() == null){
+            return;
+        }
+
         if (features == null) {
             getView().findViewById(R.id.attributeButtonBar).setVisibility(
                     View.INVISIBLE);
@@ -385,11 +455,18 @@ public class FeatureInfoAttributeListFragment extends ListFragment
                         View.INVISIBLE);
             }
             //marker button
-            if(Intent.ACTION_VIEW.equals(getActivity().getIntent().getAction())){
-                getView().findViewById(R.id.use_for_marker).setVisibility(View.INVISIBLE);
+            if(getView().findViewById(R.id.use_for_marker) != null) {
+                if (Intent.ACTION_VIEW.equals(getActivity().getIntent().getAction())) {
+                    getView().findViewById(R.id.use_for_marker).setVisibility(View.INVISIBLE);
+                } else {
+                    getView().findViewById(R.id.use_for_marker).setVisibility(View.VISIBLE);
+                }
             }else{
-                getView().findViewById(R.id.use_for_marker).setVisibility(View.VISIBLE);
-
+                //this is a custom layout without "use for marker" it can hide the bottom bar
+                //if there is only one feature
+                if(features.size() == 1){
+                    getView().findViewById(R.id.attributeButtonBar).setVisibility(View.GONE);
+                }
             }
         } else {
             getView().findViewById(R.id.attributeButtonBar).setVisibility(
@@ -432,9 +509,10 @@ public class FeatureInfoAttributeListFragment extends ListFragment
         activity.finish();
     }
 
-    public void showProgress(final String message){
 
-        if(pd == null){
+    public void showProgress(final String message) {
+
+        if (pd == null ||  pd.getOwnerActivity() == null || pd.getOwnerActivity().isFinishing() || pd.getOwnerActivity().isFinishing()){
             pd = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
             pd.setCancelable(false);
             pd.setIcon(R.drawable.ic_launcher);
@@ -455,5 +533,37 @@ public class FeatureInfoAttributeListFragment extends ListFragment
                 }
             }
         }
+    }
+
+    /**
+     * requery the loader and update the view of this fragment
+     * @param query the new query
+     * @param layers list of layers (may be null for WMSGetFeatureInfoQuery)
+     */
+    public void requery(BaseFeatureInfoQuery query, ArrayList<Layer> layers) {
+
+        currentFeatures = null;
+
+        start = 0;
+        limit = 1;
+
+        createQueryQueue(query, layers, start, limit);
+
+        adapter.clear();
+
+        getActivity().getSupportLoaderManager().restartLoader(start, null, this);
+
+    }
+
+    /**
+     * Listener for this fragment which informs registered objects that the loader finished loading
+     */
+    public interface FeatureInfoLoadedListener
+    {
+        void didFinishLoading();
+    }
+
+    public void setFeatureInfoLoadedListener(FeatureInfoLoadedListener mListener) {
+        this.mListener = mListener;
     }
 }
