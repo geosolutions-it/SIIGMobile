@@ -18,6 +18,7 @@
         <item>Beni Culturali</item>
         <item>Valutazione Danno</item>
         <item>Carica Elaborazione</item>
+        <item>Credits</item>
     </string-array>
 
     <string-array name="grafo">

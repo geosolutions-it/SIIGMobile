@@ -881,14 +881,15 @@ public class MainActivity extends MapActivityBase
         // Update Title
         onSectionAttached(position);
 
+        int drawerItemsCount = getResources().getStringArray(R.array.drawer_items).length;
+
         // update the main content by replacing fragments
-        if(layerManager == null && position < 4){
+        if(layerManager == null && position < drawerItemsCount){
             // nothing to do
             return;
         }
 
-
-        if(position == getResources().getStringArray(R.array.drawer_items).length - 2){ // valutazione danno
+        if(position == drawerItemsCount - 3){ // valutazione danno
 
             // creates a mapInfoControl which is not tied to an imageview but "invisible"
             invisibleLocationAcquireControl = FixedShapeMapInfoControl.createOnePointControl(
@@ -916,10 +917,17 @@ public class MainActivity extends MapActivityBase
             invisibleLocationAcquireControl.setEnabled(true);
 
 
-        }else if(position == getResources().getStringArray(R.array.drawer_items).length - 1){ // carica elaborazione
-          
+        }else if(position == drawerItemsCount - 2){ // carica elaborazione
+
             Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
             startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
+
+        }else if(position == drawerItemsCount - 1){ // Credits
+
+            Intent creditsActivity = new Intent(this, CreditsActivity.class);
+            startActivity(creditsActivity);
+            //push from bottom to top
+            overridePendingTransition(R.anim.in_from_down, 0);
 
         }else{ //WMS Layer
             currentStyle = position;

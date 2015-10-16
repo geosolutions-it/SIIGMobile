@@ -17,7 +17,8 @@
         <item>Urbanized Zone</item>
         <item>Cultural Goods</item>
         <item>Damage Evaluation</item>
-        <item>Upload Elaboration</item>
+        <item>Load Elaboration</item>
+        <item>Credits</item>
     </string-array>
 
     <string-array name="grafo">
