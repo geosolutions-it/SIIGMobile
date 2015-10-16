@@ -512,7 +512,7 @@ public class FeatureInfoAttributeListFragment extends ListFragment implements Lo
 
     public void showProgress(final String message) {
 
-        if (pd == null){
+        if (pd == null ||  pd.getOwnerActivity() == null || pd.getOwnerActivity().isFinishing() || pd.getOwnerActivity().isFinishing()){
             pd = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
             pd.setCancelable(false);
             pd.setIcon(R.drawable.ic_launcher);

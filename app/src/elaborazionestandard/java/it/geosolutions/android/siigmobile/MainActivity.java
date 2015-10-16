@@ -540,12 +540,16 @@ public class MainActivity extends MapActivityBase
             //create the fragment
             mFragment = FeatureInfoAttributeListFragment.getInstance();
             mFragment.setFeatureInfoLoadedListener(this);
-            mFragment.setArguments(bundle);
+            if(mFragment.getArguments() == null) {
+                mFragment.setArguments(bundle);
+            }
 
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = manager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_container, mFragment, WMS_INFO_FRAGMENT_TAG);
-            fragmentTransaction.commit();
+            if(!mFragment.isAdded()) {
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container, mFragment, WMS_INFO_FRAGMENT_TAG);
+                fragmentTransaction.commit();
+            }
 
         }else{
             //fragment exists, requery using this query and layers if available
