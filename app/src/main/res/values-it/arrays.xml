@@ -19,7 +19,7 @@
 
     <string-array name="val_method_options">
         <item>Buffer</item>
-        <item>Seletiona Scenario</item>
+        <item>Seleziona Scenario</item>
     </string-array>
 
     <string-array name="val_scenarios_options">
