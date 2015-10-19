@@ -82,7 +82,7 @@ public class AdvancedMapView extends MapView {
 	 * @param attributeSet the attributeSet
 	 */
 	public  AdvancedMapView(Context context, AttributeSet attributeSet){
-		super(context,attributeSet);
+		super(context, attributeSet);
 		if(context instanceof MapsActivity){
 			activity = (MapsActivity) context; 
 		}
@@ -94,7 +94,9 @@ public class AdvancedMapView extends MapView {
 	 * @param m the <MapControl> object
 	 */
 	public void addControl(MapControl m){
-		controls.add(m);
+        synchronized (controls){
+            controls.add(m);
+        }
 		Log.v("CONTROL","total controls:"+controls.size());
 	}
 	
@@ -103,9 +105,11 @@ public class AdvancedMapView extends MapView {
 	 * @param m the control to remove
 	 */
 	public void removeControl(MapControl m){
-		if(controls.contains(m)){
-			controls.remove(m);
-		}
+        synchronized (controls) {
+            if (controls.contains(m)) {
+                controls.remove(m);
+            }
+        }
 	}
 	
 	/**
@@ -139,18 +143,23 @@ public class AdvancedMapView extends MapView {
 	public boolean onTouchEvent(MotionEvent motionEvent) {
 		boolean catched = false;
 		boolean touchResult =true;
-		for(MapControl cl : controls){
-			if(cl==null) continue;
-			//get the OnTouchListener from the controller
-			OnTouchListener tl = cl.getMapListener();
-			//call the event
-			if(cl.isEnabled() && tl !=null){
-				catched = tl.onTouch(this, motionEvent) || catched;
-			}
-		}
+        synchronized (controls) {
+            for (MapControl cl : controls) {
+                if (cl == null) {
+                    continue;
+                }
+                //get the OnTouchListener from the controller
+                OnTouchListener tl = cl.getMapListener();
+                //call the event
+                if (cl.isEnabled() && tl != null) {
+                    catched = tl.onTouch(this, motionEvent) || catched;
+                }
+            }
+        }
 		//if the event was catched the result is not propagated to the map
-		if(!catched)
-			 touchResult = super.onTouchEvent(motionEvent);
+		if(!catched) {
+			touchResult = super.onTouchEvent(motionEvent);
+		}
 		
 		return touchResult || catched;
 	}

@@ -366,7 +366,15 @@ public class MainActivity extends MapActivityBase
             mapView.getMapScaleBar().setShowMapScaleBar(true);
 
             // Set text size
-            mapView.setTextScale(Config.MAP_SCALE);
+            try {
+                mapView.setTextScale(Config.MAP_SCALE);
+            }catch (IllegalStateException ise){
+                // Ignore and go on
+                if(BuildConfig.DEBUG){
+                    Log.e(TAG, ise.getMessage());
+                }
+
+            }
 
             // Disable Zoom Buttons
             mapView.setBuiltInZoomControls(false);
@@ -726,8 +734,8 @@ public class MainActivity extends MapActivityBase
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
 
         if (needsToAddFragment && mFragment != null) {
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mFragment, WMS_INFO_FRAGMENT_TAG).commit();
