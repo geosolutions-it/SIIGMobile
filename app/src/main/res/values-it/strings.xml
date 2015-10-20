@@ -32,7 +32,7 @@
     <string name="bb_latitude">Latitudine</string>
     <string name="bb_upperleft">In alto a sinistra</string>
     <string name="bb_lowerright">In basso a destra</string>
-    <string name="clear">Vista base</string>
+    <string name="clear">Cancella</string>
     <string name="deleting">Cancellazione in corso&#8230;</string>
     <string name="selected">selezionato</string>
     <string name="go_back">Torna alla mappa</string>

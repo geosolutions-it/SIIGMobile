@@ -3,7 +3,7 @@
 
     <string-array name="drawer_items">
         <item>Grafo Stradale</item>
-        <item>Popolazione Residenziale</item>
+        <item>Popolazione Residente</item>
         <item>Popolazione Turistica</item>
         <item>Industria</item>
         <item>Strutture Sanitarie</item>
