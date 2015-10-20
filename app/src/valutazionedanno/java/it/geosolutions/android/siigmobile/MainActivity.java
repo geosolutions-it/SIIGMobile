@@ -550,7 +550,9 @@ public class MainActivity extends MapActivityBase
             //create the fragment
             mFragment= FeatureInfoAttributeListFragment.getInstance();
             mFragment.setFeatureInfoLoadedListener(this);
-            mFragment.setArguments(bundle);
+            if(mFragment.getArguments() == null) {
+                mFragment.setArguments(bundle);
+            }
 
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
@@ -1495,7 +1497,7 @@ public class MainActivity extends MapActivityBase
         wfsInfoButtonHidden = savedInstanceState.getBoolean(KEY_WFS_BUTTON_HIDDEN_STATE);
 
         if(!wfsInfoButtonHidden){
-            int state = savedInstanceState.getInt(KEY_WFS_BUTTON_VISIBILIY_STATE);
+            int state = savedInstanceState.getInt(KEY_WFS_BUTTON_VISIBILIY_STATE, View.VISIBLE);
             findViewById(R.id.fab_wfs_result).setVisibility(state);
         }
 
