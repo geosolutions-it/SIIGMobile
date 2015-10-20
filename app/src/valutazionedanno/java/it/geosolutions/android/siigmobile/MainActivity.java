@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -402,6 +403,7 @@ public class MainActivity extends MapActivityBase
 
             if (elaborationResult == null) {
                 loadDBLayers(null);
+                removeOverlayItem(overlayCircle);
             } else {
                 loadDBLayers(elaborationResult.getResultTableName());
                 invalidateMenu(elaborationResult.getResultTableName(), true);
@@ -886,9 +888,6 @@ public class MainActivity extends MapActivityBase
     @Override
     public void onNavigationDrawerItemSelected(int position) {
 
-        // Update Title
-        onSectionAttached(position);
-
         int drawerItemsCount = getResources().getStringArray(R.array.drawer_items).length;
 
         // update the main content by replacing fragments
@@ -938,6 +937,9 @@ public class MainActivity extends MapActivityBase
             overridePendingTransition(R.anim.in_from_down, 0);
 
         }else{ //WMS Layer
+            // Update Title
+            onSectionAttached(position);
+
             currentStyle = position;
             //reload, if an elaboration arrived center on it
             if(elaborationResult == null){
@@ -1188,7 +1190,9 @@ public class MainActivity extends MapActivityBase
 
         List<OverlayItem> overlayItems = overlayItemList.getOverlayItems();
 
-        overlayItems.add(overlayCircle);
+        if(!overlayItems.contains(overlayCircle)) {
+            overlayItems.add(overlayCircle);
+        }
 
         mapView.redraw();
     }
