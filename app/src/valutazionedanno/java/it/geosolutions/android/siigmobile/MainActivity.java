@@ -319,10 +319,10 @@ public class MainActivity extends MapActivityBase
             public void onPanelCollapsed(View panel) {
 
                 findViewById(R.id.fab_location).setVisibility(View.INVISIBLE);
-                if (findViewById(R.id.fab_wfs_result).getVisibility() == View.VISIBLE) {
-                    wfsInfoButtonHidden = true;
-                    findViewById(R.id.fab_wfs_result).setVisibility(View.INVISIBLE);
-                }
+//                if (findViewById(R.id.fab_wfs_result).getVisibility() == View.VISIBLE) {
+//                    wfsInfoButtonHidden = true;
+//                    findViewById(R.id.fab_wfs_result).setVisibility(View.INVISIBLE);
+//                }
             }
             @Override
             public void onPanelAnchored(View panel) {}
@@ -330,9 +330,9 @@ public class MainActivity extends MapActivityBase
             public void onPanelHidden(View panel) {
 
                 findViewById(R.id.fab_location).setVisibility(View.VISIBLE);
-                if (wfsInfoButtonHidden) {
-                    findViewById(R.id.fab_wfs_result).setVisibility(View.VISIBLE);
-                }
+//                if (wfsInfoButtonHidden) {
+//                    findViewById(R.id.fab_wfs_result).setVisibility(View.VISIBLE);
+//                }
             }
         });
 
