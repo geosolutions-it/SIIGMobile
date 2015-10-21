@@ -105,13 +105,37 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.drawer_layout_item,
-                R.id.label,
-                getResources().getStringArray(R.array.drawer_items)
-                ));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
+//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+//                getActivity(),
+//                R.layout.drawer_layout_item,
+//                R.id.label,
+//                getResources().getStringArray(R.array.drawer_items)
+//                ));
+        CustomAdapter mAdapter = new CustomAdapter(getActivity());
+
+        mAdapter.addSectionHeaderItem(getResources().getStringArray(R.array.drawer_layers)[0]);
+        mAdapter.addSectionHeaderItem("Bersagli Umani");
+        for(String s : getResources().getStringArray(R.array.drawer_layers_human)){
+            mAdapter.addItem(s);
+        }
+        mAdapter.addSectionHeaderItem("Bersagli Non Umani");
+        for(String s : getResources().getStringArray(R.array.drawer_layers_nothuman)){
+            mAdapter.addItem(s);
+        }
+
+        mAdapter.addSectionHeaderItem("Valutazione Danno");
+        for(String s : getResources().getStringArray(R.array.drawer_elaborations)){
+            mAdapter.addItem(s);
+        }
+
+        for(String s : getResources().getStringArray(R.array.drawer_credits)){
+            mAdapter.addSectionHeaderItem(s);
+        }
+
+        mDrawerListView.setAdapter(mAdapter);
+
+        //mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
 
@@ -120,12 +144,12 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     /**
-     * Users of this fragment must call this method to set up the navigation drawer interactions.
+     * Users of this fragment must call this method to setup the navigation drawer interactions.
      *
      * @param fragmentId   The android:id of this fragment in its activity's layout.
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
-    public void setUp(int fragmentId, DrawerLayout drawerLayout) {
+    public void setup(int fragmentId, DrawerLayout drawerLayout) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
 

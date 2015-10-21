@@ -21,9 +21,32 @@
         <item>Credits</item>
     </string-array>
 
-    <string-array name="grafo">
-        <item>Street</item>
+    <string-array name="drawer_layers_human">
+        <item>Residential Population</item>
+        <item>Touristic Population</item>
+        <item>Industrial Employees</item>
+        <item>Sanitary Employees</item>
+        <item>Scholar Employees</item>
+        <item>Commercial Employees</item>
     </string-array>
 
+    <string-array name="drawer_layers_nothuman">
+        <item>Woodland Area</item>
+        <item>Protected Area</item>
+        <item>Agricultural Area</item>
+        <item>Subterranean Water</item>
+        <item>Superficial Water</item>
+        <item>Urbanized Zone</item>
+        <item>Cultural Goods</item>
+    </string-array>
+
+    <string-array name="drawer_elaborations">
+        <item>Create Elaboration</item>
+        <item>Load Elaboration</item>
+    </string-array>
+
+    <string-array name="drawer_credits">
+        <item>Credits</item>
+    </string-array>
         
 </resources>

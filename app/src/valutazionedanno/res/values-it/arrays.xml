@@ -21,8 +21,32 @@
         <item>Credits</item>
     </string-array>
 
-    <string-array name="grafo">
-        <item>Strada</item>
+    <string-array name="drawer_layers_human">
+        <item>Popolazione Residente</item>
+        <item>Popolazione Turistica</item>
+        <item>Industria</item>
+        <item>Strutture Sanitarie</item>
+        <item>Strutture Scolastiche</item>
+        <item>Centri Commerciali</item>
+    </string-array>
+
+    <string-array name="drawer_layers_nothuman">
+        <item>Aree Boscate</item>
+        <item>Aree Protette</item>
+        <item>Aree Agricole</item>
+        <item>Acque Sotterranee</item>
+        <item>Acque Superficiali</item>
+        <item>Zone Urbanizzate</item>
+        <item>Beni Culturali</item>
+    </string-array>
+
+    <string-array name="drawer_elaborations">
+        <item>Crea Elaborazione</item>
+        <item>Carica Elaborazione</item>
+    </string-array>
+
+    <string-array name="drawer_credits">
+        <item>Credits</item>
     </string-array>
 
 </resources>

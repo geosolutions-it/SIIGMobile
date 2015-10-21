@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SIIG Mobile</string>
+    <string name="app_name">DESTINATION</string>
     <string name="app_title" translatable="false">Destination</string>
     <string name="navigation_drawer_open">Open Menu</string>
     <string name="navigation_drawer_close">Close Menu</string>

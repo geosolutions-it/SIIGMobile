@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SIIG Mobile</string>
+    <string name="app_name">DESTINATION</string>
     <string name="siig_risk_form_title">Calcolo Elaborazione Standard</string>
     <string name="action_map">Mappa</string>
     <string name="action_search">Ricerca</string>

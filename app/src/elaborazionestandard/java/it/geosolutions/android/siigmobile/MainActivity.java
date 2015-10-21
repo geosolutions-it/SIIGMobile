@@ -1,6 +1,5 @@
 package it.geosolutions.android.siigmobile;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -26,7 +24,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -66,7 +63,6 @@ import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
 import it.geosolutions.android.map.model.query.CircleQuery;
 import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
-import it.geosolutions.android.map.overlay.managers.OverlayManager;
 import it.geosolutions.android.map.spatialite.SpatialiteLayer;
 import it.geosolutions.android.map.style.AdvancedStyle;
 import it.geosolutions.android.map.style.StyleManager;
@@ -116,7 +112,6 @@ public class MainActivity extends MapActivityBase
     private MultiSourceOverlayManager layerManager;
 
     public AdvancedMapView mapView;
-    public OverlayManager overlayManager;
 
     private final static int RESULT_REQUEST_CODE = 1234;
     private final static String WMS_INFO_FRAGMENT_TAG = "WMS_INFO_FRAGMENT_TAG";
@@ -223,7 +218,7 @@ public class MainActivity extends MapActivityBase
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
+        mNavigationDrawerFragment.setup(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
@@ -822,29 +817,29 @@ public class MainActivity extends MapActivityBase
         }
 
         switch (position) {
-            case 0:
             case 1:
             case 2:
             case 3:
             case 4:
-                currentStyle = position;
+            case 5:
+                currentStyle = position - 1;
                 //reload, if an elaboration arrived center on it
                 if(elaborationResult == null){
                     loadDBLayers(null);
 
-                }else if(position == 4){
+                }else if(position == 5){
                     loadDBLayers(elaborationResult.getStreetTableName());
                 }else {
                     loadDBLayers(elaborationResult.getRiskTableName());
                 }
                 // Update Title
                 if(elaborationResult == null) {
-                    mTitle = getResources().getStringArray(R.array.drawer_items)[position];
+                    mTitle = getResources().getStringArray(R.array.drawer_items)[position -1];
                 }else{
                     mTitle = elaborationResult.getUserEditedName();
                 }
                 break;
-            case 5:
+            case 7:
 
                 if (mapView == null || mapView.getMapViewPosition() == null) {
                     Snackbar
@@ -860,18 +855,18 @@ public class MainActivity extends MapActivityBase
                 showEditElaborationTitleAndDescriptionDialog(bb, isPolygonRequest);
 
                 break;
-            case 6:
+            case 8:
                 Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
                 startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
                 break;
-            case 7:
+            case 9:
                 Intent detailsActivity = new Intent(this, InfoDisplayActivity.class);
                 detailsActivity.putExtra(InfoDisplayActivity.EXTRA_TEXT_INDEX, currentStyle);
                 startActivity(detailsActivity);
                 //push from bottom to top
                 overridePendingTransition(R.anim.in_from_down, 0);
                 break;
-            case 8:
+            case 10:
                 Intent creditsActivity = new Intent(this, CreditsActivity.class);
                 startActivity(creditsActivity);
                 //push from bottom to top
@@ -889,18 +884,11 @@ public class MainActivity extends MapActivityBase
 
     }
 
-    public void onSectionAttached(int number) {
-
-        mTitle = getResources().getStringArray(R.array.drawer_items)[number];
-
-    }
-
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1138,7 +1126,7 @@ public class MainActivity extends MapActivityBase
                         }
 
                         final Elaborator elaborator = new Elaborator(MainActivity.this) {
-                            private String tableToCenter;
+
                             @Override
                             public void showError(final int resource) {
                                 //may come from background
@@ -1204,46 +1192,6 @@ public class MainActivity extends MapActivityBase
                         stringResource,
                         Snackbar.LENGTH_LONG)
                 .show();
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 
     @Override

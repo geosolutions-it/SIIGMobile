@@ -13,8 +13,22 @@
         <item>Credits</item>
     </string-array>
 
-    <string-array name="grafo">
-        <item>Strada</item>
+    <string-array name="drawer_layers">
+        <item>Grafo Stradale</item>
+        <item>Rischio Ambientale</item>
+        <item>Rischio Sociale</item>
+        <item>Rischio Totale</item>
+        <item>Pericolosità Della Strada</item>
+    </string-array>
+
+    <string-array name="drawer_elaborations">
+        <item>Salva Elaborazione Corrente</item>
+        <item>Carica Elaborazione</item>
+    </string-array>
+
+    <string-array name="drawer_credits">
+        <item>Ulteriori Informazioni</item>
+        <item>Credits</item>
     </string-array>
 
     <string-array name="val_method_options">

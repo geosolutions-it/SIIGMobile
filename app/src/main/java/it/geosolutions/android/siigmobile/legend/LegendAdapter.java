@@ -67,7 +67,7 @@ public class LegendAdapter extends ArrayAdapter<LegendItem>{
         }else{
             //no rules ->> this is grafo style
             //TODO add rule to grafo too
-            this.add(new LegendItem(context.getResources().getStringArray(R.array.grafo)[0],context.getResources().getColor(R.color.grafo)));
+            this.add(new LegendItem(context.getResources().getStringArray(R.array.drawer_layers)[0],context.getResources().getColor(R.color.grafo)));
         }
 
         this.notifyDataSetChanged();

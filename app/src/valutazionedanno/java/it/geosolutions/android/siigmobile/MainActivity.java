@@ -1,6 +1,5 @@
 package it.geosolutions.android.siigmobile;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -22,11 +20,9 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -54,7 +50,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +65,6 @@ import it.geosolutions.android.map.model.query.BaseFeatureInfoQuery;
 import it.geosolutions.android.map.model.query.CircleQuery;
 import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.overlay.managers.MultiSourceOverlayManager;
-import it.geosolutions.android.map.overlay.managers.OverlayManager;
 import it.geosolutions.android.map.spatialite.SpatialiteLayer;
 import it.geosolutions.android.map.style.AdvancedStyle;
 import it.geosolutions.android.map.style.StyleManager;
@@ -125,7 +119,6 @@ public class MainActivity extends MapActivityBase
     private MultiSourceOverlayManager layerManager;
 
     public AdvancedMapView mapView;
-    public OverlayManager overlayManager;
 
     private final static int RESULT_REQUEST_CODE = 1234;
 
@@ -235,7 +228,7 @@ public class MainActivity extends MapActivityBase
         mTitle = getTitle();
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
+        mNavigationDrawerFragment.setup(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
@@ -346,7 +339,6 @@ public class MainActivity extends MapActivityBase
                closePanel();
             }
         });
-
 
     }
 
@@ -898,7 +890,7 @@ public class MainActivity extends MapActivityBase
             return;
         }
 
-        if(position == drawerItemsCount - 3){ // valutazione danno
+        if(position == 17){ // valutazione danno
 
             // creates a mapInfoControl which is not tied to an imageview but "invisible"
             invisibleLocationAcquireControl = FixedShapeMapInfoControl.createOnePointControl(
@@ -926,21 +918,21 @@ public class MainActivity extends MapActivityBase
             invisibleLocationAcquireControl.setEnabled(true);
 
 
-        }else if(position == drawerItemsCount - 2){ // carica elaborazione
+        }else if(position == 18){ // carica elaborazione
 
             Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
             startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
 
-        }else if(position == drawerItemsCount - 1){ // Credits
+        }else if(position == 19){ // Credits
 
             Intent creditsActivity = new Intent(this, CreditsActivity.class);
             startActivity(creditsActivity);
             //push from bottom to top
             overridePendingTransition(R.anim.in_from_down, 0);
 
-        }else{ //WMS Layer
+        }else if(position == 0){ //WMS Layer
             // Update Title
-            onSectionAttached(position);
+            mTitle = getResources().getStringArray(R.array.drawer_items)[position];
 
             currentStyle = position;
             //reload, if an elaboration arrived center on it
@@ -949,13 +941,29 @@ public class MainActivity extends MapActivityBase
             } else {
                 loadDBLayers(elaborationResult.getResultTableName());
             }
+        }else if((position >= 2 && position <= 7)){ //WMS Layer
+            // Update Title
+            mTitle = getResources().getStringArray(R.array.drawer_items)[position - 1];
+
+            currentStyle = position -1;
+            //reload, if an elaboration arrived center on it
+            if(elaborationResult == null){
+                loadDBLayers(null);
+            } else {
+                loadDBLayers(elaborationResult.getResultTableName());
+            }
+        }else if((position >= 9 && position <= 15) ){ //WMS Layer
+            // Update Title
+            mTitle = getResources().getStringArray(R.array.drawer_items)[position - 2];
+
+            currentStyle = position - 2;
+            //reload, if an elaboration arrived center on it
+            if(elaborationResult == null){
+                loadDBLayers(null);
+            } else {
+                loadDBLayers(elaborationResult.getResultTableName());
+            }
         }
-
-    }
-
-    public void onSectionAttached(int number) {
-
-        mTitle = getResources().getStringArray(R.array.drawer_items)[number];
 
     }
 
@@ -1238,46 +1246,6 @@ public class MainActivity extends MapActivityBase
                         stringResource,
                         Snackbar.LENGTH_LONG)
                 .show();
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 
     @Override
