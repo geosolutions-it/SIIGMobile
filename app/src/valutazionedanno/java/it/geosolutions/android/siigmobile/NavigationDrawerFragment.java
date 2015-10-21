@@ -114,23 +114,29 @@ public class NavigationDrawerFragment extends Fragment {
 //                ));
         CustomAdapter mAdapter = new CustomAdapter(getActivity());
 
-        mAdapter.addSectionHeaderItem(getResources().getStringArray(R.array.drawer_layers)[0]);
+        mAdapter.addSectionHeaderItem("Valutazione Danno");
+        for (String s : getResources().getStringArray(R.array.drawer_elaborations)){
+            mAdapter.addItem(s);
+        }
+        mAdapter.addSeparatorItem();
         mAdapter.addSectionHeaderItem("Bersagli Umani");
         for(String s : getResources().getStringArray(R.array.drawer_layers_human)){
             mAdapter.addItem(s);
         }
+
+        mAdapter.addSeparatorItem();
         mAdapter.addSectionHeaderItem("Bersagli Non Umani");
         for(String s : getResources().getStringArray(R.array.drawer_layers_nothuman)){
             mAdapter.addItem(s);
         }
 
-        mAdapter.addSectionHeaderItem("Valutazione Danno");
-        for(String s : getResources().getStringArray(R.array.drawer_elaborations)){
-            mAdapter.addItem(s);
-        }
+        // Grafo Stradale
+        mAdapter.addSeparatorItem();
+        mAdapter.addItem(getResources().getStringArray(R.array.drawer_layers)[0]);
 
+        mAdapter.addSeparatorItem();
         for(String s : getResources().getStringArray(R.array.drawer_credits)){
-            mAdapter.addSectionHeaderItem(s);
+            mAdapter.addItem(s);
         }
 
         mDrawerListView.setAdapter(mAdapter);

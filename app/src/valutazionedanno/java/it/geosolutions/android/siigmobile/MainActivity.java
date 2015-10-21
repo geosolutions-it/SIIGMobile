@@ -890,7 +890,7 @@ public class MainActivity extends MapActivityBase
             return;
         }
 
-        if(position == 17){ // valutazione danno
+        if(position == 1){ // valutazione danno
 
             // creates a mapInfoControl which is not tied to an imageview but "invisible"
             invisibleLocationAcquireControl = FixedShapeMapInfoControl.createOnePointControl(
@@ -918,45 +918,45 @@ public class MainActivity extends MapActivityBase
             invisibleLocationAcquireControl.setEnabled(true);
 
 
-        }else if(position == 18){ // carica elaborazione
+        }else if(position == 2){ // carica elaborazione
 
             Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
             startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
 
-        }else if(position == 19){ // Credits
+        }else if(position == 23){ // Credits
 
             Intent creditsActivity = new Intent(this, CreditsActivity.class);
             startActivity(creditsActivity);
             //push from bottom to top
             overridePendingTransition(R.anim.in_from_down, 0);
 
-        }else if(position == 0){ //WMS Layer
+        }else if(position == 21){ //WMS Layer
             // Update Title
-            mTitle = getResources().getStringArray(R.array.drawer_items)[position];
+            mTitle = getResources().getStringArray(R.array.drawer_items)[0];
 
-            currentStyle = position;
+            currentStyle = 0;
             //reload, if an elaboration arrived center on it
             if(elaborationResult == null){
                 loadDBLayers(null);
             } else {
                 loadDBLayers(elaborationResult.getResultTableName());
             }
-        }else if((position >= 2 && position <= 7)){ //WMS Layer
+        }else if((position >= 5 && position <= 10)){ //WMS Layer
             // Update Title
-            mTitle = getResources().getStringArray(R.array.drawer_items)[position - 1];
+            mTitle = getResources().getStringArray(R.array.drawer_items)[position - 4];
 
-            currentStyle = position -1;
+            currentStyle = position - 4;
             //reload, if an elaboration arrived center on it
             if(elaborationResult == null){
                 loadDBLayers(null);
             } else {
                 loadDBLayers(elaborationResult.getResultTableName());
             }
-        }else if((position >= 9 && position <= 15) ){ //WMS Layer
+        }else if((position >= 13 && position <= 19) ){ //WMS Layer
             // Update Title
-            mTitle = getResources().getStringArray(R.array.drawer_items)[position - 2];
+            mTitle = getResources().getStringArray(R.array.drawer_items)[position - 6];
 
-            currentStyle = position - 2;
+            currentStyle = position - 6;
             //reload, if an elaboration arrived center on it
             if(elaborationResult == null){
                 loadDBLayers(null);

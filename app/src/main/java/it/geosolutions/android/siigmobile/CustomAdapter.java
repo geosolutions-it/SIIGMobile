@@ -17,10 +17,12 @@ import java.util.TreeSet;
 class CustomAdapter extends BaseAdapter {
 
     private static final int TYPE_ITEM = 0;
-    private static final int TYPE_SEPARATOR = 1;
+    private static final int TYPE_HEADER = 1;
+    private static final int TYPE_SEPARATOR = 2;
 
     private ArrayList<String> mData = new ArrayList<String>();
     private TreeSet<Integer> sectionHeader = new TreeSet<Integer>();
+    private TreeSet<Integer> sectionSeparator = new TreeSet<Integer>();
 
     private LayoutInflater mInflater;
 
@@ -40,14 +42,21 @@ class CustomAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void addSeparatorItem() {
+        mData.add("");
+        sectionSeparator.add(mData.size() - 1);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position) {
-        return sectionHeader.contains(position) ? TYPE_SEPARATOR : TYPE_ITEM;
+        return sectionHeader.contains(position) ? TYPE_HEADER :
+                (sectionSeparator.contains(position) ? TYPE_SEPARATOR : TYPE_ITEM);
     }
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -76,22 +85,29 @@ class CustomAdapter extends BaseAdapter {
                     convertView = mInflater.inflate(R.layout.drawer_layout_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.label);
                     break;
-                case TYPE_SEPARATOR:
+                case TYPE_HEADER:
                     convertView = mInflater.inflate(R.layout.drawer_layout_sectionheader, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textSeparator);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textHeader);
+                    break;
+                case TYPE_SEPARATOR:
+                    convertView = mInflater.inflate(R.layout.drawer_layout_separator, null);
+                    holder.separatorView = convertView.findViewById(R.id.separatorView);
                     break;
             }
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.textView.setText(mData.get(position));
+        if(holder.textView != null) {
+            holder.textView.setText(mData.get(position));
+        }
 
         return convertView;
     }
 
     public static class ViewHolder {
         public TextView textView;
+        public View separatorView;
     }
 
 }
