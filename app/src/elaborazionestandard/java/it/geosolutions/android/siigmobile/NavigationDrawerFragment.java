@@ -114,17 +114,20 @@ public class NavigationDrawerFragment extends Fragment {
 //                ));
         CustomAdapter mAdapter = new CustomAdapter(getActivity());
 
-        mAdapter.addSectionHeaderItem("Livelli");
-        for(String s : getResources().getStringArray(R.array.drawer_layers)){
-            mAdapter.addItem(s);
-        }
         mAdapter.addSectionHeaderItem("Elaborazione Standard");
         for(String s : getResources().getStringArray(R.array.drawer_elaborations)){
             mAdapter.addItem(s);
         }
 
+        mAdapter.addSeparatorItem();
+        mAdapter.addSectionHeaderItem("Livelli");
+        for(String s : getResources().getStringArray(R.array.drawer_layers)){
+            mAdapter.addItem(s);
+        }
+
+        mAdapter.addSeparatorItem();
         for(String s : getResources().getStringArray(R.array.drawer_credits)){
-            mAdapter.addSectionHeaderItem(s);
+            mAdapter.addItem(s);
         }
 
         mDrawerListView.setAdapter(mAdapter);

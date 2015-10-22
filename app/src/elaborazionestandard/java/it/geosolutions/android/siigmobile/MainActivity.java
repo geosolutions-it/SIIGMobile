@@ -817,29 +817,30 @@ public class MainActivity extends MapActivityBase
         }
 
         switch (position) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
+
             case 5:
-                currentStyle = position - 1;
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                currentStyle = position - 5;
                 //reload, if an elaboration arrived center on it
                 if(elaborationResult == null){
                     loadDBLayers(null);
 
-                }else if(position == 5){
+                }else if(position == 9){
                     loadDBLayers(elaborationResult.getStreetTableName());
                 }else {
                     loadDBLayers(elaborationResult.getRiskTableName());
                 }
                 // Update Title
                 if(elaborationResult == null) {
-                    mTitle = getResources().getStringArray(R.array.drawer_items)[position -1];
+                    mTitle = getResources().getStringArray(R.array.drawer_items)[position -5];
                 }else{
                     mTitle = elaborationResult.getUserEditedName();
                 }
                 break;
-            case 7:
+            case 1:
 
                 if (mapView == null || mapView.getMapViewPosition() == null) {
                     Snackbar
@@ -855,18 +856,18 @@ public class MainActivity extends MapActivityBase
                 showEditElaborationTitleAndDescriptionDialog(bb, isPolygonRequest);
 
                 break;
-            case 8:
+            case 2:
                 Intent resultsIntent = new Intent(this, LoadResultsActivity.class);
                 startActivityForResult(resultsIntent, RESULT_REQUEST_CODE);
                 break;
-            case 9:
+            case 11:
                 Intent detailsActivity = new Intent(this, InfoDisplayActivity.class);
                 detailsActivity.putExtra(InfoDisplayActivity.EXTRA_TEXT_INDEX, currentStyle);
                 startActivity(detailsActivity);
                 //push from bottom to top
                 overridePendingTransition(R.anim.in_from_down, 0);
                 break;
-            case 10:
+            case 12:
                 Intent creditsActivity = new Intent(this, CreditsActivity.class);
                 startActivity(creditsActivity);
                 //push from bottom to top
