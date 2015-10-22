@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DESTINATION</string>
+    <string name="app_name">PTA-DESTINATION</string>
     <string name="siig_risk_form_title">Calcolo Elaborazione Standard</string>
     <string name="action_map">Mappa</string>
     <string name="action_search">Ricerca</string>
@@ -78,7 +78,6 @@
     <string name="wfs_no_data">>Nessun dato disponibile per il layer selezionato.</string>
 
     <string name="siig_credits_page_title">Credits</string>
-    <string name="siig_credits_page_text">Credits</string>
     <string name="getfeatureinfo_title">Informazioni sulla selezione</string>
 
 </resources>

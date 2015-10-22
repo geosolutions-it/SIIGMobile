@@ -31,7 +31,7 @@ public class CreditsActivity extends AppCompatActivity {
 
         // Se HTML formatted text in the page
         WebView webView = (WebView) findViewById(R.id.siig_info_page_text);
-        webView.loadDataWithBaseURL(null, getString(R.string.siig_credits_page_text), "text/html", "utf-8", null);
+        webView.loadDataWithBaseURL("file:///android_asset/", getString(R.string.siig_credits_page_text), "text/html", "utf-8", null);
     }
 
     /**

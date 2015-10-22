@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">DESTINATION</string>
-    <string name="app_title" translatable="false">Destination</string>
+    <string name="app_name">PTA-DESTINATION</string>
+    <string name="app_title" translatable="false">PTA-Destination</string>
     <string name="navigation_drawer_open">Open Menu</string>
     <string name="navigation_drawer_close">Close Menu</string>
 
@@ -71,7 +71,41 @@
     </string>
 
     <string name="siig_credits_page_title">Credits</string>
-    <string name="siig_credits_page_text">Credits</string>
+    <string translatable="false" name="siig_credits_page_text">
+        <![CDATA[
+<p><img src="logo_PTA_DESTINATION.jpg" style="height:93px; width:93px" /><img src="logo_destination.jpg" style="height:93px; width:227px" /></p>
+
+<p><strong>La APP nasce all&rsquo;interno del progetto PTA-DESTINATION - Conoscere il trasporto di merci pericolose come strumento di tutela del territorio&nbsp;</strong><br />
+Il progetto ha &nbsp;definito una metodologia di analisi di rischio associato al trasporto merci pericolose attraverso lo sviluppo di un sistema informativo &nbsp;di condivisione dei dati ambientali, territoriali e tecnici sul trasporto di merci pericolose su strada (TMP).</p>
+
+<p>&nbsp;</p>
+
+<p><img src="logo_interreg.jpg" style="height:94px; width:94px" /></p>
+
+<p>Progetto strategico Programma Operativo di cooperazione Transfrontaliera IT-CH 2007-2013 -Tavolo Ambiente</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Territorio coinvolto</strong></p>
+
+<p>Italia &ndash; Regioni del Nord Ovest e Provincia di Bolzano<br />
+Svizzera - Canton Ticino</p>
+
+<p><strong>Partner</strong></p>
+
+<p><img src="logo_regione_piemonte.jpg" style="height:39px; width:124px" />&nbsp;Regione Piemonte - Dir. Ambiente (capofila), Dir. Trasporti, Dir. OO.PP.</p>
+
+<p>&nbsp;</p>
+
+<p><img src="logo_regione_lombardia.gif" style="height:58px; width:114px" />&nbsp;&nbsp; Regione Lombardia - D.G.Ambiente, Energia e Reti; D.G. Protezione Civile</p>
+
+<p><img src="bolzano.jpg" style="height:59px; width:119px" />&nbsp; Provincia Autonoma di Bolzano - Ripartizione Protezione antincendi e civile</p>
+
+<p><img src="regione-vda-nuovo_345_l.jpg" style="height:80px; width:81px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;Regione Autonoma Valle d&#39;Aosta - Dir. servizi antincendio e di soccorso</p>
+
+<p><img src="2bdf565.png" style="height:48px; width:78px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Canton Ticino - Dir. Ambiente</p>
+    ]]>
+    </string>
 
 
     <string name="val_coordinate">Coordinate</string>
