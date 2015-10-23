@@ -225,7 +225,7 @@ public class MainActivity extends MapActivityBase
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        mTitle = getString(R.string.app_title);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setup(

@@ -114,7 +114,7 @@ public class NavigationDrawerFragment extends Fragment {
 //                ));
         CustomAdapter mAdapter = new CustomAdapter(getActivity());
 
-        mAdapter.addSectionHeaderItem("Valutazione Danno");
+        mAdapter.addSectionHeaderItem("Valutazione del Danno");
         for (String s : getResources().getStringArray(R.array.drawer_elaborations)){
             mAdapter.addItem(s);
         }
