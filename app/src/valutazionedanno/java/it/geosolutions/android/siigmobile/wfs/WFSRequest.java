@@ -50,10 +50,11 @@ public class WFSRequest {
      * @param layerName the layer to query
      * @param center the position of the center of the query
      * @param radius the radius of meter of the query
+     * @param shibCookie shibCookie to identify
      * @param auth the auth token to use
      * @param feedback the feedback to receive the result or a error message
      */
-    public static void getWFS(final String layerName,final GeoPoint center, final int radius, final String auth, final WFSRequestFeedback feedback)
+    public static void getWFS(final String layerName,final GeoPoint center, final int radius, final String shibCookie, final String auth, final WFSRequestFeedback feedback)
     {
 
         Gson gson = new GsonBuilder()
@@ -67,6 +68,9 @@ public class WFSRequest {
                     @Override
                     public void intercept(RequestFacade request) {
                         request.addHeader("Authorization", auth);
+                        if(shibCookie != null) {
+                            request.addHeader(Config.SHIBB_COOKIE_NAME, shibCookie);
+                        }
                     }
                 })
                 .setConverter(new GsonConverter(gson))

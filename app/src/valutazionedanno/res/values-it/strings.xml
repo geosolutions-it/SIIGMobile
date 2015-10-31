@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Danno</string>
+
+    <string name="login_account">Account</string>
+    <string name="login_select_idp">Selezionare un identity provider</string>
+    <string name="login_password">Password</string>
+    <string name="login_check_to_save">Attivare per salvare la password</string>
+    <string name="login_not_online">Controlla la connessione e riprova.</string>
+    <string name="login_progress_signing_in">Accesso in corso</string>
+    <string name="login_error_invalid_password">Questa password é troppo corta</string>
+    <string name="login_error_incorrect_password">Questa password non é corretta</string>
+    <string name="login_error_field_required">Questo campo è obbligatorio</string>
+    <string name="login_error_generic">Errore effettuando il login : </string>
+    <string name="login_success">Login effettuato !</string>
+    <string name="login_login">Accedere</string>
+    <string name="login_cancel">Chuidere</string>
+    <string name="login_try_again">Riprova</string>
+    <string name="login_failed_title">Login fallito</string>
+    <string name="login_error_assertion">Errore affermando l\'autenticazione, riprova controllando le credenziali ed / o il fornitore del servizio</string>
+    <string name="login_error_credentials">Credenziali invalidi, si prega di controllare e riprovare</string>
+    <string name="login_error_noredirect">Non ha ricevuto un url per autenticare</string>
+    <string name="login_error_unexpected_status">Errore durante la richiesta del contenuto</string>
+
+    <string name="logout_logged_in_as">Hai effettuato l\'accesso come :</string>
+    <string name="logout_logged_out">Logout effettuato con successo!</string>
+    <string name="logout_really">Vuoi veramente effettuare il Logout ?</string>
+    <string name="logout_logout">Logout</string>
 </resources>

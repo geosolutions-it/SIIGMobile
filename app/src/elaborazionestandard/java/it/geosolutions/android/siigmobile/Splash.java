@@ -22,7 +22,8 @@ public class Splash extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(5000);
+                    final int sleep = BuildConfig.DEBUG ? 500 : 5000;
+                    Thread.sleep(sleep);
                 } catch (InterruptedException e) {
                     if(BuildConfig.DEBUG){
                         Log.e(this.getClass().getSimpleName(), "Splash screen interrupted", e);

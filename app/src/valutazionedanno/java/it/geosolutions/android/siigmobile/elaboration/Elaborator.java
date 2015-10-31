@@ -2,6 +2,7 @@ package it.geosolutions.android.siigmobile.elaboration;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 
@@ -126,9 +127,11 @@ public abstract class Elaborator {
             return;
         }
 
+        final String shibCookie = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Config.PREFS_SHIBB_COOKIE,null);
+
         //everything prepared, show progress, disable controls
 
-        SIIGRetrofitClient.postWPS(query, Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
+        SIIGRetrofitClient.postWPS(query, shibCookie, Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
             @Override
             public void success(CRSFeatureCollection result) {
                 if (BuildConfig.DEBUG) {

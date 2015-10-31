@@ -2,6 +2,7 @@ package it.geosolutions.android.siigmobile;
 
 import android.content.Context;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.test.ActivityUnitTestCase;
 import android.util.Log;
 import android.util.Pair;
@@ -101,7 +102,9 @@ public class SpatialiteLayerLabelRenderingTest extends ActivityUnitTestCase<Comp
 
         final String query  = request.createWPSCallFromText(getInstrumentation().getTargetContext()); //this adds additional parameters
 
-        SIIGRetrofitClient.postWPS(query, Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
+        final String shibCookie = PreferenceManager.getDefaultSharedPreferences(context).getString(Config.PREFS_SHIBB_COOKIE, null);
+
+        SIIGRetrofitClient.postWPS(query,shibCookie, Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
             @Override
             public void success(CRSFeatureCollection result) {
 
