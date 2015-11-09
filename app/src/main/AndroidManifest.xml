@@ -11,28 +11,31 @@
         tools:replace="icon, label" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
+        </activity>
+        <activity android:name="it.geosolutions.android.map.MapsActivity" />
+        <activity
+            android:name=".InfoDisplayActivity"
+            android:label="@string/siig_info_page_title"
+            android:theme="@style/AppTheme.Translucent" >
+        </activity>
+        <activity
+            android:name=".CreditsActivity"
+            android:label="@string/siig_credits_page_title"
+            android:theme="@style/AppTheme.Translucent" >
+        </activity>
+        <activity
+            android:name=".LoadResultsActivity"
+            android:label="@string/title_activity_results" />
+        <activity
+            android:name=".Splash"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="it.geosolutions.android.map.MapsActivity" />
-
-        <activity
-            android:name=".InfoDisplayActivity"
-            android:label="@string/siig_info_page_title"
-            android:theme="@style/AppTheme.Translucent">
-        </activity>
-        <activity
-            android:name=".CreditsActivity"
-            android:label="@string/siig_credits_page_title"
-            android:theme="@style/AppTheme.Translucent">
-        </activity>
-        <activity android:name=".LoadResultsActivity"
-                  android:label="@string/title_activity_results"/>
-
     </application>
 
 </manifest>
