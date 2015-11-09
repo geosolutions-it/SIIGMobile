@@ -12,6 +12,7 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import it.geosolutions.android.map.BuildConfig;
@@ -47,8 +48,254 @@ public abstract class Elaborator {
     private Context mContext;
     private boolean cancelled = false;
 
+    HashMap <Integer, HashMap <Integer, HashMap<String, Integer[]>>> rdata = new HashMap <Integer,HashMap<Integer, HashMap<String, Integer[]>>>();
+
     public Elaborator(final Context pContext){
+
         this.mContext = pContext;
+
+        Integer [] hnh = {0,0};
+        HashMap <Integer, HashMap<String, Integer[]>> newacc = new HashMap <Integer, HashMap<String, Integer[]>>();
+        HashMap<String, Integer[]> newser = new HashMap <String, Integer[]>();
+
+        //Sost: 1 Acc: 1 Ser:L -> 15 , 10
+        hnh[0] = 15 ; hnh[1] = 10 ;
+        newser.put("L" , hnh);
+        //Sost: 1 Acc: 1 Ser:G -> 35 , 15
+        hnh[0] = 35 ; hnh[1] = 15 ;
+        newser.put("G" , hnh);
+        newacc.put(1 , newser);
+        rdata.put( 1 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 2 Acc: 12 Ser:L -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 2 Acc: 12 Ser:G -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("G" , hnh);
+        newacc.put(12 , newser);
+        rdata.put( 2 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 3 Acc: 13 Ser:L -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 3 Acc: 13 Ser:G -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("G" , hnh);
+        newacc.put(13 , newser);
+        rdata.put( 3 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 4 Acc: 2 Ser:L -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 4 Acc: 2 Ser:G -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("G" , hnh);
+        newacc.put(2 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 4 Acc: 10 Ser:L -> 100 , 5
+        hnh[0] = 100 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 4 Acc: 10 Ser:G -> 180 , 10
+        hnh[0] = 180 ; hnh[1] = 10 ;
+        newser.put("G" , hnh);
+        newacc.put(10 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 4 Acc: 14 Ser:L -> 0 , 10
+        hnh[0] = 0 ; hnh[1] = 10 ;
+        newser.put("L" , hnh);
+        //Sost: 4 Acc: 14 Ser:G -> 0 , 25
+        hnh[0] = 0 ; hnh[1] = 25 ;
+        newser.put("G" , hnh);
+        newacc.put(14 , newser);
+        rdata.put( 4 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 5 Acc: 3 Ser:L -> 60 , 45
+        hnh[0] = 60 ; hnh[1] = 45 ;
+        newser.put("L" , hnh);
+        //Sost: 5 Acc: 3 Ser:G -> 120 , 100
+        hnh[0] = 120 ; hnh[1] = 100 ;
+        newser.put("G" , hnh);
+        newacc.put(3 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 5 Acc: 4 Ser:L -> 60 , 25
+        hnh[0] = 60 ; hnh[1] = 25 ;
+        newser.put("L" , hnh);
+        //Sost: 5 Acc: 4 Ser:G -> 120 , 60
+        hnh[0] = 120 ; hnh[1] = 60 ;
+        newser.put("G" , hnh);
+        newacc.put(4 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 5 Acc: 5 Ser:L -> 180 , 35
+        hnh[0] = 180 ; hnh[1] = 35 ;
+        newser.put("L" , hnh);
+        //Sost: 5 Acc: 5 Ser:G -> 400 , 60
+        hnh[0] = 400 ; hnh[1] = 60 ;
+        newser.put("G" , hnh);
+        newacc.put(5 , newser);
+        rdata.put( 5 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 6 Acc: 3 Ser:L -> 60 , 45
+        hnh[0] = 60 ; hnh[1] = 45 ;
+        newser.put("L" , hnh);
+        //Sost: 6 Acc: 3 Ser:G -> 140 , 100
+        hnh[0] = 140 ; hnh[1] = 100 ;
+        newser.put("G" , hnh);
+        newacc.put(3 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 6 Acc: 4 Ser:L -> 60 , 25
+        hnh[0] = 60 ; hnh[1] = 25 ;
+        newser.put("L" , hnh);
+        //Sost: 6 Acc: 4 Ser:G -> 120 , 60
+        hnh[0] = 120 ; hnh[1] = 60 ;
+        newser.put("G" , hnh);
+        newacc.put(4 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 6 Acc: 5 Ser:L -> 180 , 45
+        hnh[0] = 180 ; hnh[1] = 45 ;
+        newser.put("L" , hnh);
+        //Sost: 6 Acc: 5 Ser:G -> 400 , 80
+        hnh[0] = 400 ; hnh[1] = 80 ;
+        newser.put("G" , hnh);
+        newacc.put(5 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 6 Acc: 10 Ser:L -> 550 , 160
+        hnh[0] = 550 ; hnh[1] = 160 ;
+        newser.put("L" , hnh);
+        //Sost: 6 Acc: 10 Ser:G -> 1060 , 300
+        hnh[0] = 1060 ; hnh[1] = 300 ;
+        newser.put("G" , hnh);
+        newacc.put(10 , newser);
+        rdata.put( 6 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 7 Acc: 12 Ser:L -> 80 , 45
+        hnh[0] = 80 ; hnh[1] = 45 ;
+        newser.put("L" , hnh);
+        //Sost: 7 Acc: 12 Ser:G -> 160 , 80
+        hnh[0] = 160 ; hnh[1] = 80 ;
+        newser.put("G" , hnh);
+        newacc.put(12 , newser);
+        rdata.put( 7 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 8 Acc: 13 Ser:L -> 25 , 10
+        hnh[0] = 25 ; hnh[1] = 10 ;
+        newser.put("L" , hnh);
+        //Sost: 8 Acc: 13 Ser:G -> 35 , 15
+        hnh[0] = 35 ; hnh[1] = 15 ;
+        newser.put("G" , hnh);
+        newacc.put(13 , newser);
+        rdata.put( 8 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 9 Acc: 6 Ser:L -> 60 , 25
+        hnh[0] = 60 ; hnh[1] = 25 ;
+        newser.put("L" , hnh);
+        //Sost: 9 Acc: 6 Ser:G -> 180 , 100
+        hnh[0] = 180 ; hnh[1] = 100 ;
+        newser.put("G" , hnh);
+        newacc.put(6 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 9 Acc: 14 Ser:L -> 0 , 10
+        hnh[0] = 0 ; hnh[1] = 10 ;
+        newser.put("L" , hnh);
+        //Sost: 9 Acc: 14 Ser:G -> 0 , 25
+        hnh[0] = 0 ; hnh[1] = 25 ;
+        newser.put("G" , hnh);
+        newacc.put(14 , newser);
+        rdata.put( 9 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 10 Acc: 8 Ser:L -> 60 , 35
+        hnh[0] = 60 ; hnh[1] = 35 ;
+        newser.put("L" , hnh);
+        //Sost: 10 Acc: 8 Ser:G -> 180 , 100
+        hnh[0] = 180 ; hnh[1] = 100 ;
+        newser.put("G" , hnh);
+        newacc.put(8 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 10 Acc: 9 Ser:L -> 60 , 45
+        hnh[0] = 60 ; hnh[1] = 45 ;
+        newser.put("L" , hnh);
+        //Sost: 10 Acc: 9 Ser:G -> 120 , 80
+        hnh[0] = 120 ; hnh[1] = 80 ;
+        newser.put("G" , hnh);
+        newacc.put(9 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 10 Acc: 14 Ser:L -> 0 , 10
+        hnh[0] = 0 ; hnh[1] = 10 ;
+        newser.put("L" , hnh);
+        //Sost: 10 Acc: 14 Ser:G -> 0 , 25
+        hnh[0] = 0 ; hnh[1] = 25 ;
+        newser.put("G" , hnh);
+        newacc.put(14 , newser);
+        rdata.put( 10 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 11 Acc: 8 Ser:L -> 25 , 15
+        hnh[0] = 25 ; hnh[1] = 15 ;
+        newser.put("L" , hnh);
+        //Sost: 11 Acc: 8 Ser:G -> 80 , 35
+        hnh[0] = 80 ; hnh[1] = 35 ;
+        newser.put("G" , hnh);
+        newacc.put(8 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 11 Acc: 9 Ser:L -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 11 Acc: 9 Ser:G -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("G" , hnh);
+        newacc.put(9 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 11 Acc: 11 Ser:L -> 10 , 5
+        hnh[0] = 10 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 11 Acc: 11 Ser:G -> 35 , 5
+        hnh[0] = 35 ; hnh[1] = 5 ;
+        newser.put("G" , hnh);
+        newacc.put(11 , newser);
+        rdata.put( 11 , newacc );
+        newacc = new HashMap <Integer, HashMap <String, Integer[]>>();
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 12 Acc: 6 Ser:L -> 35 , 15
+        hnh[0] = 35 ; hnh[1] = 15 ;
+        newser.put("L" , hnh);
+        //Sost: 12 Acc: 6 Ser:G -> 100 , 60
+        hnh[0] = 100 ; hnh[1] = 60 ;
+        newser.put("G" , hnh);
+        newacc.put(6 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 12 Acc: 7 Ser:L -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 12 Acc: 7 Ser:G -> 5 , 5
+        hnh[0] = 5 ; hnh[1] = 5 ;
+        newser.put("G" , hnh);
+        newacc.put(7 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 12 Acc: 11 Ser:L -> 35 , 5
+        hnh[0] = 35 ; hnh[1] = 5 ;
+        newser.put("L" , hnh);
+        //Sost: 12 Acc: 11 Ser:G -> 160 , 5
+        hnh[0] = 160 ; hnh[1] = 5 ;
+        newser.put("G" , hnh);
+        newacc.put(11 , newser);
+        newser = new HashMap <String, Integer[]>();
+        //Sost: 12 Acc: 14 Ser:L -> 0 , 10
+        hnh[0] = 0 ; hnh[1] = 10 ;
+        newser.put("L" , hnh);
+        //Sost: 12 Acc: 14 Ser:G -> 0 , 25
+        hnh[0] = 0 ; hnh[1] = 25 ;
+        newser.put("G" , hnh);
+        newacc.put(14 , newser);
+        rdata.put( 12 , newacc );
     }
 
 
@@ -154,6 +401,14 @@ public abstract class Elaborator {
 
     /**
      * calculates the radius according to the given params
+     *
+     * scenarioID -> 0 = all
+     *
+     * accidentID -> 0 = all
+     *
+     * entityID -> 42 = all
+     *              0 = lieve
+     *              1 = grave
      * @param scenarioID selected scenarion
      * @param accidentID selected accident
      * @param entityID selected entity
@@ -164,8 +419,10 @@ public abstract class Elaborator {
         final int min = 100;
         final int max = 1500;
 
+        Log.d(TAG, "scenarioID: " + scenarioID + " accidentID: " + accidentID +" entityID: "+ entityID);
+        // TODO mapping Scenario -> Sostanza
 
-        //TODO implement
+        // TODO buffer computation
 
         return new Random().nextInt((max - min) + 1) + min;
     }
