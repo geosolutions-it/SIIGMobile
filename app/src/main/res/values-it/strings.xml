@@ -50,7 +50,7 @@
     <string name="result_empty">Il risultato dell\'elaborazione è vuoto, riprovare con un\'altra area.</string>
     <string name="snackbar_missing_map_text">Area non rilevata</string>
     <string name="success_saving">Elaborazione %1$s per %2$s calcolata e salvata con successo</string>
-    <string name="error_saving">Errore salvando elaborazione %s </string>
+    <string name="error_saving">Errore durante il salvataggio dell\'elaborazione %s</string>
     <string name="delete_results_message">Vuoi eliminare questi risultati ?</string>
     <string name="formula_street">PIS</string>
     <string name="formula_risk">Rischio</string>
@@ -59,14 +59,14 @@
     <string name="val_coordinate">Coordinata</string>
     <string name="val_name">Nome</string>
     <string name="val_method">Metodo</string>
-    <string name="val_buffer_width">Ampiezza Buffer </string>
-    <string name="val_buffer_width_hint">Inserisci l\'ampiezza buffer</string>
+    <string name="val_buffer_width">Ampiezza Raggio</string>
+    <string name="val_buffer_width_hint">Inserisci l\'ampiezza del raggio</string>
     <string name="val_single_substance">Sostanza Singola</string>
     <string name="val_scenario">Classi di pericolo</string>
     <string name="val_accident">Incidente</string>
     <string name="val_entity">Entità</string>
     <string name="val_enter_description_hint">Inserisci una descrizione</string>
-    <string name="enter_buffer_width">Please enter a buffer width</string>
+    <string name="enter_buffer_width">Inserire il raggio</string>
     <string name="accident_select">Selezione un incidente per favore</string>
     <string name="touch_point">Tocca il centro per la valutazione danno</string>
     <string name="position_acquirement_cancelled">Valutazione Danno Annullata</string>

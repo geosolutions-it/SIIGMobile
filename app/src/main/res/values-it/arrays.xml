@@ -32,8 +32,8 @@
     </string-array>
 
     <string-array name="val_method_options">
-        <item>Buffer</item>
-        <item>Seleziona Scenario</item>
+        <item>Cerchio con raggio</item>
+        <item>Cerchio con sostanza/scenario</item>
     </string-array>
 
     <string-array name="val_scenarios_options">
