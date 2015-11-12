@@ -139,6 +139,9 @@ public class NavigationDrawerFragment extends Fragment {
             mAdapter.addItem(s);
         }
 
+        //logout
+        mAdapter.addItem(getString(R.string.login_account));
+
         mDrawerListView.setAdapter(mAdapter);
 
         //mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);

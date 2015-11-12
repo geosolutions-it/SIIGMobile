@@ -83,6 +83,7 @@ import it.geosolutions.android.siigmobile.geocoding.GeoCodingTask;
 import it.geosolutions.android.siigmobile.geocoding.IGeoCoder;
 import it.geosolutions.android.siigmobile.geocoding.NominatimGeoCoder;
 import it.geosolutions.android.siigmobile.legend.LegendAdapter;
+import it.geosolutions.android.siigmobile.login.LoginActivity;
 import it.geosolutions.android.siigmobile.mapcontrol.FixedShapeMapInfoControl;
 import it.geosolutions.android.siigmobile.spatialite.DeleteUnsavedResultsTask;
 import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
@@ -963,6 +964,15 @@ public class MainActivity extends MapActivityBase
             } else {
                 loadDBLayers(elaborationResult.getResultTableName());
             }
+        }else if(position == 24){
+
+            //logout
+            final Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra(LoginActivity.PARAM_LOGOUT, true);
+            startActivity(intent);
+            finish();
+
         }
 
     }

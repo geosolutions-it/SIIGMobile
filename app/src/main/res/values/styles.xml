@@ -16,6 +16,12 @@
 
     </style>
 
+    <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
     <!-- https://philio.me/styling-the-searchview-with-appcompat-v21/ -->
 
     <style name="MSearchViewStyle" parent="Widget.AppCompat.Light.SearchView">

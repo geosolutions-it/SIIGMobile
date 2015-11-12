@@ -32,10 +32,11 @@ public class SIIGRetrofitClient {
      * This already runs in background / gives feedback in the main thread, but may last an notable amount of time
      *
      * @param wps the WPS request as String
-     * @param authToken token to identidy
+     * @param shibCookie shibCookie to identify
+     * @param authToken token to identify
      * @param feedback the feedback to receive the result or a error message
      */
-    public static void postWPS(final String wps, final String authToken, final WPSRequestFeedback feedback)
+    public static void postWPS(final String wps, final String shibCookie, final String authToken, final WPSRequestFeedback feedback)
     {
 
         Gson gson = new GsonBuilder()
@@ -47,7 +48,7 @@ public class SIIGRetrofitClient {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setConverter(new GsonConverter(gson))
                 .setEndpoint(ENDPOINT)
-                .setRequestInterceptor(new LoginRequestInterceptor(authToken))
+                .setRequestInterceptor(new LoginRequestInterceptor(authToken, shibCookie))
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
@@ -89,26 +90,18 @@ public class SIIGRetrofitClient {
 
     public static class LoginRequestInterceptor implements RequestInterceptor {
 
-        private String mUser;
-        private String mPass;
         private String mAuth;
+        private String mShibbCookie;
+
 
         /**
-         * constructor to use with user/pass
-         * @param pUser
-         * @param pPass
-         */
-        public LoginRequestInterceptor(final String pUser,final String pPass){
-            this.mUser = pUser;
-            this.mPass = pPass;
-        }
-
-        /**
-         * constructor to use with auth token
+         * constructor to use with auth token and shibCookie (can be null)
          * @param authToken
+         * @param shibbCookie
          */
-        public LoginRequestInterceptor(final String authToken){
+        public LoginRequestInterceptor(final String authToken, final String shibbCookie){
             this.mAuth = authToken;
+            this.mShibbCookie = shibbCookie;
         }
 
         @Override
@@ -116,21 +109,16 @@ public class SIIGRetrofitClient {
 
             requestFacade.addHeader("Accept", "application/json;");
 
-            if (mUser != null && mPass != null) {
-                final String authorizationValue = getB64Auth(mUser, mPass);
-                requestFacade.addHeader("Authorization", authorizationValue);
-            }else if(mAuth != null){
+            if(mAuth != null){
                 requestFacade.addHeader("Authorization", mAuth);
-            }else{
-                throw new IllegalArgumentException("no password or user available to intercept");
             }
         }
 
-        public static String getB64Auth( String login, String pass ) {
+        public void setAuthFromCredentials( String login, String pass ) {
 
             String source = login + ":" + pass;
 
-            return "Basic " + Base64.encodeToString(source.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+            mAuth = "Basic " + Base64.encodeToString(source.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 
         }
 

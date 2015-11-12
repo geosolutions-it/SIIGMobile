@@ -1,4 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Damage</string>
+    <string name="app_title">PTA-DESTINATION Damage</string>
+    <string name="login_account">Account</string>
+    <string name="login_select_idp">Select an identity provider</string>
+    <string name="login_password">Password</string>
+    <string name="login_check_to_save">Check to save password</string>
+    <string name="login_not_online">Internet connection needed, please go online!</string>
+    <string name="login_progress_signing_in">Signing in&#8230;</string>
+    <string name="login_error_invalid_password">This password is too short</string>
+    <string name="login_error_incorrect_password">This password is incorrect</string>
+    <string name="login_error_field_required">This field is required</string>
+    <string name="login_error_generic">Error logging in</string>
+    <string name="login_success">Success, you are logged in !</string>
+    <string name="login_login">Login</string>
+    <string name="login_cancel">Cancel</string>
+    <string name="login_try_again">Try again</string>
+    <string name="login_failed_title">Login failed</string>
+    <string name="login_error_assertion">Error asserting your authentication, please try again and or check your credentials and service / identity provider</string>
+    <string name="login_error_credentials">Invalid Credentials, please check and try again</string>
+    <string name="login_error_noredirect">did not receive an url to authenticate</string>
+    <string name="login_error_unexpected_status">Error requesting the content</string>
+
+    <string name="logout_logged_in_as">You are logged in as :</string>
+    <string name="logout_logged_out">You were successfully logged out !</string>
+    <string name="logout_really">Do you really want to logout ?</string>
+    <string name="logout_logout">Logout</string>
+
 </resources>

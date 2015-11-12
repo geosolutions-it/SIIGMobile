@@ -133,4 +133,10 @@ public class Config {
 
     public static byte WMS_BERSAGLI_HIGHLIGHT_MIN_ZOOM = 14;
 
+    public final static String SHIBB_COOKIE_NAME = "Shib-Session-ID";
+    public final static String PREFS_SHIBB_COOKIE = "SHIBB_COOKIE";
+
+    public final static String SP_CONTENT_ENDPOINT = "https://sp.testshib.org/testing/sample.jsp";
+    public final static String TEST_IDP_ENDPOINT = "https://idp.testshib.org";
+
 }
