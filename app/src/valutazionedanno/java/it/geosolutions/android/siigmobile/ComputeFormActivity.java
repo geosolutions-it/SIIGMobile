@@ -442,20 +442,17 @@ public class ComputeFormActivity extends AppCompatActivity
                     //bufferwidth
                     int bufferWidth = 0;
 
-                    if (calcMethodMode == ComputeFormActivity.CalcMethodMode.BUFFER) {
-                        final String bufferWidthString = bufferWidthEd.getText().toString();
-                        try {
-                            bufferWidth = Integer.parseInt(bufferWidthString);
-                        } catch (NumberFormatException e) {
-                            //the exception is handled by the next line "if (bufferWidth == 0) { ..."
-                        }
+                    final String bufferWidthString = bufferWidthEd.getText().toString();
+                    try {
+                        bufferWidth = Integer.parseInt(bufferWidthString);
+                    } catch (NumberFormatException e) {
+                        //the exception is handled by the next line "if (bufferWidth == 0) { ..."
+                    }
 
-                        if (bufferWidth == 0) {
-                            Toast.makeText(getActivity().getBaseContext(), R.string.enter_buffer_width, Toast.LENGTH_SHORT).show();
-                            bufferWidthEd.requestFocus();
-                            return;
-                        }
-
+                    if (bufferWidth == 0) {
+                        Toast.makeText(getActivity().getBaseContext(), R.string.enter_buffer_width, Toast.LENGTH_SHORT).show();
+                        bufferWidthEd.requestFocus();
+                        return;
                     }
 
                     final int accidentItem = accidentSpinner.getSelectedItemPosition();
