@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Danno</string>
-
+    <string name="app_title">PTA-DESTINATION Danno</string>
     <string name="login_account">Account</string>
     <string name="login_select_idp">Selezionare un identity provider</string>
     <string name="login_password">Password</string>
@@ -13,12 +13,12 @@
     <string name="login_error_field_required">Questo campo è obbligatorio</string>
     <string name="login_error_generic">Errore effettuando il login : </string>
     <string name="login_success">Login effettuato !</string>
-    <string name="login_login">Accedere</string>
-    <string name="login_cancel">Chuidere</string>
+    <string name="login_login">Login</string>
+    <string name="login_cancel">Annulla</string>
     <string name="login_try_again">Riprova</string>
     <string name="login_failed_title">Login fallito</string>
-    <string name="login_error_assertion">Errore affermando l\'autenticazione, riprova controllando le credenziali ed / o il fornitore del servizio</string>
-    <string name="login_error_credentials">Credenziali invalidi, si prega di controllare e riprovare</string>
+    <string name="login_error_assertion">Errore durante l\'autenticazione, riprova controllando le credenziali ed / o il fornitore del servizio</string>
+    <string name="login_error_credentials">Credenziali non valide, si prega di controllare e riprovare</string>
     <string name="login_error_noredirect">Non ha ricevuto un url per autenticare</string>
     <string name="login_error_unexpected_status">Errore durante la richiesta del contenuto</string>
 

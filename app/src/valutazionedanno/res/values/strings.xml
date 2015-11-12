@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Damage</string>
-
+    <string name="app_title">PTA-DESTINATION Damage</string>
     <string name="login_account">Account</string>
     <string name="login_select_idp">Select an identity provider</string>
     <string name="login_password">Password</string>
