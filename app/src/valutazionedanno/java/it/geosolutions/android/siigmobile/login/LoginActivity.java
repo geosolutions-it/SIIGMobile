@@ -164,9 +164,13 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        Bundle bundle = new Bundle();
-                        bundle.putInt(PREFS_IDP, LoginFragment.IdentityProvider.PIEMONTE.ordinal());
-                        getLoginFragment().setArguments(bundle);
+                        if(getLoginFragment().getArguments() != null){
+                            getLoginFragment().getArguments().putInt(PREFS_IDP, LoginFragment.IdentityProvider.PIEMONTE.ordinal());
+                        }else {
+                            Bundle bundle = new Bundle();
+                            bundle.putInt(PREFS_IDP, LoginFragment.IdentityProvider.PIEMONTE.ordinal());
+                            getLoginFragment().setArguments(bundle);
+                        }
 
                         getSupportFragmentManager()
                                 .beginTransaction()
