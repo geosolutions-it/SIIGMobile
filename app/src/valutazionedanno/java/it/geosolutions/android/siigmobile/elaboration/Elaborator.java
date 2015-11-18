@@ -2,10 +2,10 @@ package it.geosolutions.android.siigmobile.elaboration;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 
+import com.loopj.android.http.PersistentCookieStore;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
@@ -14,7 +14,6 @@ import org.mapsforge.core.model.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 import it.geosolutions.android.map.BuildConfig;
 import it.geosolutions.android.map.database.SpatialDataSourceManager;
@@ -127,11 +126,9 @@ public abstract class Elaborator {
             return;
         }
 
-        final String shibCookie = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Config.PREFS_SHIBB_COOKIE,null);
-
         //everything prepared, show progress, disable controls
 
-        SIIGRetrofitClient.postWPS(query, shibCookie, Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
+        SIIGRetrofitClient.postWPS(query, new PersistentCookieStore(mContext).getCookies(), Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
             @Override
             public void success(CRSFeatureCollection result) {
                 if (BuildConfig.DEBUG) {
