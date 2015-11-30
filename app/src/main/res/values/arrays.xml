@@ -90,6 +90,7 @@
         <item>materia altamente tossica, corrosiva, che reagisce pericolosamente con l\'acqua</item>
     </string-array>
 
+    <!-- NOTE: These values should not contain duplicates -->
     <string-array name="val_accidents_options">
         <item>Select one&#8230;</item>
         <item>VAPOURS RELEASE from REFRIGERATED TOXIC LIQUID </item>

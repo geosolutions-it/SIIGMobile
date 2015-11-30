@@ -329,7 +329,10 @@ public abstract class Elaborator {
         this.cancelled = true;
     }
 
-
+    /**
+     * Map the various scenario values with the correct values to be used in computations
+     * @return
+     */
     public static HashMap<Integer, Integer> getScenarioMapping(){
         if(scenarioMapping == null || scenarioMapping.isEmpty()){
 
@@ -419,6 +422,10 @@ public abstract class Elaborator {
         return scenarioMapping;
     }
 
+    /**
+     * Returns the Risk data to be used for computations and value filtering
+     * @return
+     */
     public static  HashMap <Integer,HashMap<Integer, HashMap<String, Integer[]>>> getRData(){
         if(rdata == null){
             rdata = new HashMap <Integer,HashMap<Integer, HashMap<String, Integer[]>>>();

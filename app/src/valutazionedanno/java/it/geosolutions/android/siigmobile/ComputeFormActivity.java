@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -62,10 +63,12 @@ public class ComputeFormActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compute_form);
 
+        // Setup Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.m_toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        toolbar.setTitle(R.string.title_activity_compute_form);
         // Set an OnMenuItemClickListener to handle menu item clicks
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -256,7 +259,71 @@ public class ComputeFormActivity extends AppCompatActivity
                 public void onNothingSelected(AdapterView<?> parent) { }
             };
 
-            scenarioSpinner.setOnItemSelectedListener(recalcRadiusListener);
+            //a listener to change the Accident spinner values based on the Scenario selection
+            final AdapterView.OnItemSelectedListener scenarioListener = new AdapterView.OnItemSelectedListener(){
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                    // Update the radius
+                    if(calcMethodMode == CalcMethodMode.BY_SUBSTANCE) {
+                        recalculateRadius();
+                    }
+
+                    final String  scenario = getActivity().getResources().getStringArray(R.array.scenario_ids)[position];
+                    int scenarioID = 0 ;
+                    try {
+                        scenarioID = Integer.parseInt(scenario);
+                    }catch(NumberFormatException nfe){
+                        Log.w(TAG, "invalid scenario parsed, setting to zero (all scenarios).");
+                    }
+
+                    // Create the adapter
+                    ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, android.R.id.text1);
+                    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    String[] accidentValuesStrings = getActivity().getResources().getStringArray(R.array.val_accidents_options);
+                    if (scenarioID == 0){
+                        spinnerAdapter.addAll(accidentValuesStrings);
+                        accidentSpinner.setAdapter(spinnerAdapter);
+                        spinnerAdapter.notifyDataSetChanged();
+                        return;
+                    }
+
+                    // Change the Accident available values
+                    Log.d(TAG, "scenarioID: " + scenarioID);
+                    Integer originalScenarioID = Elaborator.getScenarioMapping().get(scenarioID);
+
+                    String[] accidentIDStrings = getActivity().getResources().getStringArray(R.array.accident_ids);
+
+                    // Scenario
+                    for ( Integer scenId : Elaborator.getRData().keySet() ) {
+                        if (scenId.equals(originalScenarioID)) {
+                            if (Elaborator.getRData().get(scenId) != null) {
+
+                                //Accident
+                                for (Integer accID : Elaborator.getRData().get(scenId).keySet()) {
+                                    if (Elaborator.getRData().get(scenId).get(accID) != null) {
+                                        for(int i=0; i < accidentIDStrings.length; i++) {
+                                            if(accidentIDStrings[i] != null && accidentIDStrings[i].equals(accID.toString())) {
+                                                spinnerAdapter.add(accidentValuesStrings[i]);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    accidentSpinner.setAdapter(spinnerAdapter);
+                    spinnerAdapter.notifyDataSetChanged();
+
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) { }
+            };
+
+            scenarioSpinner.setOnItemSelectedListener(scenarioListener);
             entitySpinner.setOnItemSelectedListener(recalcRadiusListener);
 
             final AdapterView.OnItemSelectedListener activateComputeButtonListener = new AdapterView.OnItemSelectedListener(){
@@ -270,7 +337,7 @@ public class ComputeFormActivity extends AppCompatActivity
 
                             if (!TextUtils.isEmpty(titleEd.getText().toString()) &&
                                     !TextUtils.isEmpty(bufferWidthEd.getText().toString()) &&
-                                    accidentSpinner.getSelectedItemPosition() != 0) {
+                                    getAccidentItemID() != 0) {
                                 if (!computeButton.isEnabled()) {
                                     activateComputeButton();
                                 }
@@ -286,7 +353,7 @@ public class ComputeFormActivity extends AppCompatActivity
                             recalculateRadius();
 
                             if (!TextUtils.isEmpty(titleEd.getText().toString()) &&
-                                    accidentSpinner.getSelectedItemPosition() != 0) {
+                                    getAccidentItemID() != 0) {
                                 if (!computeButton.isEnabled()) {
                                     activateComputeButton();
                                 }
@@ -323,7 +390,7 @@ public class ComputeFormActivity extends AppCompatActivity
 
                             if(!TextUtils.isEmpty(titleEd.getText().toString()) &&
                                     !TextUtils.isEmpty(bufferWidthEd.getText().toString()) &&
-                                    accidentSpinner.getSelectedItemPosition() != 0){
+                                    getAccidentItemID() != 0){
                                 activateComputeButton();
                             }else{
                                 deactivateComputeButton();
@@ -339,7 +406,7 @@ public class ComputeFormActivity extends AppCompatActivity
                             recalculateRadius();
 
                             if(!TextUtils.isEmpty(titleEd.getText().toString()) &&
-                                    accidentSpinner.getSelectedItemPosition() != 0){
+                                    getAccidentItemID() != 0){
                                 activateComputeButton();
                             }else{
                                 deactivateComputeButton();
@@ -370,7 +437,7 @@ public class ComputeFormActivity extends AppCompatActivity
         private void recalculateRadius(){
 
             final int scenarioItem =  scenarioSpinner.getSelectedItemPosition();
-            final int accidentItem =  accidentSpinner.getSelectedItemPosition();
+            int accidentItem = getAccidentItemID();
             final int entityItem   =  entitySpinner.getSelectedItemPosition();
 
             final String  scenario = getActivity().getResources().getStringArray(R.array.scenario_ids)[scenarioItem];
@@ -395,6 +462,34 @@ public class ComputeFormActivity extends AppCompatActivity
             computeButton.setEnabled(false);
             computeButton.setOnClickListener(null);
 
+        }
+
+        /**
+         * Returns the real AccidentID selected
+         * @return
+         */
+        int getAccidentItemID() {
+            int accidentItem = 0;
+            String [] accident_options = getActivity().getResources().getStringArray(R.array.val_accidents_options);
+            if(accidentSpinner.getSelectedItem() != null){
+
+                String accidentItemValue = accidentSpinner.getSelectedItem().toString() ;
+
+                if(BuildConfig.DEBUG) {
+                    Log.d(TAG, "Position: " + accidentSpinner.getSelectedItemPosition());
+                    Log.d(TAG, "Value: " + accidentSpinner.getSelectedItem().toString());
+                }
+
+                for(int i = 0; i < accident_options.length; i++){
+                    if(accident_options[i] != null && accident_options[i].equalsIgnoreCase(accidentItemValue)){
+                        accidentItem = i;
+                        // found, stop searching
+                        break;
+                    }
+
+                }
+            }
+            return accidentItem;
         }
 
         /**
@@ -455,7 +550,7 @@ public class ComputeFormActivity extends AppCompatActivity
                         return;
                     }
 
-                    final int accidentItem = accidentSpinner.getSelectedItemPosition();
+                    int accidentItem = getAccidentItemID();
 
                     if (accidentItem == 0) {
                         //no accident selected
@@ -463,6 +558,7 @@ public class ComputeFormActivity extends AppCompatActivity
                         accidentSpinner.requestFocus();
                         return;
                     }
+
                     final int scenarioItem = scenarioSpinner.getSelectedItemPosition();
                     final int entityItem = entitySpinner.getSelectedItemPosition();
 
@@ -516,6 +612,7 @@ public class ComputeFormActivity extends AppCompatActivity
 
 
                 }
+
             });
 
         }
