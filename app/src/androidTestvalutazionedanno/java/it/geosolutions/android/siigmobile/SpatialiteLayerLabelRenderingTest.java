@@ -2,11 +2,11 @@ package it.geosolutions.android.siigmobile;
 
 import android.content.Context;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.test.ActivityUnitTestCase;
 import android.util.Log;
 import android.util.Pair;
 
+import com.loopj.android.http.PersistentCookieStore;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -33,7 +33,7 @@ import it.geosolutions.android.siigmobile.spatialite.SpatialiteUtils;
 import it.geosolutions.android.siigmobile.wps.CRSFeatureCollection;
 import it.geosolutions.android.siigmobile.wps.SIIGRetrofitClient;
 import it.geosolutions.android.siigmobile.wps.ValutazioneDannoWPSRequest;
-import jsqlite.*;
+import jsqlite.Database;
 
 /**
  * Created by Robert Oehler on 28.09.15.
@@ -100,11 +100,9 @@ public class SpatialiteLayerLabelRenderingTest extends ActivityUnitTestCase<Comp
                 accident,
                 entities);
 
-        final String query  = request.createWPSCallFromText(getInstrumentation().getTargetContext()); //this adds additional parameters
+        final String query  = request.createWPSCallFromText(context); //this adds additional parameters
 
-        final String shibCookie = PreferenceManager.getDefaultSharedPreferences(context).getString(Config.PREFS_SHIBB_COOKIE, null);
-
-        SIIGRetrofitClient.postWPS(query,shibCookie, Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
+        SIIGRetrofitClient.postWPS(query, new PersistentCookieStore(context).getCookies(), Config.DESTINATION_AUTHORIZATION, new SIIGRetrofitClient.WPSRequestFeedback() {
             @Override
             public void success(CRSFeatureCollection result) {
 

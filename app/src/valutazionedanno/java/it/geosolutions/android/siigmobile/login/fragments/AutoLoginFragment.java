@@ -22,8 +22,7 @@ import it.geosolutions.android.siigmobile.MainActivity;
 import it.geosolutions.android.siigmobile.R;
 import it.geosolutions.android.siigmobile.Util;
 import it.geosolutions.android.siigmobile.login.LoginActivity;
-import it.geosolutions.android.siigmobile.login.auth.AuthTask;
-import it.geosolutions.android.siigmobile.login.auth.ShibAuthResult;
+import it.geosolutions.android.siigmobile.login.AsyncShibbolethClient;
 
 /**
  * Created by Robert Oehler on 11.11.15.
@@ -127,50 +126,37 @@ public class AutoLoginFragment extends Fragment {
                 return;
             }
 
-            String cookie = getArguments().getString(Config.PREFS_SHIBB_COOKIE);
-            int idp = getArguments().getInt(LoginActivity.PREFS_IDP);
-            LoginFragment.IdentityProvider identityProvider = LoginFragment.IdentityProvider.values()[idp];
 
-            final AuthTask authTask = new AuthTask(getActivity().getBaseContext(), identityProvider, Config.SP_CONTENT_ENDPOINT) {
+            //TODO use production endpoints
+//            int idp = getArguments().getInt(LoginActivity.PREFS_IDP);
+//            LoginFragment.IdentityProvider identityProvider = LoginFragment.IdentityProvider.values()[idp];
+//            String productionIDP =  getEndPointAccordingToIdentityProvider(identityProvider);
 
+            final AsyncShibbolethClient shibbolethClient = new AsyncShibbolethClient(getActivity(), true);
+            shibbolethClient.authenticate(Config.SP_CONTENT_ENDPOINT, Config.TEST_IDP_ENDPOINT, user, pass, new AsyncShibbolethClient.AuthCallback() {
                 @Override
-                public void done(final ShibAuthResult result) {
+                public void authFailed(final String errorMessage, Throwable error) {
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    showProgress(false);
 
-                            if (result.isSuccess()) {
-
-                                Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show();
-
-                                getActivity().finish();
-                                startActivity(new Intent(getActivity(), MainActivity.class));
-
-                            } else {
-
-                                //error, could not autologin
-
-                                showProgress(false);
-
-                                if (result.hasError()) {
-                                    //error message available, show
-                                    Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_error_generic) + " : " + result.getErrorMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-
-                        }
-                    });
+                    Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_error_generic) + " : " + errorMessage, Toast.LENGTH_LONG).show();
 
 
                 }
-            };
-            if (cookie != null) {
-                authTask.setCookie(cookie);
-            }
-            //TODO remove on production and use the endpoint according to the selected idp ->authtask.getEndPointAccordingToIdentityProvider()
-            authTask.setIdpEndPoint(Config.TEST_IDP_ENDPOINT);
-            authTask.execute(user, pass);
+                @Override
+                public void accessGranted(){
+
+
+                    Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show();
+
+                    getActivity().finish();
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+
+                }
+
+
+            });
+
         }
     }
 

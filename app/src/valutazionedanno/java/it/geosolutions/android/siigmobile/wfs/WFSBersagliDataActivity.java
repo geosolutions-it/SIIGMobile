@@ -2,7 +2,6 @@ package it.geosolutions.android.siigmobile.wfs;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +16,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.loopj.android.http.PersistentCookieStore;
 
 import org.mapsforge.core.model.GeoPoint;
 
@@ -127,9 +128,7 @@ public class WFSBersagliDataActivity extends AppCompatActivity {
                         return;
                     }
 
-                    final String shibCookie = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString(Config.PREFS_SHIBB_COOKIE,null);
-
-                    WFSRequest.getWFS(layerName, p, radius, shibCookie, Config.DESTINATION_AUTHORIZATION, new WFSRequest.WFSRequestFeedback() {
+                    WFSRequest.getWFS(layerName, p, radius, new PersistentCookieStore(getBaseContext()).getCookies(), Config.DESTINATION_AUTHORIZATION, new WFSRequest.WFSRequestFeedback() {
                         @Override
                         public void success(CRSFeatureCollection result) {
 
