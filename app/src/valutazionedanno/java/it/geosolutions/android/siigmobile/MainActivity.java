@@ -689,7 +689,7 @@ public class MainActivity extends MapActivityBase
                 //TODO reconfigure for val danno results
                 if (l.getTitle().startsWith(Config.RESULT_PREFIX)) {
 
-                    ((SpatialiteLayer) l).setStyleFileName(Config.RESULT_STYLES[resultModeForRiskMode()]);
+                    ((SpatialiteLayer) l).setStyleFileName(Config.RESULT_STYLES[2]);
 
                     if (layerToCenter != null && l.getTitle().equals(layerToCenter)) {
 

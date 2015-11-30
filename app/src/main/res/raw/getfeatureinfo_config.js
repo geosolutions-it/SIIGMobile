@@ -160,6 +160,23 @@
       "locale":"it",
       "layers": [
          {
+           "name" : "grafo_stradale",
+           "properties" :
+             {
+               "nr_incidenti_it" : "N. Incidenti",
+               "flg_nr_incidenti_it":"Flag Incidenti",
+               "nr_corsie_it" : "N. Corsie",
+               "fl_nr_corsie_it":"Flag Corsie",
+               "lunghezza" : "Lunghezza",
+               "densita_veicolare_it":"Densità Veicolare",
+               "tipo_densita_veicolare_leggeri_pesanti_it" : "Tipo Densità Veicolare",
+               "velocita_media" : "Velocità Media",
+               "elenco_dissesti":"Elenco Dissesti",
+               "tipo_velocita_media_leggeri_pesanti_it" : "Tipo Velocità Media",
+               "partner_it" : "Partner"
+             }
+         },
+         {
            "name" : "v_geo_popolazione_residente_pl",
            "properties" :
              {
