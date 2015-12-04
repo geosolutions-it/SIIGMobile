@@ -133,7 +133,7 @@ public class Config {
 
     public static byte WMS_BERSAGLI_HIGHLIGHT_MIN_ZOOM = 14;
 
-    public final static String SP_CONTENT_ENDPOINT = "https://sp.testshib.org/testing/sample.jsp";
-    public final static String TEST_IDP_ENDPOINT = "https://idp.testshib.org";
+    public final static String SP_CONTENT_ENDPOINT = "http://destinationpa.csi.it/siig/";
+    public final static String TEST_IDP_ENDPOINT = "https://secure.ruparpiemonte.it/iamidp/Authn/X509/Login";
 
 }

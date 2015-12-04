@@ -1,5 +1,6 @@
 package it.geosolutions.android.siigmobile.login;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -14,7 +15,20 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory;
 import cz.msebera.android.httpclient.cookie.Cookie;
 import it.geosolutions.android.siigmobile.R;
 
@@ -41,8 +55,7 @@ import it.geosolutions.android.siigmobile.R;
  * 6. Request again the content as in step 1. The SP should now return the content and/or a cookie for further use
  *
  */
-
-public  class AsyncShibbolethClient {
+public class AsyncShibbolethClient {
     
     private final static String TAG = "AShibClient";
 
@@ -67,6 +80,22 @@ public  class AsyncShibbolethClient {
 
         //1. request content at SP
         client.setEnableRedirects(false);
+        client.setLoggingEnabled(true);
+        try {
+            client.setSSLSocketFactory(getCustomSSLSocketFactory());
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        }
         client.get(spEndPoint, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -209,6 +238,83 @@ public  class AsyncShibbolethClient {
         });
 
     }
+
+    private SSLSocketFactory getCustomSSLSocketFactory() throws KeyStoreException, KeyManagementException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
+        KeyManager[] keyManagers = null; 	 // --Defaults to No Client Authentication Certificates Provided
+        TrustManager[] trustManagers = null;   // --Defaults to the built-in AndroidCAStore
+        /**  ---------------- Custom Server Certificates  ---------------- **/
+        /**
+         * Since we are using a Custom PKI we need to add the Certificates as being trusted by the application:
+         * 		using  A) a BKS file
+         * 		   or  B) a PEM file
+         */
+
+        /**
+         *  A) Read Trusted Certificates from BKS file
+         *
+         */
+
+        //KeyStore trustStore = KeyStore.getInstance("BKS");
+        //InputStream trustStoreStream = activity.openFileInput("SSL_Server_chain.bks");
+        //trustStore.load(trustStoreStream, null);
+
+
+        /**
+         * B) Read Trusted Certificates from PEM file
+         * Note: the PEM files should not contain any text (use: openssl ca -notext ...)
+         */
+		/*
+		trustStore = KeyStore.getInstance("BKS");
+		trustStore.load(null,null);
+		final BufferedInputStream bis = new BufferedInputStream(
+						activity.openFileInput("SSL_Server_chain.crt"));
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		while (bis.available()>0){
+			Certificate cert = cf.generateCertificate(bis);
+			SslCertificate sslCert = new SslCertificate((X509Certificate)cert);
+			trustStore.setCertificateEntry(sslCert.getIssuedTo().getCName(), cert);
+		}
+		*/
+        /**
+         * Add TrustStore To the TrustManager:
+         */
+
+        //final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        //tmf.init(trustStore);
+        //trustManagers = tmf.getTrustManagers();
+
+        /**  ---------------- Client Certificates  ---------------- **/
+        /**
+         * Load Client Certificate
+         */
+        /**
+         * When using the built-in KeyChain:
+         */
+
+        if(this.context instanceof Activity) {
+            keyManagers = new KeyManager[]{new KeyChainManager((Activity) this.context)};
+        }
+
+        /**
+         * When using a custom KeyStore from a file:
+         */
+
+        //KeyStore clientStore = KeyStore.getInstance("PKCS12");
+        //final InputStream keyStoreLocation = activity.openFileInput("SSL_Client_B.p12");
+        //clientStore.load(keyStoreLocation, "user".toCharArray());
+
+        //final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        //kmf.init(clientStore, "user".toCharArray());
+
+        //keyManagers = kmf.getKeyManagers();
+
+        /**  ---------------- Insert into SSLContext ---------------- **/
+
+        final SSLContext sslCtx = SSLContext.getInstance("TLS");
+        sslCtx.init(keyManagers, trustManagers, new SecureRandom());
+        return new DestinationSSLSocketFactory(sslCtx);
+    }
+
 
     public interface AuthCallback
     {

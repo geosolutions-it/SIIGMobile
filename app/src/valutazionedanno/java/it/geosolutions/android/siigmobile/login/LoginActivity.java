@@ -384,8 +384,7 @@ public class LoginActivity extends AppCompatActivity {
                 //TODO
                 break;
             case PIEMONTE:
-                //TODO
-                break;
+                return "https://secure.ruparpiemonte.it/iamidp/AuthnEngine";
         }
 
         return null;

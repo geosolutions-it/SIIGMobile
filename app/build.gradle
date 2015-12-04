@@ -32,6 +32,7 @@ android {
             applicationId "it.geosolutions.android.siigmobile.valutazionedanno"
             versionCode 6
             versionName "0.4"
+            minSdkVersion 14
         }
     }
 
@@ -56,7 +57,7 @@ android {
         }
 
         debug{
-            testCoverageEnabled = true
+            testCoverageEnabled false
         }
     }
 
