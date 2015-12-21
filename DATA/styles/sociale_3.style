@@ -1,0 +1,73 @@
+{
+	"dashed": false,
+	"maxZoom": 13,
+	"minZoom": 12,
+	"textfield": "",
+	"strokecolor": "#000000",
+	"shape": "square",
+	"fillcolor": "#FF0000",
+	"name": "sociale_3",
+	"order": 9,
+	"fillalpha": 0.3,
+	"size": 5.0,
+	"strokealpha": 1.0,
+	"enabled": 0,
+	"decimationFactor": 1.0E-5,
+	"textsize": 5.0,
+	"width": 3.0,
+	"rules": [{
+		"filter": {
+            "PropertyName": "rischio_sociale",
+            "LowerBoundary": 0,
+            "UpperBoundary": 0.000000000153216
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "",
+			"strokecolor": "#14F200",
+			"shape": "square",
+			"fillcolor": "#14F200",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"textsize": 5.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "rischio_sociale",
+            "LowerBoundary": 0.000000000153216,
+            "UpperBoundary": 0.0002868048076608
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "",
+			"strokecolor": "#FFFB00",
+			"shape": "square",
+			"fillcolor": "#FFFB00",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"textsize": 5.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "rischio_sociale",
+            "LowerBoundary": 0.0002868048076608,
+            "UpperBoundary": 10000
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "",
+			"strokecolor": "#FF0000",
+			"shape": "square",
+			"fillcolor": "#FF0000",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"textsize": 5.0,
+			"width": 3.0
+		}
+	}]
+}

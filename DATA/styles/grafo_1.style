@@ -1,0 +1,18 @@
+{
+	"dashed": false,
+	"maxZoom": 30,
+	"minZoom": 16,
+	"textfield": "",
+	"strokecolor": "#0000FF",
+	"shape": "square",
+	"fillcolor": "red",
+	"name": "grafo_1",
+	"order": 7,
+	"fillalpha": 0.3,
+	"size": 5.0,
+	"strokealpha": 1.0,
+	"enabled": 0,
+	"decimationFactor": 1.0E-5,
+	"textsize": 5.0,
+	"width": 3.0
+}

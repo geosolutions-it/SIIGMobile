@@ -3,7 +3,23 @@
     {
       "locale":"en",
       "layers": [
-         {
+      {
+        "name" : "grafo_stradale",
+        "properties" :
+          {
+            "nr_incidenti_en" : "Accidents Number",
+            "flg_nr_incidenti_en":"Accidents Flag",
+            "nr_corsie_en" : "Lanes Number",
+            "fl_nr_corsie_en":"Lanes Flag",
+            "lunghezza" : "Length",
+            "densita_veicolare_en":"Vehicles Density",
+            "tipo_densita_veicolare_leggeri_pesanti_en" : "Vehicles Density Type",
+            "velocita_media" : "Average Speed",
+            "elenco_dissesti":"Instability List",
+            "tipo_velocita_media_leggeri_pesanti_en" : "Average Speed Type",
+            "partner_en" : "Partner"
+          }
+      },{
            "name" : "rischio_totale_ambientale",
            "properties" :
              {
@@ -165,6 +181,22 @@
       "locale":"it",
       "layers": [
          {
+           "name" : "grafo_stradale",
+           "properties" :
+             {
+               "nr_incidenti_it" : "N. Incidenti",
+               "flg_nr_incidenti_it":"Flag Incidenti",
+               "nr_corsie_it" : "N. Corsie",
+               "fl_nr_corsie_it":"Flag Corsie",
+               "lunghezza" : "Lunghezza",
+               "densita_veicolare_it":"Densità Veicolare",
+               "tipo_densita_veicolare_leggeri_pesanti_it" : "Tipo Densità Veicolare",
+               "velocita_media" : "Velocità Media",
+               "elenco_dissesti":"Elenco Dissesti",
+               "tipo_velocita_media_leggeri_pesanti_it" : "Tipo Velocità Media",
+               "partner_it" : "Partner"
+             }
+         }, {
             "name" : "rischio_totale_ambientale",
             "properties" :
               {

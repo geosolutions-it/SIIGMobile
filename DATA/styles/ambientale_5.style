@@ -1,0 +1,73 @@
+{
+	"dashed": false,
+	"maxZoom": 9,
+	"minZoom": 1,
+	"textfield": "",
+	"strokecolor": "#000000",
+	"shape": "square",
+	"fillcolor": "#FF0000",
+	"name": "ambientale_5",
+	"order": 11,
+	"fillalpha": 0.3,
+	"size": 5.0,
+	"strokealpha": 1.0,
+	"enabled": 0,
+	"decimationFactor": 1.0E-5,
+	"textsize": 5.0,
+	"width": 3.0,
+	"rules": [{
+		"filter": {
+            "PropertyName": "thema_ambientale",
+            "LowerBoundary": 1,
+            "UpperBoundary": 2
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "",
+			"strokecolor": "#14F200",
+			"shape": "square",
+			"fillcolor": "#14F200",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"textsize": 5.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_ambientale",
+            "LowerBoundary": 2,
+            "UpperBoundary": 3
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "",
+			"strokecolor": "#FFFB00",
+			"shape": "square",
+			"fillcolor": "#FFFB00",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"textsize": 5.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_ambientale",
+            "LowerBoundary": 3,
+            "UpperBoundary": 4
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "",
+			"strokecolor": "#FF0000",
+			"shape": "square",
+			"fillcolor": "#FF0000",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"textsize": 5.0,
+			"width": 3.0
+		}
+	}]
+}

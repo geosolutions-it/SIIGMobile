@@ -3,7 +3,23 @@
     {
       "locale":"en",
       "layers": [
-         {
+      {
+        "name" : "grafo_stradale",
+        "properties" :
+          {
+            "nr_incidenti_en" : "Accidents Number",
+            "flg_nr_incidenti_en":"Accidents Flag",
+            "nr_corsie_en" : "Lanes Number",
+            "fl_nr_corsie_en":"Lanes Flag",
+            "lunghezza" : "Length",
+            "densita_veicolare_en":"Vehicles Density",
+            "tipo_densita_veicolare_leggeri_pesanti_en" : "Vehicles Density Type",
+            "velocita_media" : "Average Speed",
+            "elenco_dissesti":"Instability List",
+            "tipo_velocita_media_leggeri_pesanti_en" : "Average Speed Type",
+            "partner_en" : "Partner"
+          }
+      }, {
            "name" : "v_geo_popolazione_residente_pl",
            "properties" :
              {

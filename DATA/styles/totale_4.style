@@ -1,0 +1,199 @@
+{
+	"dashed": false,
+	"maxZoom": 11,
+	"minZoom": 10,
+	"textfield": "",
+	"strokecolor": "#000000",
+	"shape": "square",
+	"fillcolor": "#FF0000",
+	"name": "totale_4",
+	"order": 10,
+	"fillalpha": 0.3,
+	"size": 5.0,
+	"strokealpha": 1.0,
+	"enabled": 0,
+	"decimationFactor": 1.0E-5,
+	"textsize": 5.0,
+	"width": 3.0,
+	"rules": [{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 1,
+            "UpperBoundary": 2
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#14F200",
+			"shape": "square",
+			"fillcolor": "#14F200",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 2,
+            "UpperBoundary": 3
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#0A7900",
+			"shape": "square",
+			"fillcolor": "#0A7900",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 3,
+            "UpperBoundary": 4
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+			"textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#053800",
+			"shape": "square",
+			"fillcolor": "#053800",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 4,
+            "UpperBoundary": 5
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#A5FB00",
+			"shape": "square",
+			"fillcolor": "#A5FB00",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 5,
+            "UpperBoundary": 6
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FFFB00",
+			"shape": "square",
+			"fillcolor": "#FFFB00",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 6,
+            "UpperBoundary": 7
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+			"textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FF9800",
+			"shape": "square",
+			"fillcolor": "#FF9800",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 7,
+            "UpperBoundary": 8
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FFB4B4",
+			"shape": "square",
+			"fillcolor": "#FFB4B4",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 8,
+            "UpperBoundary": 9
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+            "textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FF6A6A",
+			"shape": "square",
+			"fillcolor": "#FF6A6A",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	},{
+		"filter": {
+            "PropertyName": "thema_totale",
+            "LowerBoundary": 9,
+            "UpperBoundary": 10
+		},
+		"symbolizer": {
+			"dashed": false,
+			"textfield": "label_totale",
+			"textsize": 5.0,
+			"textstrokecolor": "#000000",
+			"textfillcolor": "#000000",
+			"strokecolor": "#FF0000",
+			"shape": "square",
+			"fillcolor": "red",
+			"fillalpha": 0.3,
+			"size": 5.0,
+			"strokealpha": 1.0,
+			"width": 3.0
+		}
+	}]
+}
