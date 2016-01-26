@@ -6,7 +6,7 @@ package it.geosolutions.android.siigmobile;
  */
 public class Config {
 
-    public static final String DESTINATION_WMS_URL = "http://destination.geo-solutions.it/geoserver_destination_plus/destination/wms";
+    public static final String DESTINATION_WMS_URL = "http://destination.geo-solutions.it/geoserver_destination_plus/mobile/wms";
     public static final String DESTINATION_AUTHORIZATION = "Basic c3VwZXI6c3VwZXI=";
     public static final int WPS_MAX_FEATURES = 500;
     public static final int FORMULA_RISK = 141;

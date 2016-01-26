@@ -19,7 +19,7 @@ public interface  SIIGWPSServices {
      * @param body a wrapper containing the raw xml
      * @param cb the callback which is used to parse the response / inform about the process
      */
-    @POST("/wps")
+    @POST("/mobile/wps")
     void postWPS(@Body TypedInput body, Callback<CRSFeatureCollection> cb);
 
 

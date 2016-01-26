@@ -4,8 +4,8 @@
             <ows:Identifier>features</ows:Identifier>
             <wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">
                 <wps:Body>
-                    <wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:destination="http://destination.geo-solutions.it">
-                        <wfs:Query typeName="destination:rischio_1">
+                    <wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:mobile="http://mobile.csi.it">
+                        <wfs:Query typeName="mobile:rischio_1">
                             <ogc:Filter>
                                 <ogc:BBOX>
                                     <ogc:PropertyName>geometria</ogc:PropertyName>

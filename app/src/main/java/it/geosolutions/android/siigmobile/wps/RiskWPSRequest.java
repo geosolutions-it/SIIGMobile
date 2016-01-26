@@ -30,6 +30,7 @@ import it.geosolutions.android.siigmobile.BuildConfig;
 public class RiskWPSRequest extends WPSRequest{
 
     public static final String KEY_FEATURES = "features";
+    public static final String KEY_WORKSPACE = "workspace";
     public static final String KEY_STORE = "store";
     public static final String KEY_BATCH = "batch";
     public static final String KEY_PRECISION = "precision";
@@ -60,13 +61,15 @@ public class RiskWPSRequest extends WPSRequest{
     private static final NavigableMap<Double, String> areas = new TreeMap<>();
     // Max values
     static {
-        areas.put(0.00025, "destination:siig_geo_ln_arco_1");
-        areas.put(0.001, "destination:siig_geo_ln_arco_2");
-        areas.put(0.004, "destination:siig_geo_pl_arco_3");
-        areas.put(0.25, "destination:siig_geo_pl_arco_4");
-        areas.put(100.0, "destination:siig_geo_pl_arco_5");
+        areas.put(0.00025, "mobile:siig_geo_ln_arco_1");
+        areas.put(0.001, "mobile:siig_geo_ln_arco_2");
+        areas.put(0.004, "mobile:siig_geo_pl_arco_3");
+        areas.put(0.25, "mobile:siig_geo_pl_arco_4");
+        areas.put(100.0, "mobile:siig_geo_pl_arco_5");
         //18.225263943
     }
+
+
 
     private static final NavigableMap<Double, Integer> levels = new TreeMap<>();
     // Max values
@@ -112,6 +115,7 @@ public class RiskWPSRequest extends WPSRequest{
 
         this.featureCollection = _features;
 
+        this.parameters.put(KEY_WORKSPACE,"mobile");
         this.parameters.put(KEY_STORE,_store);
         this.parameters.put(KEY_BATCH,_batch);
         this.parameters.put(KEY_PRECISION,_precision);
@@ -182,7 +186,7 @@ public class RiskWPSRequest extends WPSRequest{
                 "\t\t\t<ows:Identifier>features</ows:Identifier>\n" +
                 "\t\t\t<wps:Reference mimeType=\"text/xml\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n" +
                 "\t\t\t\t<wps:Body>\n" +
-                "\t\t\t\t\t<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\" xmlns:destination=\"http://destination.geo-solutions.it\">\n" +
+                "\t\t\t\t\t<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\" xmlns:mobile=\"http://mobile.csi.it\">\n" +
                         // TODO: the ceiling value can be null
                 "\t\t\t\t\t\t<wfs:Query typeName=\""+ areas.ceilingEntry(env.getArea()).getValue()+"\">\n" +
                 "\t\t\t\t\t\t\t<ogc:Filter>\n" +
@@ -318,10 +322,10 @@ public class RiskWPSRequest extends WPSRequest{
         serializer.attribute("", "service", "WFS");
         serializer.attribute("", "version", "1.0.0");
         serializer.attribute("", "outputFormat", "GML2");
-        serializer.attribute("", "xlmns:destination", "http://destination.geo-solutions.it");
+        serializer.attribute("", "xlmns:mobile", "http://mobile.csi.it");
 
         serializer.startTag("wfs", "Query");
-        serializer.attribute("", "typeName", "destination:rischio_1");
+        serializer.attribute("", "typeName", "mobile:rischio_1");
 
         serializer.setPrefix("ogc", "ogc");
         serializer.startTag("ogc", "Filter");
