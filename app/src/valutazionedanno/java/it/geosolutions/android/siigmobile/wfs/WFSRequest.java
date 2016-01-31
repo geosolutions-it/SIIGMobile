@@ -9,8 +9,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.GeoPoint;
 
+import java.util.List;
 import java.util.Locale;
 
+import cz.msebera.android.httpclient.cookie.Cookie;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
 import it.geosolutions.android.siigmobile.BuildConfig;
@@ -50,11 +52,11 @@ public class WFSRequest {
      * @param layerName the layer to query
      * @param center the position of the center of the query
      * @param radius the radius of meter of the query
-     * @param shibCookie shibCookie to identify
+     * @param cookies a list of cookies to identify
      * @param auth the auth token to use
      * @param feedback the feedback to receive the result or a error message
      */
-    public static void getWFS(final String layerName,final GeoPoint center, final int radius, final String shibCookie, final String auth, final WFSRequestFeedback feedback)
+    public static void getWFS(final String layerName,final GeoPoint center, final int radius, final List<Cookie> cookies, final String auth, final WFSRequestFeedback feedback)
     {
 
         Gson gson = new GsonBuilder()
@@ -68,8 +70,10 @@ public class WFSRequest {
                     @Override
                     public void intercept(RequestFacade request) {
                         request.addHeader("Authorization", auth);
-                        if(shibCookie != null) {
-                            request.addHeader(Config.SHIBB_COOKIE_NAME, shibCookie);
+                        if(cookies != null && cookies.size() > 0) {
+                            for(Cookie cookie : cookies) {
+                                request.addHeader(cookie.getName(), cookie.getValue());
+                            }
                         }
                     }
                 })

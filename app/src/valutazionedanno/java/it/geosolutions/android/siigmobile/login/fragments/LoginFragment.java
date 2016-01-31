@@ -30,8 +30,7 @@ import it.geosolutions.android.siigmobile.MainActivity;
 import it.geosolutions.android.siigmobile.R;
 import it.geosolutions.android.siigmobile.Util;
 import it.geosolutions.android.siigmobile.login.LoginActivity;
-import it.geosolutions.android.siigmobile.login.auth.AuthTask;
-import it.geosolutions.android.siigmobile.login.auth.ShibAuthResult;
+import it.geosolutions.android.siigmobile.login.AsyncShibbolethClient;
 
 /**
  * Created by Robert Oehler on 31.10.15.
@@ -74,8 +73,6 @@ public class LoginFragment extends Fragment {
     private View mLoginFormView;
     private View mLoginStatusView;
     private TextView mLoginStatusMessageView;
-
-    private AuthTask mAuthTask;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -154,6 +151,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
+
     }
 
     /**
@@ -162,9 +160,6 @@ public class LoginFragment extends Fragment {
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -214,62 +209,40 @@ public class LoginFragment extends Fragment {
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
 
-            //kick off a background task to perform the user login attempt.
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            mAuthTask = new AuthTask(getActivity().getBaseContext(), mIdentityProvider, Config.SP_CONTENT_ENDPOINT){
-
+            //TODO use production endpoints
+//          String productionIDP =  LoginActivity.getEndPointAccordingToIdentityProvider(mIdentityProvider);
+            final AsyncShibbolethClient shibboleth = new AsyncShibbolethClient(getActivity(), true);
+            shibboleth.authenticate(Config.SP_CONTENT_ENDPOINT, Config.TEST_IDP_ENDPOINT, user, pass, new AsyncShibbolethClient.AuthCallback() {
                 @Override
-                public void done(final ShibAuthResult result) {
+                public void authFailed(final String errorMessage, Throwable error) {
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    showProgress(false);
 
-                            mAuthTask = null;
-
-                            showProgress(false);
-
-                            if (result.isSuccess()) {
-
-                                Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show();
-
-                                final SharedPreferences.Editor ed = prefs.edit();
-
-                                ed.putString(LoginActivity.PREFS_USER, user);
-                                ed.putString(LoginActivity.PREFS_PASS, pass);
-                                if (result.hasCookie()) {
-                                    ed.putString(Config.PREFS_SHIBB_COOKIE, result.getCookie());
-                                }
-                                ed.putInt(LoginActivity.PREFS_IDP, mIdentityProvider.ordinal());
-
-                                ed.apply();
-
-                                getActivity().finish();
-                                startActivity(new Intent(getActivity(), MainActivity.class));
-
-                            } else {
-                                //error
-                                if (!result.hasError()) {
-                                    //no exception, most likely wrong password
-                                    mPasswordView.setError(getString(R.string.login_error_incorrect_password));
-                                    mPasswordView.requestFocus();
-                                } else {
-
-                                    //error message available, show
-                                    Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_error_generic) + " : " + result.getErrorMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-
-                        }
-                    });
-
+                    Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_error_generic) + " : " + errorMessage, Toast.LENGTH_LONG).show();
 
                 }
-            };
-            //TODO remove on production and use the endpoint according to the selected idp ->authtask.getEndPointAccordingToIdentityProvider()
-            mAuthTask.setIdpEndPoint(Config.TEST_IDP_ENDPOINT);
-            mAuthTask.setCookie(prefs.getString(Config.PREFS_SHIBB_COOKIE, null));
-            mAuthTask.execute(user, pass);
+                @Override
+                public void accessGranted(){
+
+                    showProgress(false);
+
+                    Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show();
+
+                    final SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+
+                    ed.putString(LoginActivity.PREFS_USER, user);
+                    ed.putString(LoginActivity.PREFS_PASS, pass);
+                    ed.putInt(LoginActivity.PREFS_IDP, mIdentityProvider.ordinal());
+
+                    ed.apply();
+
+                    getActivity().finish();
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                }
+
+
+            });
+
         }
     }
 

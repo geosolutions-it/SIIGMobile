@@ -12,7 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
-import it.geosolutions.android.siigmobile.Config;
+import com.loopj.android.http.PersistentCookieStore;
+
 import it.geosolutions.android.siigmobile.MainActivity;
 import it.geosolutions.android.siigmobile.R;
 import it.geosolutions.android.siigmobile.login.fragments.AutoLoginFragment;
@@ -124,7 +125,6 @@ public class LoginActivity extends AppCompatActivity {
                 bundle.putInt(PREFS_IDP,       prefs.getInt(PREFS_IDP, LoginFragment.IdentityProvider.PIEMONTE.ordinal()));
                 bundle.putString(PREFS_USER,   prefs.getString(PREFS_USER, null));
                 bundle.putString(PREFS_PASS,   prefs.getString(PREFS_PASS, null));
-                bundle.putString(Config.PREFS_SHIBB_COOKIE, prefs.getString(Config.PREFS_SHIBB_COOKIE, null));
                 getAutoLoginFragment().setArguments(bundle);
 
                 getSupportFragmentManager()
@@ -272,10 +272,13 @@ public class LoginActivity extends AppCompatActivity {
 
         ed.putString(PREFS_USER, null);
         ed.putString(PREFS_PASS, null);
-        ed.putString(Config.PREFS_SHIBB_COOKIE, null);
         ed.putInt(PREFS_IDP, -1);
 
         ed.apply();
+
+        //clear cookies
+        PersistentCookieStore cookieStore = new PersistentCookieStore(getBaseContext());
+        cookieStore.clear();
 
         didLogout = true;
 
@@ -360,5 +363,31 @@ public class LoginActivity extends AppCompatActivity {
             autoLoginFragment = AutoLoginFragment.getInstance();
         }
         return autoLoginFragment;
+    }
+
+
+    /**
+     * returns the endpoint according to the identity provider
+     * @param provider
+     * @return
+     */
+    public static String getEndPointAccordingToIdentityProvider(final LoginFragment.IdentityProvider provider){
+
+
+        switch (provider){
+
+            case AOSTA:
+                return "https://idpcittadini.partout.it/idp/shibboleth";
+            case BOLZANO:
+                return "https://idp.prov.bz/idp/shibboleth";
+            case LOMBARDIA:
+                //TODO
+                break;
+            case PIEMONTE:
+                return "https://secure.ruparpiemonte.it/iamidp/AuthnEngine";
+        }
+
+        return null;
+
     }
 }

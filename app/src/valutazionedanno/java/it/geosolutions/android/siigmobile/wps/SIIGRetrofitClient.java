@@ -7,10 +7,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vividsolutions.jts.geom.Geometry;
 
+import java.util.List;
+
+import cz.msebera.android.httpclient.cookie.Cookie;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonDeserializer;
 import it.geosolutions.android.map.wfs.geojson.GeometryJsonSerializer;
 import it.geosolutions.android.siigmobile.BuildConfig;
-import it.geosolutions.android.siigmobile.Config;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -33,11 +35,11 @@ public class SIIGRetrofitClient {
      * This already runs in background / gives feedback in the main thread, but may last an notable amount of time
      *
      * @param wps the WPS request as String
-     * @param shibCookie shibCookie to identify
+     * @param cookies cookies to identify
      * @param authToken token to identify
      * @param feedback the feedback to receive the result or a error message
      */
-    public static void postWPS(final String wps, final String shibCookie, final String authToken, final WPSRequestFeedback feedback)
+    public static void postWPS(final String wps, final List<Cookie> cookies, final String authToken, final WPSRequestFeedback feedback)
     {
 
         Gson gson = new GsonBuilder()
@@ -49,7 +51,7 @@ public class SIIGRetrofitClient {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setConverter(new GsonConverter(gson))
                 .setEndpoint(ENDPOINT)
-                .setRequestInterceptor(new LoginRequestInterceptor(authToken, shibCookie))
+                .setRequestInterceptor(new LoginRequestInterceptor(authToken, cookies))
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
@@ -92,17 +94,17 @@ public class SIIGRetrofitClient {
     public static class LoginRequestInterceptor implements RequestInterceptor {
 
         private String mAuth;
-        private String mShibbCookie;
+        private List<Cookie> mCookies;
 
 
         /**
          * constructor to use with auth token and shibCookie (can be null)
          * @param authToken
-         * @param shibbCookie
+         * @param cookies
          */
-        public LoginRequestInterceptor(final String authToken, final String shibbCookie){
+        public LoginRequestInterceptor(final String authToken, final List<Cookie> cookies){
             this.mAuth = authToken;
-            this.mShibbCookie = shibbCookie;
+            this.mCookies = cookies;
         }
 
         @Override
@@ -113,8 +115,10 @@ public class SIIGRetrofitClient {
             if(mAuth != null){
                 requestFacade.addHeader("Authorization", mAuth);
             }
-            if(mShibbCookie != null){
-                requestFacade.addHeader(Config.SHIBB_COOKIE_NAME, mShibbCookie);
+            if(mCookies != null && mCookies.size() > 0){
+                for(Cookie cookie : mCookies) {
+                    requestFacade.addHeader(cookie.getName(), cookie.getValue());
+                }
             }
         }
 

@@ -7,9 +7,7 @@ import android.util.Log;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import it.geosolutions.android.siigmobile.login.auth.AuthTask;
-import it.geosolutions.android.siigmobile.login.auth.ShibAuthResult;
-import it.geosolutions.android.siigmobile.login.fragments.LoginFragment;
+import it.geosolutions.android.siigmobile.login.AsyncShibbolethClient;
 
 /**
  * Created by Robert Oehler on 11.11.15.
@@ -21,7 +19,7 @@ public class ShibbolethTest extends InstrumentationTestCase {
     /**
      * tests that the authtask returns true for valid credentials
      */
-    public void testLoginSuccess(){
+    public void testLoginSuccess() throws Throwable {
 
         final Context context = getInstrumentation().getTargetContext();
 
@@ -31,23 +29,33 @@ public class ShibbolethTest extends InstrumentationTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        final LoginFragment.IdentityProvider identityProvider = LoginFragment.IdentityProvider.PIEMONTE;
+        final AsyncShibbolethClient shibboleth = new AsyncShibbolethClient(context, false);
 
-        final AuthTask authTask = new AuthTask(context, identityProvider, Config.SP_CONTENT_ENDPOINT) {
-
+        runTestOnUiThread(new Runnable() {
             @Override
-            public void done(final ShibAuthResult result) {
+            public void run() {
 
+                shibboleth.authenticate(Config.SP_CONTENT_ENDPOINT, Config.TEST_IDP_ENDPOINT, "myself", "myself", new AsyncShibbolethClient.AuthCallback() {
+                    @Override
+                    public void authFailed(final String errorMessage, Throwable error) {
 
-                assertTrue(result.isSuccess());
+                        Log.i("ShibbolethTest", "positive test failed, error");
+                        fail();
 
-                latch.countDown();
+                        latch.countDown();
+                    }
 
+                    @Override
+                    public void accessGranted() {
 
+                        Log.i("ShibbolethTest", "positive test passed, okay");
+
+                        latch.countDown();
+                    }
+                });
             }
-        };
-        authTask.setIdpEndPoint(Config.TEST_IDP_ENDPOINT);
-        authTask.execute("myself","myself");
+        });
+
 
         try {
             //wait for completion
@@ -60,7 +68,7 @@ public class ShibbolethTest extends InstrumentationTestCase {
     /**
      * tests that the authtask returns false for invalid credentials
      */
-    public void testLoginFail(){
+    public void testLoginFail() throws Throwable {
 
         final Context context = getInstrumentation().getTargetContext();
 
@@ -70,23 +78,33 @@ public class ShibbolethTest extends InstrumentationTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        final LoginFragment.IdentityProvider identityProvider = LoginFragment.IdentityProvider.PIEMONTE;
+        final AsyncShibbolethClient shibboleth = new AsyncShibbolethClient(context, false);
 
-        final AuthTask authTask = new AuthTask(context, identityProvider, Config.SP_CONTENT_ENDPOINT) {
-
+        runTestOnUiThread(new Runnable() {
             @Override
-            public void done(final ShibAuthResult result) {
+            public void run() {
 
+                shibboleth.authenticate(Config.SP_CONTENT_ENDPOINT, Config.TEST_IDP_ENDPOINT, "you", "me", new AsyncShibbolethClient.AuthCallback() {
+                    @Override
+                    public void authFailed(final String errorMessage, Throwable error) {
 
-                assertFalse(result.isSuccess());
+                        Log.i("ShibbolethTest", "negative test failed, okay");
+                        latch.countDown();
+                    }
 
-                latch.countDown();
+                    @Override
+                    public void accessGranted() {
 
+                        Log.i("ShibbolethTest", "negative test passed, error");
 
+                        fail();
+
+                        latch.countDown();
+                    }
+                });
             }
-        };
-        authTask.setIdpEndPoint(Config.TEST_IDP_ENDPOINT);
-        authTask.execute("you","me");
+        });
+
 
         try {
             //wait for completion
