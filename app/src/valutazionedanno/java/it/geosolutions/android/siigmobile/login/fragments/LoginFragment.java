@@ -151,6 +151,13 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        final Button loginCertButton  = (Button) view.findViewById(R.id.login_certificate);
+        loginCertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptCertLogin();
+            }
+        });
 
     }
 
@@ -244,6 +251,50 @@ public class LoginFragment extends Fragment {
             });
 
         }
+    }
+
+    /**
+     * Attempts to sign in using an existing device certificate.
+     */
+    public void attemptCertLogin() {
+
+        //check if online
+        if(!Util.isOnline(getActivity().getBaseContext())){
+
+            Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_not_online), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Show progress spinner
+        mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
+        showProgress(true);
+
+        //TODO use production endpoints
+//          String productionIDP =  LoginActivity.getEndPointAccordingToIdentityProvider(mIdentityProvider);
+        final AsyncShibbolethClient shibboleth = new AsyncShibbolethClient(getActivity(), true);
+        shibboleth.authenticateCert(Config.SP_CONTENT_ENDPOINT, new AsyncShibbolethClient.AuthCallback() {
+            @Override
+            public void authFailed(final String errorMessage, Throwable error) {
+
+                showProgress(false);
+
+                Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_error_generic) + " : " + errorMessage, Toast.LENGTH_LONG).show();
+
+            }
+            @Override
+            public void accessGranted(){
+
+                showProgress(false);
+
+                Toast.makeText(getActivity().getBaseContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show();
+
+                getActivity().finish();
+                startActivity(new Intent(getActivity(), MainActivity.class));
+            }
+
+
+        });
+
     }
 
 

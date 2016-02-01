@@ -48,7 +48,11 @@ public class LogoutFragment extends Fragment {
 
         if(getArguments() != null && getArguments().containsKey(LoginActivity.PREFS_IDP)){
             int idp = getArguments().getInt(LoginActivity.PREFS_IDP);
-            mIdentityProvider = LoginFragment.IdentityProvider.values()[idp];
+            if(idp > 0 && idp < LoginFragment.IdentityProvider.values().length) {
+                mIdentityProvider = LoginFragment.IdentityProvider.values()[idp];
+            }else{
+                mIdentityProvider = LoginFragment.IdentityProvider.values()[LoginFragment.IdentityProvider.PIEMONTE.ordinal()];
+            }
         }
 
         if(getArguments() != null && getArguments().containsKey(LoginActivity.PREFS_USER)){

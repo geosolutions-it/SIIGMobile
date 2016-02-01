@@ -79,7 +79,7 @@ public class AsyncShibbolethClient {
     public void authenticate(final String spEndPoint, final String idpEndPoint, final String user, final String pass,@NonNull final AuthCallback callback){
 
         //1. request content at SP
-        client.setEnableRedirects(false);
+        client.setEnableRedirects(true);
         client.setLoggingEnabled(true);
         try {
             client.setSSLSocketFactory(getCustomSSLSocketFactory());
@@ -96,12 +96,56 @@ public class AsyncShibbolethClient {
         } catch (UnrecoverableKeyException e) {
             e.printStackTrace();
         }
+
         client.get(spEndPoint, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
-                //TODO using AsyncHttpClient get() to the sp using valid cookies results in 200 -> check if that is true also for production
-                callback.accessGranted();
+                byte[] bytes = new byte[responseBody.length];
+                for (int i=0, len=responseBody.length; i<len; i++) {
+                    bytes[i] = Byte.parseByte(String.valueOf(responseBody[i]));
+                }
+
+                String str = new String(bytes);
+
+                if(str.contains("/iamidp/Authn/X509/Login")){
+
+                    client.post("https://secure.ruparpiemonte.it/iamidp/Authn/X509/Login", new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess ( int statusCode, Header[] headers,byte[] responseBody){
+
+                            byte[] bytes = new byte[responseBody.length];
+                            for (int i = 0, len = responseBody.length; i < len; i++) {
+                                bytes[i] = Byte.parseByte(String.valueOf(responseBody[i]));
+                            }
+
+                            String str = new String(bytes);
+
+                            if (str.contains("X509")) {
+
+
+                            } else {
+
+                                callback.accessGranted();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure ( int statusCode, Header[] headers,byte[] responseBody,
+                        final Throwable error){
+
+                            if(statusCode == 302) {
+                                String s = new String();
+                            }
+                                // Error
+                            Log.d(AsyncShibbolethClient.TAG, "Status Code: "+statusCode);
+                        }
+                    });
+
+                }else {
+
+                    callback.accessGranted();
+                }
             }
 
             @Override
@@ -234,6 +278,161 @@ public class AsyncShibbolethClient {
                     //unexpected state
                     callback.authFailed(context.getString(R.string.login_error_unexpected_status), error);
                 }
+            }
+        });
+
+    }
+
+    public void authenticateCert(final String spEndPoint, @NonNull final AuthCallback callback){
+
+        //1. request content at SP
+        client.setEnableRedirects(true);
+        client.setLoggingEnabled(true);
+
+        try {
+            client.setSSLSocketFactory(getCustomSSLSocketFactory());
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        }
+
+        client.get(spEndPoint, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                String str = new String(responseBody);
+
+                if (str.contains("/iamidp/Authn/X509/Login")) {
+
+
+                    client.post("https://secure.ruparpiemonte.it/iamidp/Authn/X509/Login", new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                            String str = new String(responseBody);
+
+                            if (str.contains("SAMLResponse")) {
+
+                                Log.d("TestShib", "SAMLResponse Found!");
+
+                                String response = new String(responseBody);
+                                Document idpDoc = Jsoup.parse(response);
+                                Element relayStateElement = idpDoc.select("[name=RelayState]").get(0);
+                                Element SAMLResponseElement = idpDoc.select("[name=SAMLResponse]").get(0);
+                                String relayState = relayStateElement.attr("value");
+                                String SAMLResponse = SAMLResponseElement.attr("value");
+
+                                RequestParams rParams = new RequestParams();
+                                rParams.put("RelayState", relayState);
+                                rParams.put("SAMLResponse", SAMLResponse);
+
+                                client.post(
+                                        "https://destinationpa.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
+                                        rParams,
+                                        new AsyncHttpResponseHandler() {
+                                            @Override
+                                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                                                String str = new String(responseBody);
+
+                                                Log.d("EVVAI", str);
+                                                callback.accessGranted();
+                                            }
+
+                                            @Override
+                                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
+                                                                  final Throwable error) {
+
+                                                String str = new String(responseBody);
+
+                                                if (statusCode == 302) {
+                                                    String s = new String();
+                                                }
+                                                // Error
+                                                Log.w("TestShib", "Direct login Status Code: " + statusCode);
+                                            }
+                                        });
+
+
+                            }  else {
+
+                                Log.w("TestShib", "No SAMLResponse Found");
+                                callback.authFailed("No SAMLResponse Found", null);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
+                                              final Throwable error) {
+
+                            String str = new String(responseBody);
+                            // Error
+                            Log.w("TestShib", "Status Code: " + statusCode);
+                            Log.w("TestShib", str);
+                            callback.authFailed(context.getString(R.string.login_error_unexpected_status), error);
+                        }
+                    });
+
+                } else if(str.contains("SAMLResponse")){
+
+                    String response = new String(responseBody);
+                    Document idpDoc = Jsoup.parse(response);
+                    Element relayStateElement = idpDoc.select("[name=RelayState]").get(0);
+                    Element SAMLResponseElement = idpDoc.select("[name=SAMLResponse]").get(0);
+                    String relayState = relayStateElement.attr("value");
+                    String SAMLResponse = SAMLResponseElement.attr("value");
+
+                    RequestParams rParams = new RequestParams();
+                    rParams.put("RelayState", relayState);
+                    rParams.put("SAMLResponse", SAMLResponse);
+
+                    client.post(
+                            "https://destinationpa.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
+                            rParams,
+                            new AsyncHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                                    String str = new String(responseBody);
+
+                                    Log.d("EVVAI", str);
+                                    callback.accessGranted();
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
+                                                      final Throwable error) {
+
+                                    String str = new String(responseBody);
+
+                                    if (statusCode == 302) {
+                                        String s = new String();
+                                    }
+                                    // Error
+                                    Log.w("TestShib", "Direct login Status Code: " + statusCode);
+                                }
+                            });
+
+
+                } else {
+
+                    callback.accessGranted();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, final Throwable error) {
+                //unexpected state
+                callback.authFailed(context.getString(R.string.login_error_unexpected_status), error);
             }
         });
 

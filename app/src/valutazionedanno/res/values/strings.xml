@@ -28,4 +28,6 @@
     <string name="logout_really">Do you really want to logout ?</string>
     <string name="logout_logout">Logout</string>
 
+    <string name="login_cert">Login with Certificate</string>
+
 </resources>
