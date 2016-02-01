@@ -30,8 +30,8 @@ android {
 
         valutazionedanno {
             applicationId "it.geosolutions.android.siigmobile.valutazionedanno"
-            versionCode 8
-            versionName "0.6"
+            versionCode 9
+            versionName "0.7"
         }
     }
 

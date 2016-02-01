@@ -81,5 +81,6 @@
     <string name="getfeatureinfo_title">Informazioni sulla selezione</string>
     <string name="app_title">PTA-DESTINATION Rischio</string>
     <string name="title_activity_compute_form">Crea Elaborazione</string>
+    <string name="login_cert">Login con Certificato</string>
 
 </resources>
