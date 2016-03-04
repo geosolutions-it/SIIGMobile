@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.loopj.android.http.PersistentCookieStore;
 import com.newrelic.agent.android.NewRelic;
 import com.shamanland.fab.FloatingActionButton;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -54,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import cz.msebera.android.httpclient.cookie.Cookie;
 import it.geosolutions.android.map.activities.MapActivityBase;
 import it.geosolutions.android.map.common.Constants;
 import it.geosolutions.android.map.control.LocationControl;
@@ -591,6 +593,16 @@ public class MainActivity extends MapActivityBase
             // Authorization Headers
             Headers.Builder hbuilder = new Headers.Builder();
             hbuilder.add("Authorization", Config.DESTINATION_AUTHORIZATION);
+            // Add login cookies
+            PersistentCookieStore psc = new PersistentCookieStore(this);
+            List<Cookie> cookieList = psc.getCookies();
+            if(!cookieList.isEmpty()) {
+                StringBuilder cookieStringB = new StringBuilder();
+                for (Cookie c : psc.getCookies()) {
+                    cookieStringB.append(c.getName()).append("=").append(c.getValue()).append(";");
+                }
+                hbuilder.add("Cookie", cookieStringB.toString());
+            }
             destinationSource.setHeaders(hbuilder.build());
 
             WMSLayer layer = new WMSLayer(destinationSource, Config.WMS_LAYERS[

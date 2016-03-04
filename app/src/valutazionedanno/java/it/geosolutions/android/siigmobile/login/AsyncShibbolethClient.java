@@ -345,7 +345,6 @@ public class AsyncShibbolethClient {
 
                                                 String str = new String(responseBody);
 
-                                                Log.d("EVVAI", str);
                                                 callback.accessGranted();
                                             }
 
