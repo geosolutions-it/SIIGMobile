@@ -30,6 +30,7 @@ import javax.net.ssl.TrustManager;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory;
 import cz.msebera.android.httpclient.cookie.Cookie;
+import it.geosolutions.android.siigmobile.Config;
 import it.geosolutions.android.siigmobile.R;
 
 /**
@@ -110,7 +111,7 @@ public class AsyncShibbolethClient {
 
                 if(str.contains("/iamidp/Authn/X509/Login")){
 
-                    client.post("https://secure.ruparpiemonte.it/iamidp/Authn/X509/Login", new AsyncHttpResponseHandler() {
+                    client.post(Config.TEST_IDP_ENDPOINT, new AsyncHttpResponseHandler() {
                         @Override
                         public void onSuccess ( int statusCode, Header[] headers,byte[] responseBody){
 
@@ -138,7 +139,7 @@ public class AsyncShibbolethClient {
                                 String s = new String();
                             }
                                 // Error
-                            Log.d(AsyncShibbolethClient.TAG, "Status Code: "+statusCode);
+                            Log.d(AsyncShibbolethClient.TAG, "Status Code: " + statusCode);
                         }
                     });
 
@@ -314,7 +315,7 @@ public class AsyncShibbolethClient {
                 if (str.contains("/iamidp/Authn/X509/Login")) {
 
 
-                    client.post("https://secure.ruparpiemonte.it/iamidp/Authn/X509/Login", new AsyncHttpResponseHandler() {
+                    client.post(Config.TEST_IDP_ENDPOINT, new AsyncHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
@@ -336,7 +337,7 @@ public class AsyncShibbolethClient {
                                 rParams.put("SAMLResponse", SAMLResponse);
 
                                 client.post(
-                                        "https://destinationpa.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
+                                        "https://tst-destinationpa.territorio.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
                                         rParams,
                                         new AsyncHttpResponseHandler() {
                                             @Override
@@ -396,7 +397,7 @@ public class AsyncShibbolethClient {
                     rParams.put("SAMLResponse", SAMLResponse);
 
                     client.post(
-                            "https://destinationpa.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
+                            "https://tst-destinationpa.territorio.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
                             rParams,
                             new AsyncHttpResponseHandler() {
                                 @Override
@@ -412,10 +413,13 @@ public class AsyncShibbolethClient {
                                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
                                                       final Throwable error) {
 
-                                    String str = new String(responseBody);
+                                    if(responseBody != null && responseBody.length > 0) {
+                                        String str = new String(responseBody);
+                                        Log.w("TestShib", "Response: " + str);
+                                    }
 
                                     if (statusCode == 302) {
-                                        String s = new String();
+                                        Log.d("TestShib", "Got a 302");
                                     }
                                     // Error
                                     Log.w("TestShib", "Direct login Status Code: " + statusCode);
@@ -440,7 +444,8 @@ public class AsyncShibbolethClient {
 
     private SSLSocketFactory getCustomSSLSocketFactory() throws KeyStoreException, KeyManagementException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
         KeyManager[] keyManagers = null; 	 // --Defaults to No Client Authentication Certificates Provided
-        TrustManager[] trustManagers = null;   // --Defaults to the built-in AndroidCAStore
+        // TODO: FOR TEST SERVER ONLY, DO NOT USE UnsecureTrustManager IN PRODUCTION SERVER
+        TrustManager[] trustManagers = {new UnsecureTrustManager()};   // --Defaults to the built-in AndroidCAStore
         /**  ---------------- Custom Server Certificates  ---------------- **/
         /**
          * Since we are using a Custom PKI we need to add the Certificates as being trusted by the application:

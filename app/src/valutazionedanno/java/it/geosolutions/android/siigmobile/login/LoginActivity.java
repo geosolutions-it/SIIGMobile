@@ -325,7 +325,7 @@ public class LoginActivity extends AppCompatActivity {
                 case LOMBARDIA:
                     return ContextCompat.getDrawable(getBaseContext(), R.drawable.lombardia_header);
                 case PIEMONTE:
-                    return ContextCompat.getDrawable(getBaseContext(), R.drawable.piemonte_header);
+                    return ContextCompat.getDrawable(getBaseContext(), R.drawable.destination_header);
             }
 
         }
