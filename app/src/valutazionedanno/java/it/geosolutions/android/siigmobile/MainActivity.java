@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -483,9 +484,24 @@ public class MainActivity extends MapActivityBase
                                 query.setCrs(crs);
                                 query.setLocale(env);
                                 query.setStyles("");
-                                query.setAuthToken(Config.DESTINATION_AUTHORIZATION);
                                 query.setAdditionalParams(additionalParameters);
                                 query.setEndPoint(Config.DESTINATION_WMS_URL);
+
+                                List<Pair<String,String>> headers = new ArrayList<Pair<String, String>>();
+                                headers.add(new Pair<String, String>("Authorization", Config.DESTINATION_AUTHORIZATION));
+
+                                // Add cookies
+                                PersistentCookieStore psc = new PersistentCookieStore(MainActivity.this);
+                                List<Cookie> cookieList = psc.getCookies();
+                                if(!cookieList.isEmpty()) {
+                                    StringBuilder cookieStringB = new StringBuilder();
+                                    for (Cookie c : psc.getCookies()) {
+                                            cookieStringB.append(c.getName()).append("=").append(c.getValue()).append(";");
+                                        }
+                                    headers.add(new Pair<String, String>("Cookie", cookieStringB.toString()));
+                                }
+
+                                query.setHeaders(headers);
 
                                 if (getFeatureInfoConfiguration() != null) {
                                     query.setLocaleConfig(getFeatureInfoConfiguration().getLocaleForLanguageCode(local_code));

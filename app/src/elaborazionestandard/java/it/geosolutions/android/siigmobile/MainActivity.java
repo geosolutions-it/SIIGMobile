@@ -13,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.loopj.android.http.PersistentCookieStore;
 import com.newrelic.agent.android.NewRelic;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.okhttp.Headers;
@@ -52,6 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import cz.msebera.android.httpclient.cookie.Cookie;
 import it.geosolutions.android.map.activities.MapActivityBase;
 import it.geosolutions.android.map.common.Constants;
 import it.geosolutions.android.map.control.LocationControl;
@@ -477,13 +480,28 @@ public class MainActivity extends MapActivityBase
                                 query.setCrs(crs);
                                 query.setLocale(env);
                                 query.setStyles("");
-                                query.setAuthToken(Config.DESTINATION_AUTHORIZATION);
                                 query.setAdditionalParams(additionalParameters);
                                 query.setEndPoint(Config.DESTINATION_WMS_URL);
 
                                 if (getFeatureInfoConfiguration() != null) {
                                     query.setLocaleConfig(getFeatureInfoConfiguration().getLocaleForLanguageCode(local_code));
                                 }
+
+                                List<Pair<String,String>> headers = new ArrayList<Pair<String, String>>();
+                                headers.add(new Pair<String, String>("Authorization", Config.DESTINATION_AUTHORIZATION));
+
+                                // Add cookies
+                                PersistentCookieStore psc = new PersistentCookieStore(MainActivity.this);
+                                List<Cookie> cookieList = psc.getCookies();
+                                if(!cookieList.isEmpty()) {
+                                    StringBuilder cookieStringB = new StringBuilder();
+                                    for (Cookie c : psc.getCookies()) {
+                                        cookieStringB.append(c.getName()).append("=").append(c.getValue()).append(";");
+                                    }
+                                    headers.add(new Pair<String, String>("Cookie", cookieStringB.toString()));
+                                }
+
+                                query.setHeaders(headers);
 
                                 bundle.putParcelable("query", query);
                                 lastQueryBundle = bundle;

@@ -157,7 +157,7 @@ public class MapModuleWMSGetInfoTest extends InstrumentationTestCase {
         assertEquals(query.getVersion(), parcelQuery.getVersion());
         assertEquals(query.getCrs(), parcelQuery.getCrs());
         assertEquals(query.getLocale(),parcelQuery.getLocale());
-        assertEquals(query.getAuthToken(),parcelQuery.getAuthToken());
+        assertEquals(query.getHeaders(),parcelQuery.getHeaders());
         assertEquals(query.getStyles(),parcelQuery.getStyles());
         assertEquals(query.getEndPoint(),parcelQuery.getEndPoint());
         assertEquals(query.getPixel_X(),parcelQuery.getPixel_X());

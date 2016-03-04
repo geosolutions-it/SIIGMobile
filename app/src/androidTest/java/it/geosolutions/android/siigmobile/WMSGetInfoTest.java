@@ -1,10 +1,13 @@
 package it.geosolutions.android.siigmobile;
 
+import android.support.v4.util.Pair;
 import android.test.ActivityUnitTestCase;
 
 import org.mapsforge.core.model.BoundingBox;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -70,7 +73,10 @@ public class WMSGetInfoTest extends ActivityUnitTestCase<MainActivity> {
                 additionalParameters,
                 Config.DESTINATION_WMS_URL);
 
-        getFeatureInfo.setAuthToken(Config.DESTINATION_AUTHORIZATION);
+        List<Pair<String,String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(new Pair<String, String>("Authorization", Config.DESTINATION_AUTHORIZATION));
+
+        getFeatureInfo.setHeaders(headers);
 
         FeatureCollection result = getFeatureInfo.requestGetFeatureInfo();
 

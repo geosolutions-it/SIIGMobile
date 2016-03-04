@@ -148,8 +148,8 @@ public class WMSSource implements Source{
                     query.getAdditionalParams(),
                     query.getEndPoint());
 
-            if (query.getAuthToken() != null) {
-                getFeatureInfo.setAuthToken(query.getAuthToken());
+            if (query.getHeaders() != null) {
+                getFeatureInfo.setHeaders(query.getHeaders());
             }
 
             FeatureCollection result = null;

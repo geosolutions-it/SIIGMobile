@@ -2,10 +2,13 @@ package it.geosolutions.android.map.model.query;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.util.Pair;
 
 import org.mapsforge.core.model.BoundingBox;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.geosolutions.android.map.wms.GetFeatureInfoConfiguration;
@@ -24,7 +27,7 @@ public class WMSGetFeatureInfoQuery extends BaseFeatureInfoQuery{
     private String version;
     private String crs;
     private String locale;
-    private String authToken;
+    private List<Pair<String, String>> headers;
     private String styles;
     private String endPoint;
     private double pixel_X,pixel_Y;
@@ -143,12 +146,12 @@ public class WMSGetFeatureInfoQuery extends BaseFeatureInfoQuery{
         this.pixel_X = pixel_X;
     }
 
-    public String getAuthToken() {
-        return authToken;
+    public List<Pair<String, String>> getHeaders() {
+        return headers;
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    public void setHeaders(List<Pair<String, String>> headers) {
+        this.headers = headers;
     }
 
     public String[] getQueryLayers() {
@@ -202,7 +205,6 @@ public class WMSGetFeatureInfoQuery extends BaseFeatureInfoQuery{
         dest.writeInt(getMapSize().length);
         dest.writeLongArray(getMapSize());
         dest.writeMap(getAdditionalParams());
-        dest.writeString(getAuthToken());
         dest.writeDouble(getPixel_X());
         dest.writeDouble(getPixel_Y());
         dest.writeSerializable(getBbox());
@@ -216,6 +218,12 @@ public class WMSGetFeatureInfoQuery extends BaseFeatureInfoQuery{
         dest.writeString(getCrs());
         dest.writeString(getEndPoint());
         dest.writeSerializable(getLocaleConfig());
+        // Write Name and Value as separate strings for each Header
+        dest.writeInt(getHeaders().size());
+        for(Pair<String,String> p : getHeaders()) {
+            dest.writeString(p.first);
+            dest.writeString(p.second);
+        }
     }
 
     /**
@@ -235,8 +243,6 @@ public class WMSGetFeatureInfoQuery extends BaseFeatureInfoQuery{
         additionalParams = new HashMap<>();
         p.readMap(additionalParams, this.getClass().getClassLoader());
 
-
-        authToken = p.readString();
         pixel_X = p.readDouble();
         pixel_Y = p.readDouble();
         bbox = (BoundingBox) p.readSerializable();
@@ -256,6 +262,15 @@ public class WMSGetFeatureInfoQuery extends BaseFeatureInfoQuery{
         endPoint= p.readString();
 
         localeConfig = (GetFeatureInfoConfiguration.Locale) p.readSerializable();
+
+        int headers_size = p.readInt();
+        if(headers_size > 0) {
+            headers = new ArrayList<Pair<String, String>>();
+            for (int i = 0; i < headers_size; i++) {
+                headers.add(new Pair<String, String>(p.readString(), p.readString()));
+            }
+        }
+
     }
 
     public WMSGetFeatureInfoQuery(){
@@ -270,7 +285,7 @@ public class WMSGetFeatureInfoQuery extends BaseFeatureInfoQuery{
         setZoomLevel(q.getZoomLevel());
         setMapSize(q.getMapSize());
         setAdditionalParams(q.getAdditionalParams());
-        setAuthToken(q.getAuthToken());
+        setHeaders(q.getHeaders());
         setPixel_Y(q.getPixel_Y());
         setPixel_X(q.getPixel_X());
         setBbox(q.getBbox());

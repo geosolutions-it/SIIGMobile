@@ -1,15 +1,20 @@
 package it.geosolutions.android.siigmobile;
 
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 import android.test.ActivityUnitTestCase;
 
+import com.loopj.android.http.PersistentCookieStore;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.mapsforge.core.model.BoundingBox;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import cz.msebera.android.httpclient.cookie.Cookie;
 import it.geosolutions.android.map.fragment.featureinfo.FeatureInfoAttributeListFragment;
 import it.geosolutions.android.map.model.query.WMSGetFeatureInfoQuery;
 import it.geosolutions.android.map.utils.ProjectionUtils;
@@ -95,11 +100,14 @@ public class SlidingPanelTest  extends ActivityUnitTestCase<MainActivity> {
         query.setCrs(crs);
         query.setLocale(env);
         query.setStyles("");
-        query.setAuthToken(Config.DESTINATION_AUTHORIZATION);
         query.setAdditionalParams(additionalParameters);
         query.setEndPoint(Config.DESTINATION_WMS_URL);
         bundle.putParcelable("query", query);
 
+        List<Pair<String,String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(new Pair<String, String>("Authorization", Config.DESTINATION_AUTHORIZATION));
+
+        query.setHeaders(headers);
         getActivity().showFragment(bundle);
 
         //wait for inflation

@@ -1,5 +1,6 @@
 package it.geosolutions.android.map.wms;
 
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -9,6 +10,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.mapsforge.core.model.BoundingBox;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +61,7 @@ public class WMSGetFeatureInfo {
 
     private RestAdapter restAdapter;
     private String endPoint;
-    private String authToken;
+    private List<Pair<String,String>> headers;
 
     /**
      * Constructor containing the mandatory fields
@@ -219,8 +221,13 @@ public class WMSGetFeatureInfo {
                 additionalParameters);
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    /**
+     * Set the Headers to be added to each http request.
+     * The Pair should be set as p.first = name, p.second = value
+     * @param headers
+     */
+    public void setHeaders(List<Pair<String, String>> headers) {
+        this.headers = headers;
     }
 
     public RestAdapter getRestAdapter(){
@@ -245,11 +252,13 @@ public class WMSGetFeatureInfo {
                 builder.setLogLevel(RestAdapter.LogLevel.FULL);
             }
             builder.setConverter(new GsonConverter(gson));
-            if(authToken != null){
+            if(headers != null && !headers.isEmpty()){
                 builder.setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestFacade request) {
-                        request.addHeader("Authorization", authToken);
+                        for(Pair<String,String> p : headers){
+                            request.addHeader(p.first, p.second);
+                        }
                     }
                 });
             }
