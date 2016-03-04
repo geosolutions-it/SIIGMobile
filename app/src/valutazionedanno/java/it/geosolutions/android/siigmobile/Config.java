@@ -33,7 +33,7 @@ public class Config {
     public static final int DEFAULT_STYLE = 1;
 
     public static final String[] WMS_LAYERS = {
-            "grafo_stradale",
+            "destination:grafo_stradale",
             "destination:popolazione_residente_all",
             "destination:popolazione_turistica_all",
             "destination:industria_servizi_all",
