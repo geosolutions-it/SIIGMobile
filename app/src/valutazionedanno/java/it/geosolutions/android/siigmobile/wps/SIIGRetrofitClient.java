@@ -115,10 +115,13 @@ public class SIIGRetrofitClient {
             if(mAuth != null){
                 requestFacade.addHeader("Authorization", mAuth);
             }
+
             if(mCookies != null && mCookies.size() > 0){
-                for(Cookie cookie : mCookies) {
-                    requestFacade.addHeader(cookie.getName(), cookie.getValue());
+                StringBuilder cookieStringB = new StringBuilder();
+                for (Cookie c : mCookies) {
+                    cookieStringB.append(c.getName()).append("=").append(c.getValue()).append(";");
                 }
+                requestFacade.addHeader("Cookie", cookieStringB.toString());
             }
         }
 
