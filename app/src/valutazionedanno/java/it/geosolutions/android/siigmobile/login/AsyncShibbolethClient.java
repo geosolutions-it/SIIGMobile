@@ -337,7 +337,7 @@ public class AsyncShibbolethClient {
                                 rParams.put("SAMLResponse", SAMLResponse);
 
                                 client.post(
-                                        "https://tst-destinationpa.territorio.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
+                                        "https://destinationpa.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
                                         rParams,
                                         new AsyncHttpResponseHandler() {
                                             @Override
@@ -396,7 +396,7 @@ public class AsyncShibbolethClient {
                     rParams.put("SAMLResponse", SAMLResponse);
 
                     client.post(
-                            "https://tst-destinationpa.territorio.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
+                            "https://destinationpa.csi.it/territorioliv1wrupext/Shibboleth.sso/SAML2/POST",
                             rParams,
                             new AsyncHttpResponseHandler() {
                                 @Override
@@ -404,7 +404,7 @@ public class AsyncShibbolethClient {
 
                                     String str = new String(responseBody);
 
-                                    Log.d("EVVAI", str);
+                                    Log.d("Access Granted", str);
                                     callback.accessGranted();
                                 }
 
@@ -443,8 +443,7 @@ public class AsyncShibbolethClient {
 
     private SSLSocketFactory getCustomSSLSocketFactory() throws KeyStoreException, KeyManagementException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
         KeyManager[] keyManagers = null; 	 // --Defaults to No Client Authentication Certificates Provided
-        // TODO: FOR TEST SERVER ONLY, DO NOT USE UnsecureTrustManager IN PRODUCTION SERVER
-        TrustManager[] trustManagers = {new UnsecureTrustManager()};   // --Defaults to the built-in AndroidCAStore
+        TrustManager[] trustManagers = null;   // --Defaults to the built-in AndroidCAStore
         /**  ---------------- Custom Server Certificates  ---------------- **/
         /**
          * Since we are using a Custom PKI we need to add the Certificates as being trusted by the application:

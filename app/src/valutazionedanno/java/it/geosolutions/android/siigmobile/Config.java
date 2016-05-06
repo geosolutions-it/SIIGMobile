@@ -6,7 +6,7 @@ package it.geosolutions.android.siigmobile;
  */
 public class Config {
 
-    public static final String DESTINATION_WMS_URL = "http://tst-destinationpa.territorio.csi.it/geoserver/wms";
+    public static final String DESTINATION_WMS_URL = "http://destinationpa.csi.it/geoserver/wms";
     public static final String DESTINATION_AUTHORIZATION = "Basic c3VwZXI6c3VwZXI=";
     public static final int WPS_MAX_FEATURES = 500;
     public static final int FORMULA_RISK = 141;
@@ -133,7 +133,7 @@ public class Config {
 
     public static byte WMS_BERSAGLI_HIGHLIGHT_MIN_ZOOM = 14;
 
-    public final static String SP_CONTENT_ENDPOINT = "http://tst-destinationpa.territorio.csi.it/siig/";
-    public final static String TEST_IDP_ENDPOINT = "https://tst-secure.ruparpiemonte.it/iamidp/Authn/X509/Login";
+    public final static String SP_CONTENT_ENDPOINT = "http://destinationpa.csi.it/siig/";
+    public final static String TEST_IDP_ENDPOINT = "https://secure.ruparpiemonte.it/iamidp/Authn/X509/Login";
 
 }

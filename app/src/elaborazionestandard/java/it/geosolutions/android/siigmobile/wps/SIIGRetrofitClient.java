@@ -24,7 +24,7 @@ import retrofit.mime.TypedString;
  */
 public class SIIGRetrofitClient {
 
-    public final static String ENDPOINT = "http://tst-destinationpa.territorio.csi.it/geoserver";
+    public final static String ENDPOINT = "http://destinationpa.csi.it/geoserver";
 
     /**
      * Sends the WPS Request to GeoServer using RetroFit

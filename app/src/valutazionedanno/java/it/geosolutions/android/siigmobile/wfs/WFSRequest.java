@@ -41,7 +41,7 @@ public class WFSRequest {
     public final static int VALUE_CRS = 4326;
 
 
-    public static final String ENDPOINT = "http://tst-destinationpa.territorio.csi.it/geoserver/mobile";
+    public static final String ENDPOINT = "http://destinationpa.csi.it/geoserver/mobile";
 
 
     /**
