@@ -41,7 +41,7 @@ public class WFSRequest {
     public final static int VALUE_CRS = 4326;
 
 
-    public static final String ENDPOINT = "http://destinationpa.csi.it/geoserver/mobile";
+    public static final String ENDPOINT = "http://destinationpa.csi.it/geoserver";
 
 
     /**
@@ -71,14 +71,16 @@ public class WFSRequest {
                     public void intercept(RequestFacade request) {
                         request.addHeader("Authorization", auth);
                         if(cookies != null && cookies.size() > 0) {
-                            for(Cookie cookie : cookies) {
-                                request.addHeader(cookie.getName(), cookie.getValue());
+                            StringBuilder cookieStringB = new StringBuilder();
+                            for (Cookie c : cookies) {
+                                cookieStringB.append(c.getName()).append("=").append(c.getValue()).append(";");
                             }
+                            request.addHeader("Cookie", cookieStringB.toString());
                         }
                     }
                 })
                 .setConverter(new GsonConverter(gson))
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                //.setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
         BoundingBox bb = new BoundingBox(center.latitude, center.longitude, center.latitude, center.longitude);
@@ -106,7 +108,7 @@ public class WFSRequest {
                     @Override
                     public void success(CRSFeatureCollection featureResponse, Response response) {
                         if (BuildConfig.DEBUG) {
-                            Log.i("WPSCall", "success " + featureResponse.toString() + "\n" + response.toString());
+                            Log.i("WFSCall", "success " + featureResponse.toString() + "\n" + response.toString());
                         }
                         feedback.success(featureResponse);
                     }
@@ -114,7 +116,7 @@ public class WFSRequest {
                     @Override
                     public void failure(RetrofitError error) {
 
-                        Log.w("WPSCall", "failure " + error.getMessage());
+                        Log.w("WFSCall", "failure " + error.getMessage());
 
                         feedback.error(error.getMessage());
                     }
